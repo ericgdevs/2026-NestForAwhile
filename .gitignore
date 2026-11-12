@@ -1,0 +1,20 @@
+# Node
+node_modules/
+dist/
+.vite/
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+# Data / env
+*.db
+*.sqlite
+.env
+# Test output
+playwright-report/
+test-results/
+coverage/
+# OS
+.DS_Store
