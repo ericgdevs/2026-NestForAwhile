@@ -70,3 +70,4 @@
 | Implement T050-T051 | Copilot (GPT-5.6 Terra) | Added httpx-based Ollama and Groq structured JSON provider clients with timeout and configuration handling | None | Caden |
 | Implement T052 | Copilot (GPT-5.6 Terra) | Added strict Pydantic recipe output models and product-ID validation against the AI contract | None | Caden |
 | Implement T053 | Copilot (GPT-5.6 Terra) | Added inventory location lookup and recipe guardrails for stock availability and restricted ingredients | None | Caden |
+| Implement T054-T055 | Copilot (GPT-5.6 Terra) | Added recipe prompt construction and deterministic in-stock fallback recipe generation | None | Caden |
