@@ -39,3 +39,4 @@
 | Implement | Copilot (Sonnet 5.5) | T091: donor_id/grant_id on inventory_lots (model, migration 0002, seed) and attribution/distribution/visit aggregations in reports.py, tests | Eric approved the data-model change (1a) | Eric |
 | Implement | Copilot (Sonnet 5.5) | T092: deterministic four-section ReportData builder (service-level; no DOCX, no route, no python-docx), tests | Eric approved plan (3b: structured object, DOCX later) | Eric |
 | Implement | Copilot (Sonnet 5.5) | T052 (partial): ai/schemas.py with manifest models and Pydantic output models mirroring ai-schemas.json plus missing-ingredient and substitution outputs, tests | Eric approved plan and decisions | Eric |
+| Implement | Copilot (Sonnet 5.5) | AI output validators (identifier leaks, unknown index, Restricted suggestions, status override), tests | Eric approved plan and decisions | Eric |
