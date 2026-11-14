@@ -23,3 +23,5 @@ test-results/
 coverage/
 # OS
 .DS_Store
+.vercel
+.env*
