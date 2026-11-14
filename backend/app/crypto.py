@@ -4,11 +4,11 @@ from cryptography.fernet import Fernet
 from sqlalchemy import Text
 from sqlalchemy.types import TypeDecorator
 
-from app.config import settings
+from app.config import Settings
 
 
 def _fernet(key: str | None = None) -> Fernet:
-    value = key or settings.field_encryption_key
+    value = key or Settings.from_env().field_encryption_key
     if not value:
         raise RuntimeError("FIELD_ENCRYPTION_KEY is required for encrypted fields")
     try:

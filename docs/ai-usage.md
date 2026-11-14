@@ -37,3 +37,4 @@
 | Implement T015 | Copilot (GPT-5.6 Terra) | Added shopping session, capacity, queue, cart, recommendation, checkout, and intervention models with metadata tests | None | Caden |
 | Implement T016 | Copilot (GPT-5.6 Terra) | Added donor, grant, report, and anonymized AI request models with privacy-focused metadata tests | None | Caden |
 | Implement T017 | Copilot (GPT-5.6 Terra) | Added Alembic configuration, initial schema migration, and SQLite upgrade validation | None | Caden |
+| Implement T018 | Copilot (GPT-5.6 Terra) | Added Argon2 password verification, JWT cookie helpers, role dependencies, and auth failure tests | None | Caden |
