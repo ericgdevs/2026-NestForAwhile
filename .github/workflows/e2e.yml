@@ -1,0 +1,49 @@
+name: End-to-end
+
+on:
+  pull_request:
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            e2e/package-lock.json
+      - name: Install backend
+        run: python -m pip install -r backend/requirements.txt
+      - name: Install frontend
+        working-directory: frontend
+        run: npm ci
+      - name: Install browsers
+        working-directory: e2e
+        run: npm ci && npx playwright install --with-deps chromium
+      - name: Start backend
+        env:
+          JWT_SECRET: synthetic-e2e-secret
+          SEED_DEMO_DATA: "true"
+          DATABASE_URL: sqlite:///./e2e.db
+        run: |
+          export FIELD_ENCRYPTION_KEY="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')"
+          (cd backend && python -m seed.load) &
+          uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 &
+      - name: Build and start frontend
+        working-directory: frontend
+        run: npm run build && npm run preview -- --host 127.0.0.1 --port 5173 &
+      - name: Run Playwright
+        working-directory: e2e
+        env:
+          BASE_URL: http://127.0.0.1:5173
+          E2E_CLIENT_EMAIL: client.active@example.test
+          E2E_CLIENT_PASSWORD: demo-password
+          E2E_VOLUNTEER_EMAIL: volunteer@example.test
+          E2E_VOLUNTEER_PASSWORD: demo-password
+        run: npx playwright test

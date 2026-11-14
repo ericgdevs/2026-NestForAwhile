@@ -47,7 +47,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T006 [P] [qa] CI frontend workflow `.github/workflows/frontend.yml`: lint + typecheck + Vitest + build on every PR
 - [X] T007 [P] [qa] CI hygiene workflow `.github/workflows/hygiene.yml` + `scripts/check_hygiene.sh`: fail if `.env` is tracked, if the phrase "HIPAA compliant" appears anywhere
 - [X] T008 [qa] Playwright scaffold: `e2e/package.json`, `e2e/playwright.config.ts` (`BASE_URL` env, local + deployed projects), `e2e/fixtures/auth.ts` (login helper per role) (dependency approval)
-- [ ] T009 [qa] CI e2e workflow `.github/workflows/e2e.yml`: start backend (SQLite + seed) and frontend build, run Playwright on every PR
+- [X] T009 [qa] CI e2e workflow `.github/workflows/e2e.yml`: start backend (SQLite + seed) and frontend build, run Playwright on every PR
 - [X] T010 [docs] Add `.github/CODEOWNERS` matching the ownership table above and `.github/pull_request_template.md` (task ID, stream, merge-commit-only reminder, ai-usage row checkbox, tests run). Needs the team's GitHub handles from Eric.
 
 **Checkpoint**: three CI workflows run on an empty repo; owners are enforced.
@@ -125,9 +125,9 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T054 [ai] [US6] `backend/app/ai/recipes.py`: prompt builder from `Active_Cart_Manifest`, scanned item, in-stock inventory, and the client's restrictions in plain list form
 - [X] T055 [ai] [US6] `backend/app/ai/fallback.py`: deterministic rules-only recipes built from in-cart and in-stock items, filtered by the same rules; tests
 - [X] T056 [ai] [US6] `backend/app/routes/recipes.py`: `POST /recipes` runs provider → structure validation → rules guard → display, falls back on any failure, logs `ai_requests` (no client identity), caches by manifest hash; one `include_router` line in `main.py` (coordinate with Aditya); route tests with the mocked provider (leak, provider down, invalid JSON, missing-ingredient location)
-- [ ] T057 [qa] [US6] AI evaluation scenarios `backend/tests/ai_eval/scenarios.yaml`: profiles, carts, inventories, and edge cases (nut allergy, vegan, kidney friendly, empty cart, out-of-stock-only cart, prompt-injection text in a product name)
-- [ ] T058 [qa] [US6] AI evaluation runner `backend/tests/ai_eval/run_eval.py`: reports valid-JSON rate, restricted-ingredient leaks (must be 0 after rules), in-stock ingredient rate, fallback rate, and latency for a chosen provider; writes a report file
-- [ ] T059 [ai] [US6] Ollama local-development setup: `scripts/dev/ollama_setup.sh` (pull the chosen model), README snippet, and `/health` reporting provider availability
+- [X] T057 [qa] [US6] AI evaluation scenarios `backend/tests/ai_eval/scenarios.yaml`: profiles, carts, inventories, and edge cases (nut allergy, vegan, kidney friendly, empty cart, out-of-stock-only cart, prompt-injection text in a product name)
+- [X] T058 [qa] [US6] AI evaluation runner `backend/tests/ai_eval/run_eval.py`: reports valid-JSON rate, restricted-ingredient leaks (must be 0 after rules), in-stock ingredient rate, fallback rate, and latency for a chosen provider; writes a report file
+- [X] T059 [ai] [US6] Ollama local-development setup: `scripts/dev/ollama_setup.sh` (pull the chosen model), README snippet, and `/health` reporting provider availability
 - [ ] T060 [ai] [US6] Run the evaluation on Ollama candidates and on the Groq open-weight model, record the choice in `docs/ai-eval-results.md`, and set the default model names in `.env.example`
 - [X] T061 [ui] [US6] `frontend/src/pages/Recipes.tsx`: recipes with in-cart/in-stock ingredients, missing ingredients with aisle/shelf/bin, friendly notice when the fallback was used
 - [X] T062 [qa] [US6] Playwright `e2e/tests/us6-recipes.spec.ts`: recipes appear, missing-ingredient locations shown, no Restricted ingredient, fallback path with the AI provider unreachable
@@ -141,7 +141,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 10: User Story 11 – Role-Based Access (P1)
 
-- [ ] T067 [qa] [US11] `backend/tests/api/test_role_matrix.py`: every route × every role against the plan's permission matrix (allowed, 403, and 401 when logged out)
+- [X] T067 [qa] [US11] `backend/tests/api/test_role_matrix.py`: every route × every role against the plan's permission matrix (allowed, 403, and 401 when logged out)
 - [ ] T068 [ui] [US11] `frontend/src/lib/roles.ts` and nav: each role sees only its screens; unauthorized page
 - [ ] T069 [qa] [US11] Playwright `e2e/tests/us11-roles.spec.ts`: each role sees only its menu, direct URL to another role's screen is denied, API call from the wrong role returns 403
 

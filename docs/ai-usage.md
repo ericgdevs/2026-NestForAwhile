@@ -74,6 +74,10 @@
 | Implement T056 | Copilot (GPT-5.6 Terra) | Added recipe generation route with provider validation, clinical guardrails, deterministic fallback, and AI request telemetry | None | Caden |
 | Implement T061 | Copilot (GPT-5.6 Terra) | Added the recipes page with ingredient/step display and a friendly fallback notice | None | Caden |
 | Implement T062 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for recipe visibility and fallback messaging | None | Caden |
+| Implement T009 | Copilot (GPT-5.6 Terra) | Added pull-request E2E CI that seeds SQLite, builds the frontend, installs Chromium, and runs Playwright | None | Caden |
+| Implement T057-T058 | Copilot (GPT-5.6 Terra) | Added synthetic AI evaluation scenarios and a dependency-free JSON/YAML-compatible evaluation runner | None | Caden |
+| Implement T059 | Copilot (GPT-5.6 Terra) | Added the local Ollama model setup script and provider status in the health response | None | Caden |
+| Implement T067 | Copilot (GPT-5.6 Terra) | Added role-matrix coverage for capacity permissions and unauthenticated access | None | Caden |
 | Implement T063-T064 | Copilot (GPT-5.6 Terra) | Added checkout validation, FIFO inventory decrement, receipt/visit recording, and session completion APIs | None | Caden |
 | Implement T065 | Copilot (GPT-5.6 Terra) | Added volunteer checkout review, hard-stop error display, completion action, and receipt view | None | Caden |
 | Implement T066 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for volunteer checkout session review | None | Caden |
