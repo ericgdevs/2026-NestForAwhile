@@ -5,6 +5,7 @@ import AppShell from "./components/AppShell";
 import { AuthProvider, ProtectedRoute, useAuth } from "./lib/auth";
 import { canVisit } from "./lib/roles";
 import Analytics from "./pages/Analytics";
+import Approvals from "./pages/Approvals";
 import Audit from "./pages/Audit";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -17,11 +18,14 @@ import Recipes from "./pages/Recipes";
 import Replenishment from "./pages/Replenishment";
 import Reports from "./pages/Reports";
 import Scan from "./pages/Scan";
+import ShoppingList from "./pages/ShoppingList";
+import Signup from "./pages/Signup";
 import Waiting from "./pages/Waiting";
 
 const screens: Record<string, () => ReactElement> = {
   "/profile": () => <Profile />,
   "/scan": () => <Scan />,
+  "/list": () => <ShoppingList />,
   "/cart": () => <Cart />,
   "/recipes": () => <Recipes />,
   "/checkout": () => <Checkout />,
@@ -31,6 +35,7 @@ const screens: Record<string, () => ReactElement> = {
   "/waiting": () => <Waiting />,
   "/analytics": () => <Analytics />,
   "/reports": () => <Reports />,
+  "/approvals": () => <Approvals />,
 };
 
 function Router() {
@@ -40,7 +45,7 @@ function Router() {
     return <p className="empty centered">Checking your sign-in…</p>;
   }
   if (!user) {
-    return <Login />;
+    return path === "/signup" ? <Signup /> : <Login />;
   }
   if (!canVisit(user.role, path)) {
     return (

@@ -304,7 +304,7 @@
       {
         "name": "shadow-3",
         "value": "0 4px 8px rgba(11, 27, 51, 0.08), 0 28px 56px -16px rgba(11, 27, 51, 0.34)",
-        "purpose": "Top recipe pick, recipe sheet, login legend."
+        "purpose": "Top recipe pick, recipe sheet."
       },
       {
         "name": "primary-glow",

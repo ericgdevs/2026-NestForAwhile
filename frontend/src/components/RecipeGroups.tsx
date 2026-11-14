@@ -15,7 +15,66 @@ export function groupByCuisine(recipes: Recipe[]): [string, Recipe[]][] {
   return [...groups.entries()];
 }
 
-function RecipeCard({ recipe, top }: { recipe: Recipe; top: boolean }) {
+export type RecipeActions = {
+  onSave?: (recipe: Recipe) => Promise<unknown>;
+  onAddToList?: (recipe: Recipe) => Promise<unknown>;
+  onDelete?: (recipe: Recipe) => Promise<unknown>;
+};
+
+const ACTION_LABELS = {
+  onSave: ["Save", "Saved"],
+  onAddToList: ["Add to list", "On your list"],
+  onDelete: ["Delete", "Deleted"],
+} as const;
+
+function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeActions }) {
+  const [done, setDone] = useState<string[]>([]);
+  const [failed, setFailed] = useState(false);
+  const keys = (Object.keys(ACTION_LABELS) as (keyof RecipeActions)[]).filter((key) => actions[key]);
+  if (!keys.length) return null;
+
+  async function run(key: keyof RecipeActions) {
+    setFailed(false);
+    try {
+      await actions[key]!(recipe);
+      setDone((list) => [...list, key]);
+    } catch {
+      setFailed(true);
+    }
+  }
+
+  return (
+    <div className="stack" style={{ marginTop: "0.75rem", gap: "0.5rem" }}>
+      <div className="row" style={{ justifyContent: "flex-start", flexWrap: "wrap" }}>
+        {keys.map((key) => {
+          const [label, doneLabel] = ACTION_LABELS[key];
+          const isDone = done.includes(key);
+          return (
+            <button
+              aria-label={`${isDone ? doneLabel : label}: ${recipe.title}`}
+              className={`btn ${isDone ? "btn-done" : key === "onAddToList" ? "btn-primary" : "btn-secondary"}`}
+              disabled={isDone}
+              key={key}
+              type="button"
+              onClick={() => void run(key)}
+            >
+              {isDone && <Icon name="check" />}
+              {isDone ? doneLabel : label}
+            </button>
+          );
+        })}
+      </div>
+      {failed && (
+        <p className="alert alert-danger" role="alert">
+          <Icon name="alert" />
+          That didn't work. Please try again.
+        </p>
+      )}
+    </div>
+  );
+}
+
+function RecipeCard({ recipe, top, actions }: { recipe: Recipe; top: boolean; actions: RecipeActions }) {
   return (
     <article className={`label-panel recipe ${top ? "recipe-top" : ""}`}>
       {top && (
@@ -48,11 +107,12 @@ function RecipeCard({ recipe, top }: { recipe: Recipe; top: boolean }) {
           <li key={step}>{step}</li>
         ))}
       </ol>
+      <RecipeButtons actions={actions} recipe={recipe} />
     </article>
   );
 }
 
-export default function RecipeGroups({ recipes }: { recipes: Recipe[] }) {
+export default function RecipeGroups({ recipes, actions = {} }: { recipes: Recipe[]; actions?: RecipeActions }) {
   const groups = groupByCuisine(recipes);
   const [active, setActive] = useState(0);
   const [, current] = groups[Math.min(active, groups.length - 1)] ?? ["", []];
@@ -70,7 +130,7 @@ export default function RecipeGroups({ recipes }: { recipes: Recipe[] }) {
       )}
       <div className="grid grid-auto">
         {current.map((recipe, index) => (
-          <RecipeCard key={recipe.title} recipe={recipe} top={index === 0} />
+          <RecipeCard actions={actions} key={recipe.id ?? recipe.title} recipe={recipe} top={index === 0} />
         ))}
       </div>
     </div>

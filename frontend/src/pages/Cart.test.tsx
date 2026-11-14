@@ -21,3 +21,31 @@ test("renders cart items and recommendation marker", async () => {
   expect(screen.getByText("Synthetic Oats")).toBeInTheDocument();
   expect(screen.getByText(/recommended for you/i)).toBeInTheDocument();
 });
+
+test("shows nutrition facts and status when the cart API sends them", async () => {
+  getCart.mockResolvedValueOnce({
+    items: [
+      {
+        product_id: 2,
+        name: "Synthetic Beans",
+        quantity: 3,
+        from_recommendation: false,
+        sku: "SYN-BEANS-001",
+        status: "Capped",
+        sodium_mg: 420,
+        sugar_g: 1,
+        sat_fat_g: null,
+        potassium_mg: 300,
+      },
+    ],
+  });
+  render(<Cart />);
+  expect(await screen.findByText("420 mg")).toBeInTheDocument();
+  expect(screen.getByRole("status", { name: /please check/i })).toBeInTheDocument();
+  expect(screen.getByText((_, element) => element?.textContent === "Quantity in cart: 3")).toBeInTheDocument();
+});
+
+test("says nutrition is not available until the API sends it", async () => {
+  render(<Cart />);
+  expect(await screen.findByText(/nutrition facts not available yet/i)).toBeInTheDocument();
+});

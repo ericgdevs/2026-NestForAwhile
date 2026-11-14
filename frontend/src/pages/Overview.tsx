@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getCapacity, getInventoryLots, getReplenishment } from "../api/client";
+import { getCapacity, getInventoryLots, getPendingClients, getReplenishment } from "../api/client";
 import Icon from "../components/Icon";
 import { useAuth } from "../lib/auth";
 import { canVisit } from "../lib/roles";
@@ -17,11 +17,13 @@ export default function Overview() {
   const { user } = useAuth();
   const role = user!.role;
   const seesInventory = canVisit(role, "/lots");
+  const seesApprovals = canVisit(role, "/approvals");
   // Mirrors the server's /capacity roles; Director is denied there.
   const seesCapacity = role !== "Director";
   const [shoppers, setShoppers] = useState<number | null>(null);
   const [expiring, setExpiring] = useState<number | null>(null);
   const [lowStock, setLowStock] = useState<number | null>(null);
+  const [pending, setPending] = useState<number | null>(null);
 
   useEffect(() => {
     if (seesCapacity) {
@@ -37,9 +39,17 @@ export default function Overview() {
         .then((items) => setLowStock(items.length))
         .catch(() => setLowStock(null));
     }
-  }, [seesCapacity, seesInventory]);
+    if (seesApprovals) {
+      getPendingClients()
+        .then((clients) => setPending(clients.length))
+        .catch(() => setPending(null));
+    }
+  }, [seesApprovals, seesCapacity, seesInventory]);
 
   const facts: Fact[] = [
+    ...(seesApprovals
+      ? [{ label: "Waiting for approval", value: pending, href: "/approvals", one: "account waiting for approval", many: "accounts waiting for approval" }]
+      : []),
     ...(seesInventory
       ? [
           { label: "Lots expiring within 7 days", value: expiring, href: "/lots", one: "lot expiring within 7 days", many: "lots expiring within 7 days" },

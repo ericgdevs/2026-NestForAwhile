@@ -28,3 +28,13 @@ test("API requests include cookies and return typed JSON", async () => {
     expect.objectContaining({ credentials: "include" }),
   );
 });
+
+test("adding a recipe that only uses the scanned item sends nothing", async () => {
+  const { addRecipeToList } = await import("./client");
+  const fetchMock = vi.fn();
+  vi.stubGlobal("fetch", fetchMock);
+  const recipe = { title: "Oats", ingredients: [{ name: "Oats", product_id: 1 }], steps: ["Cook."] };
+  await expect(addRecipeToList(recipe, 1)).resolves.toBeNull();
+  expect(fetchMock).not.toHaveBeenCalled();
+  vi.unstubAllGlobals();
+});
