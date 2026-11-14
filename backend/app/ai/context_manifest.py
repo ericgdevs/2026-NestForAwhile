@@ -48,6 +48,8 @@ def build_manifest(
     restrictions: list[str],
     cart_quantities: dict[int, int] | None = None,
     household_size: int | None = None,
+    focus_product_id: int | None = None,
+    cuisine: str | None = None,
 ) -> tuple[ContextManifest, dict[int, int]]:
     """Build the AI-safe manifest. Returns (manifest, index -> real product_id).
 
@@ -77,6 +79,10 @@ def build_manifest(
         restrictions=list(restrictions),
         household_size_bucket=_household_bucket(household_size),
         items=items,
+        focus_index=next(
+            (index for index, pid in index_map.items() if pid == focus_product_id), None
+        ),
+        cuisine=cuisine,
     )
     assert_no_identifiers(manifest.model_dump())
     _assert_no_product_identifiers(manifest, products)
