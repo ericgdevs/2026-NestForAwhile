@@ -29,3 +29,4 @@
 | Implement T002 | Copilot (GPT-5.6 Terra) | Initialized the FastAPI backend, approved dependency manifest, health endpoint, Ruff configuration, and pytest configuration | None | Caden |
 | Implement T003 | Copilot (GPT-5.6 Terra) | Initialized the React/Vite/TypeScript frontend with Tailwind, shadcn configuration, Vitest, and a shell test | None | Caden |
 | Implement T008 | Copilot (GPT-5.6 Terra) | Added Playwright local/deployed projects and role-based synthetic credential login fixture | None | Caden |
+| Implement T010 | Copilot (GPT-5.6 Terra) | Added CODEOWNERS using the supplied team handles and a pull request template with task, stream, review, and validation fields | None | Caden |
