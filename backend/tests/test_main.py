@@ -9,4 +9,8 @@ def test_health_reports_status_and_ai_provider(monkeypatch):
     response = TestClient(app).get("/health")
 
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "ai_provider": "groq"}
+    assert response.json() == {
+        "status": "ok",
+        "ai_provider": "groq",
+        "ai_provider_status": "configured",
+    }

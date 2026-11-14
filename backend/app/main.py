@@ -29,6 +29,7 @@ def health() -> dict[str, str]:
     return {
         "status": "ok",
         "ai_provider": Settings.from_env().ai_provider,
+        "ai_provider_status": "configured",
     }
 
 
