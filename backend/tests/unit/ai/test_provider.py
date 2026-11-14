@@ -7,7 +7,9 @@ from app.ai.provider import AITask, GroqProvider, OllamaProvider, ProviderError,
 from app.ai.schemas import ContextManifest
 
 
-@pytest.mark.parametrize("value, cls", [("groq", GroqProvider), ("ollama", OllamaProvider), (" Groq ", GroqProvider)])
+@pytest.mark.parametrize(
+    "value, cls", [("groq", GroqProvider), ("ollama", OllamaProvider), (" Groq ", GroqProvider)]
+)
 def test_factory_selects_provider(monkeypatch, value, cls):
     monkeypatch.setenv("AI_PROVIDER", value)
     assert isinstance(get_provider(), cls)
@@ -27,8 +29,9 @@ def test_factory_rejects_unset(monkeypatch):
 
 
 def test_provider_module_does_not_import_groq_sdk():
-    import app.ai.provider as module
     from pathlib import Path
+
+    import app.ai.provider as module
 
     source = Path(module.__file__).read_text().lower()
     for forbidden in ("import groq", "from groq"):
@@ -43,7 +46,12 @@ def test_provider_interface_cannot_be_instantiated_directly():
 
 
 def test_tasks_are_limited_to_the_four_allowed_roles():
-    assert {t.value for t in AITask} == {"explain", "recipes", "missing_ingredients", "substitutions"}
+    assert {t.value for t in AITask} == {
+        "explain",
+        "recipes",
+        "missing_ingredients",
+        "substitutions",
+    }
 
 
 def test_provider_error_is_a_runtime_error():
@@ -85,48 +93,74 @@ def test_ollama_returns_raw_structured_json(monkeypatch, ollama_env, manifest):
     assert captured["json"]["model"] == "qwen-test"
     assert captured["json"]["format"] == "json"
     assert captured["json"]["stream"] is False
-    assert json.loads(captured["json"]["prompt"]) == {"task": "explain", "manifest": manifest.model_dump(mode="json")}
+    assert json.loads(captured["json"]["prompt"]) == {
+        "task": "explain",
+        "manifest": manifest.model_dump(mode="json"),
+    }
     assert captured["timeout"] == 30
 
 
 def test_ollama_timeout_raises_provider_error(monkeypatch, ollama_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: (_ for _ in ()).throw(httpx.TimeoutException("slow")))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: (_ for _ in ()).throw(httpx.TimeoutException("slow")),
+    )
 
     with pytest.raises(ProviderError, match="request failed"):
         OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
 
 
 def test_ollama_connection_failure_raises_provider_error(monkeypatch, ollama_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: (_ for _ in ()).throw(httpx.ConnectError("down")))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: (_ for _ in ()).throw(httpx.ConnectError("down")),
+    )
 
     with pytest.raises(ProviderError, match="request failed"):
         OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
 
 
 def test_ollama_malformed_json_raises_provider_error(monkeypatch, ollama_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(content=b"not json"))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(content=b"not json")
+    )
 
     with pytest.raises(ProviderError, match="malformed JSON"):
         OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
 
 
 def test_ollama_non_success_response_raises_provider_error(monkeypatch, ollama_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(500, json_body={"error": "failed"}))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: ollama_response(500, json_body={"error": "failed"}),
+    )
 
     with pytest.raises(ProviderError, match="request failed"):
         OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
 
 
 def test_ollama_missing_response_content_raises_provider_error(monkeypatch, ollama_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(json_body={"done": True}))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: ollama_response(json_body={"done": True}),
+    )
 
     with pytest.raises(ProviderError, match="content is missing"):
         OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
 
 
-@pytest.mark.parametrize("body", [{"done": False, "response": "{}"}, {"done": True, "response": []}, {"done": True, "response": "[]"}])
+@pytest.mark.parametrize(
+    "body",
+    [
+        {"done": False, "response": "{}"},
+        {"done": True, "response": []},
+        {"done": True, "response": "[]"},
+    ],
+)
 def test_ollama_invalid_response_raises_provider_error(monkeypatch, ollama_env, manifest, body):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(json_body=body))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(json_body=body)
+    )
 
     with pytest.raises(ProviderError, match="invalid response"):
         OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
@@ -153,7 +187,9 @@ def test_groq_returns_raw_structured_json(monkeypatch, groq_env, manifest):
     def post(url, **kwargs):
         captured["url"] = url
         captured.update(kwargs)
-        return groq_response(json_body={"choices": [{"message": {"content": '{"text":"Use canned beans."}'}}]})
+        return groq_response(
+            json_body={"choices": [{"message": {"content": '{"text":"Use canned beans."}'}}]}
+        )
 
     monkeypatch.setattr("app.ai.provider.httpx.post", post)
 
@@ -162,30 +198,46 @@ def test_groq_returns_raw_structured_json(monkeypatch, groq_env, manifest):
     assert captured["headers"] == {"Authorization": "Bearer test-key"}
     assert captured["json"]["model"] == "llama-test"
     assert captured["json"]["response_format"] == {"type": "json_object"}
-    assert json.loads(captured["json"]["messages"][0]["content"]) == {"task": "explain", "manifest": manifest.model_dump(mode="json")}
+    assert json.loads(captured["json"]["messages"][0]["content"]) == {
+        "task": "explain",
+        "manifest": manifest.model_dump(mode="json"),
+    }
     assert captured["timeout"] == 30
 
 
 @pytest.mark.parametrize(
     ("exception", "message"),
-    [(httpx.TimeoutException("slow"), "request failed"), (httpx.ConnectError("down"), "request failed")],
+    [
+        (httpx.TimeoutException("slow"), "request failed"),
+        (httpx.ConnectError("down"), "request failed"),
+    ],
 )
-def test_groq_transport_failures_raise_provider_error(monkeypatch, groq_env, manifest, exception, message):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: (_ for _ in ()).throw(exception))
+def test_groq_transport_failures_raise_provider_error(
+    monkeypatch, groq_env, manifest, exception, message
+):
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post", lambda *args, **kwargs: (_ for _ in ()).throw(exception)
+    )
 
     with pytest.raises(ProviderError, match=message):
         GroqProvider().generate_json(AITask.EXPLAIN, manifest)
 
 
 def test_groq_rate_limit_raises_provider_error(monkeypatch, groq_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: groq_response(429, json_body={"error": "limited"}))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: groq_response(429, json_body={"error": "limited"}),
+    )
 
     with pytest.raises(ProviderError, match="rate limited"):
         GroqProvider().generate_json(AITask.EXPLAIN, manifest)
 
 
 def test_groq_non_success_response_raises_provider_error(monkeypatch, groq_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: groq_response(500, json_body={"error": "failed"}))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: groq_response(500, json_body={"error": "failed"}),
+    )
 
     with pytest.raises(ProviderError, match="request failed"):
         GroqProvider().generate_json(AITask.EXPLAIN, manifest)
@@ -194,7 +246,9 @@ def test_groq_non_success_response_raises_provider_error(monkeypatch, groq_env, 
 def test_groq_malformed_json_raises_provider_error(monkeypatch, groq_env, manifest):
     monkeypatch.setattr(
         "app.ai.provider.httpx.post",
-        lambda *args, **kwargs: groq_response(json_body={"choices": [{"message": {"content": "not json"}}]}),
+        lambda *args, **kwargs: groq_response(
+            json_body={"choices": [{"message": {"content": "not json"}}]}
+        ),
     )
 
     with pytest.raises(ProviderError, match="malformed JSON"):
@@ -202,7 +256,10 @@ def test_groq_malformed_json_raises_provider_error(monkeypatch, groq_env, manife
 
 
 def test_groq_missing_response_content_raises_provider_error(monkeypatch, groq_env, manifest):
-    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: groq_response(json_body={"choices": [{"message": {}}]}))
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: groq_response(json_body={"choices": [{"message": {}}]}),
+    )
 
     with pytest.raises(ProviderError, match="content is missing"):
         GroqProvider().generate_json(AITask.EXPLAIN, manifest)

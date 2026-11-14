@@ -1,9 +1,18 @@
-"""Final deterministic safety layer: re-checks validated AI output against current inventory and classify()."""
+"""Final deterministic safety layer.
+
+Re-checks validated AI output against current inventory and classify()."""
+
 from collections.abc import Iterable
 from dataclasses import dataclass
 
 from app.ai.orchestrator import AIResult
-from app.ai.schemas import ContextManifest, ExplanationOutput, MissingIngredientsOutput, RecipeOutput, SubstitutionsOutput
+from app.ai.schemas import (
+    ContextManifest,
+    ExplanationOutput,
+    MissingIngredientsOutput,
+    RecipeOutput,
+    SubstitutionsOutput,
+)
 from app.rules.classify import classify
 
 
@@ -14,7 +23,14 @@ class GuardedResult:
 
 
 class _Checker:
-    def __init__(self, result: AIResult, manifest: ContextManifest, products: Iterable, restrictions: list[str], in_stock_ids: set[int]):
+    def __init__(
+        self,
+        result: AIResult,
+        manifest: ContextManifest,
+        products: Iterable,
+        restrictions: list[str],
+        in_stock_ids: set[int],
+    ):
         self.index_map = result.index_map
         self.by_id = {p.id: p for p in products}
         self.in_stock_ids = in_stock_ids
@@ -51,17 +67,22 @@ def apply_rules_guard(
     restrictions: list[str],
     in_stock_ids: set[int],
 ) -> GuardedResult:
-    """Drop every suggestion that fails a fresh check; never raises, never sets a status, makes no external calls."""
+    """Drop every suggestion that fails a fresh check.
+
+    Never raises, never sets a status, makes no external calls."""
     check = _Checker(result, manifest, list(products), restrictions, in_stock_ids)
     output = result.output
     if isinstance(output, RecipeOutput):
         recipes = [
-            r for r in output.recipes
+            r
+            for r in output.recipes
             if all([check.ok(i.product_id) for i in r.ingredients if i.product_id is not None])
         ]
         output = output.model_copy(update={"recipes": recipes})
     elif isinstance(output, MissingIngredientsOutput):
-        output = output.model_copy(update={"items": [i for i in output.items if check.ok(i.product_id)]})
+        output = output.model_copy(
+            update={"items": [i for i in output.items if check.ok(i.product_id)]}
+        )
     elif isinstance(output, SubstitutionsOutput):
         # the original may be Restricted or out of stock; that is why it is being substituted
         subs = [s for s in output.substitutions if check.ok(s.substitute_product_id)]

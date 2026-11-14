@@ -1,9 +1,7 @@
 from __future__ import annotations
 
 
-def build_fallback_recipes(
-    cart_manifest: list[dict], inventory: list[dict]
-) -> list[dict]:
+def build_fallback_recipes(cart_manifest: list[dict], inventory: list[dict]) -> list[dict]:
     available = {item["product_id"]: item for item in inventory}
     ingredients = [
         {"name": item["name"], "product_id": item["product_id"]}

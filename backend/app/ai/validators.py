@@ -4,7 +4,11 @@ import re
 from pydantic import ValidationError
 
 from app.ai.schemas import (
-    ContextManifest, ExplanationOutput, MissingIngredientsOutput, RecipeOutput, SubstitutionsOutput,
+    ContextManifest,
+    ExplanationOutput,
+    MissingIngredientsOutput,
+    RecipeOutput,
+    SubstitutionsOutput,
 )
 
 
@@ -12,9 +16,30 @@ class AIValidationError(ValueError):
     pass
 
 
-FORBIDDEN_KEYS = {"id", "sku", "barcode", "image_url", "email", "phone", "client_id", "user_id", "username", "first_name", "last_name"}
+FORBIDDEN_KEYS = {
+    "id",
+    "sku",
+    "barcode",
+    "image_url",
+    "email",
+    "phone",
+    "client_id",
+    "user_id",
+    "username",
+    "first_name",
+    "last_name",
+}
 # Any key containing one of these is treated as an attempt to set or change a status/classification.
-STATUS_KEY_PARTS = ("status", "tier", "classif", "verdict", "override", "approved", "capped", "restricted")
+STATUS_KEY_PARTS = (
+    "status",
+    "tier",
+    "classif",
+    "verdict",
+    "override",
+    "approved",
+    "capped",
+    "restricted",
+)
 IDENTIFIER_PATTERNS = [
     re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"),
     re.compile(r"https?://|www\.", re.I),
@@ -43,7 +68,9 @@ def _walk(value, path=""):
 
 
 def assert_no_identifiers(payload) -> None:
-    """Reject identifier keys and identifier-looking strings (email, URL, phone, barcode/SKU digits)."""
+    """Reject identifier keys and identifier-looking strings.
+
+    Covers email, URL, phone and barcode/SKU digits."""
     for path, key, text in _walk(payload):
         if key is not None and key.lower() in FORBIDDEN_KEYS:
             raise AIValidationError(f"identifier field at {path}")
@@ -53,26 +80,39 @@ def assert_no_identifiers(payload) -> None:
 
 def _assert_no_status_override(raw) -> None:
     for path, key, _ in _walk(raw):
-        if key is not None and any(part in re.sub(r"[^a-z]", "", key.lower()) for part in STATUS_KEY_PARTS):
+        if key is not None and any(
+            part in re.sub(r"[^a-z]", "", key.lower()) for part in STATUS_KEY_PARTS
+        ):
             raise AIValidationError(f"AI may not set or change status ({path})")
 
 
 def _referenced_indexes(output) -> list[tuple[int, bool]]:
     """(index, may_be_restricted) for every manifest index the output uses."""
     if isinstance(output, RecipeOutput):
-        return [(i.product_id, False) for r in output.recipes for i in r.ingredients if i.product_id is not None]
+        return [
+            (i.product_id, False)
+            for r in output.recipes
+            for i in r.ingredients
+            if i.product_id is not None
+        ]
     if isinstance(output, MissingIngredientsOutput):
         return [(i.product_id, False) for i in output.items]
     if isinstance(output, SubstitutionsOutput):
-        return [r for s in output.substitutions for r in ((s.original_product_id, True), (s.substitute_product_id, False))]
+        return [
+            r
+            for s in output.substitutions
+            for r in ((s.original_product_id, True), (s.substitute_product_id, False))
+        ]
     return []
 
 
 def validate_ai_output(task: str, raw: str | dict, manifest: ContextManifest):
-    """Parse AI output for a task and enforce the rules-first guarantees; returns the typed output."""
+    """Parse AI output for a task and enforce the rules-first guarantees.
+
+    Returns the typed output."""
     if task not in TASK_MODELS:
         raise AIValidationError(f"unsupported AI task: {task}")
-    if not isinstance(raw, (str, dict)):
+    if not isinstance(raw, str | dict):
         raise AIValidationError("AI output must be a JSON string or object")
     try:
         data = json.loads(raw) if isinstance(raw, str) else raw

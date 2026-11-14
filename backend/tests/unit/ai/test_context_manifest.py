@@ -9,13 +9,26 @@ from app.rules.classify import classify
 
 
 def product(pid, name="Beans", **kw):
-    base = dict(id=pid, sku=f"SKU{pid}", barcode="0123456789012", name=name, category="Canned",
-                image_url="https://img.test/a.png", sodium_mg=100.0, calories=None,
-                allergens=[], diet_flags=["vegan"], ingredients_text="beans")
+    base = dict(
+        id=pid,
+        sku=f"SKU{pid}",
+        barcode="0123456789012",
+        name=name,
+        category="Canned",
+        image_url="https://img.test/a.png",
+        sodium_mg=100.0,
+        calories=None,
+        allergens=[],
+        diet_flags=["vegan"],
+        ingredients_text="beans",
+    )
     return SimpleNamespace(**{**base, **kw})
 
 
-PRODUCTS = [product(501), product(502, "Almond milk", allergens=["tree nuts"], diet_flags=["contains_tree_nut"])]
+PRODUCTS = [
+    product(501),
+    product(502, "Almond milk", allergens=["tree nuts"], diet_flags=["contains_tree_nut"]),
+]
 
 
 def test_strips_identifiers_and_maps_indexes():
@@ -31,7 +44,9 @@ def test_strips_identifiers_and_maps_indexes():
 
 def test_status_comes_from_classify():
     manifest, _ = build_manifest(PRODUCTS, ["Nut Allergy"])
-    assert [i.status for i in manifest.items] == [classify(p, {"restrictions": ["Nut Allergy"]})[0] for p in PRODUCTS]
+    assert [i.status for i in manifest.items] == [
+        classify(p, {"restrictions": ["Nut Allergy"]})[0] for p in PRODUCTS
+    ]
     assert manifest.items[1].status == "Restricted"
 
 
@@ -47,9 +62,14 @@ def test_hash_is_stable_and_content_sensitive():
     assert manifest_hash(a) == manifest_hash(b) != manifest_hash(c)
 
 
-@pytest.mark.parametrize("field, value", [
-    ("name", "Beans SKU501"), ("category", "https://img.test/a.png"), ("diet_flags", ["0123456789012"]),
-])
+@pytest.mark.parametrize(
+    "field, value",
+    [
+        ("name", "Beans SKU501"),
+        ("category", "https://img.test/a.png"),
+        ("diet_flags", ["0123456789012"]),
+    ],
+)
 def test_real_product_values_in_text_are_blocked(field, value):
     with pytest.raises(AIValidationError):
         build_manifest([product(501, **{field: value})], [])
@@ -60,7 +80,9 @@ def test_bare_product_id_as_text_is_blocked():
         build_manifest([product(501, name="501")], [])
 
 
-@pytest.mark.parametrize("name", ["Contact jane@example.test", "Call 555-123-4567", "Code 0123456789012"])
+@pytest.mark.parametrize(
+    "name", ["Contact jane@example.test", "Call 555-123-4567", "Code 0123456789012"]
+)
 def test_email_phone_barcode_patterns_in_names_are_blocked(name):
     with pytest.raises(AIValidationError):
         build_manifest([product(1, name=name)], [])

@@ -16,6 +16,7 @@ OLLAMA_DEFAULT_URL = "http://127.0.0.1:11434"
 
 class AITask(str, Enum):
     """The only things AI may do; statuses stay with the rules engine."""
+
     EXPLAIN = "explain"
     RECIPES = "recipes"
     MISSING_INGREDIENTS = "missing_ingredients"
@@ -23,7 +24,9 @@ class AITask(str, Enum):
 
 
 class ProviderError(RuntimeError):
-    """Runtime failure of a configured provider (timeout, rate limit, 5xx); real clients raise this."""
+    """Runtime failure of a configured provider (timeout, rate limit, 5xx).
+
+    Real clients raise this."""
 
 
 class AIProvider(ABC):
@@ -80,7 +83,11 @@ class GroqProvider(AIProvider):
             body = response.json()
         except (json.JSONDecodeError, ValueError) as exc:
             raise ProviderError("Groq returned malformed JSON") from exc
-        if not isinstance(body, dict) or not isinstance(body.get("choices"), list) or not body["choices"]:
+        if (
+            not isinstance(body, dict)
+            or not isinstance(body.get("choices"), list)
+            or not body["choices"]
+        ):
             raise ProviderError("Groq returned an invalid response")
 
         choice = body["choices"][0]

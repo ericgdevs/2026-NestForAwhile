@@ -9,12 +9,24 @@ from app.rules.classify import classify
 
 
 def product(pid, name, **kw):
-    base = dict(id=pid, sku=f"SKU{pid}", barcode="0123456789012", category="Canned", image_url="https://img.test/a.png",
-                sodium_mg=100.0, allergens=[], diet_flags=["vegan"], ingredients_text="x")
+    base = dict(
+        id=pid,
+        sku=f"SKU{pid}",
+        barcode="0123456789012",
+        category="Canned",
+        image_url="https://img.test/a.png",
+        sodium_mg=100.0,
+        allergens=[],
+        diet_flags=["vegan"],
+        ingredients_text="x",
+    )
     return SimpleNamespace(**{**base, "name": name, **kw})
 
 
-PRODUCTS = [product(501, "Beans"), product(502, "Almond milk", allergens=["tree nuts"], diet_flags=["contains_tree_nut"])]
+PRODUCTS = [
+    product(501, "Beans"),
+    product(502, "Almond milk", allergens=["tree nuts"], diet_flags=["contains_tree_nut"]),
+]
 RESTRICTIONS = ["Nut Allergy"]
 
 
@@ -32,7 +44,11 @@ class FakeProvider(AIProvider):
 
 
 def recipe(index):
-    return {"recipes": [{"title": "T", "ingredients": [{"name": "x", "product_id": index}], "steps": ["go"]}]}
+    return {
+        "recipes": [
+            {"title": "T", "ingredients": [{"name": "x", "product_id": index}], "steps": ["go"]}
+        ]
+    }
 
 
 def run(provider, task=AITask.RECIPES):
@@ -49,7 +65,9 @@ def test_valid_response_returns_validated_schema():
 def test_provider_receives_rules_statuses_and_no_identifiers():
     provider = FakeProvider(recipe(0))
     run(provider)
-    assert [i.status.lower() for i in provider.seen.items] == [classify(p, {"restrictions": RESTRICTIONS})[0].lower() for p in PRODUCTS]
+    assert [i.status.lower() for i in provider.seen.items] == [
+        classify(p, {"restrictions": RESTRICTIONS})[0].lower() for p in PRODUCTS
+    ]
     dumped = str(provider.seen.model_dump())
     assert "SKU501" not in dumped and "0123456789012" not in dumped and "img.test" not in dumped
 
@@ -77,7 +95,9 @@ def test_status_override_rejected():
         run(FakeProvider(data))
 
 
-@pytest.mark.parametrize("error", [ProviderError("rate limited"), TimeoutError(), ConnectionRefusedError()])
+@pytest.mark.parametrize(
+    "error", [ProviderError("rate limited"), TimeoutError(), ConnectionRefusedError()]
+)
 def test_provider_exception_is_wrapped(error):
     with pytest.raises(AIOrchestrationError) as info:
         run(FakeProvider(error=error))

@@ -7,14 +7,28 @@ import app.ai.rules_guard as guard_module
 from app.ai.context_manifest import build_manifest, manifest_hash
 from app.ai.orchestrator import AIResult
 from app.ai.rules_guard import apply_rules_guard
-from app.ai.schemas import ExplanationOutput, MissingIngredientsOutput, RecipeOutput, SubstitutionsOutput
+from app.ai.schemas import (
+    ExplanationOutput,
+    MissingIngredientsOutput,
+    RecipeOutput,
+    SubstitutionsOutput,
+)
 
 RESTRICTIONS = ["Nut Allergy"]
 
 
 def product(pid, name, **kw):
-    base = dict(id=pid, sku=f"S{pid}", barcode="0123456789012", category="Canned", image_url=None, sodium_mg=100.0,
-                allergens=[], diet_flags=["vegan"], ingredients_text="x")
+    base = dict(
+        id=pid,
+        sku=f"S{pid}",
+        barcode="0123456789012",
+        category="Canned",
+        image_url=None,
+        sodium_mg=100.0,
+        allergens=[],
+        diet_flags=["vegan"],
+        ingredients_text="x",
+    )
     return SimpleNamespace(**{**base, "name": name, **kw})
 
 
@@ -26,17 +40,25 @@ IN_STOCK = {501, 502, 503}
 
 
 def guard(output, products=PRODUCTS, in_stock=IN_STOCK):
-    """Manifest is built from PRODUCTS (what the AI saw); `products` is the inventory at guard time."""
+    """Manifest is built from PRODUCTS (what the AI saw).
+
+    `products` is the inventory at guard time."""
     manifest, index_map = build_manifest(PRODUCTS, RESTRICTIONS)
     result = AIResult(output, manifest_hash(manifest), index_map, "fake")
     return apply_rules_guard(result, manifest, products, RESTRICTIONS, in_stock)
 
 
 def recipes(*index_lists):
-    return RecipeOutput(recipes=[
-        {"title": f"R{n}", "ingredients": [{"name": "x", "product_id": i} for i in idxs], "steps": ["go"]}
-        for n, idxs in enumerate(index_lists)
-    ])
+    return RecipeOutput(
+        recipes=[
+            {
+                "title": f"R{n}",
+                "ingredients": [{"name": "x", "product_id": i} for i in idxs],
+                "steps": ["go"],
+            }
+            for n, idxs in enumerate(index_lists)
+        ]
+    )
 
 
 def titles(result):
@@ -74,7 +96,9 @@ def test_unavailable_when_out_of_stock():
 
 
 def test_classification_mismatch_when_inventory_changed_since_manifest():
-    changed = product(503, "Rice", allergens=None, diet_flags=None, ingredients_text=None)  # now has no exclusion data -> Capped, AI saw Approved
+    changed = product(
+        503, "Rice", allergens=None, diet_flags=None, ingredients_text=None
+    )  # now has no exclusion data -> Capped, AI saw Approved
     result = guard(recipes([0], [2]), products=[BEANS, ALMOND, changed])
     assert titles(result) == ["R0"] and result.dropped == [("classification_mismatch", 2)]
 
@@ -97,16 +121,22 @@ def test_empty_recommendation_lists_pass_through():
 
 
 def test_missing_ingredients_filtered():
-    output = MissingIngredientsOutput(items=[{"product_id": 0, "reason": "a"}, {"product_id": 1, "reason": "b"}])
+    output = MissingIngredientsOutput(
+        items=[{"product_id": 0, "reason": "a"}, {"product_id": 1, "reason": "b"}]
+    )
     result = guard(output)
-    assert [i.product_id for i in result.output.items] == [0] and result.dropped == [("restricted", 1)]
+    assert [i.product_id for i in result.output.items] == [0] and result.dropped == [
+        ("restricted", 1)
+    ]
 
 
 def test_substitution_original_may_be_restricted_but_substitute_may_not():
-    output = SubstitutionsOutput(substitutions=[
-        {"original_product_id": 1, "substitute_product_id": 0, "reason": "ok"},
-        {"original_product_id": 0, "substitute_product_id": 1, "reason": "bad"},
-    ])
+    output = SubstitutionsOutput(
+        substitutions=[
+            {"original_product_id": 1, "substitute_product_id": 0, "reason": "ok"},
+            {"original_product_id": 0, "substitute_product_id": 1, "reason": "bad"},
+        ]
+    )
     result = guard(output)
     assert [s.substitute_product_id for s in result.output.substitutions] == [0]
     assert result.dropped == [("restricted", 1)]

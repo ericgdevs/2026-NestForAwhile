@@ -7,7 +7,9 @@ from app.ai.validators import validate_ai_output
 
 
 class AIOrchestrationError(RuntimeError):
-    """A runtime AI failure (provider error, malformed or rule-violating output); callers fall back to rules-only."""
+    """A runtime AI failure (provider error, malformed or rule-violating output).
+
+    Callers fall back to rules-only."""
 
 
 @dataclass(frozen=True)
@@ -26,11 +28,17 @@ def run_ai_task(
     household_size: int | None = None,
     provider: AIProvider | None = None,
 ) -> AIResult:
-    """manifest (statuses from classify()) -> provider -> validation. Never creates or changes a status."""
+    """manifest (statuses from classify()) -> provider -> validation.
+
+    Never creates or changes a status."""
     task = AITask(task)
-    provider = provider or get_provider()  # a bad AI_PROVIDER is a startup error, not an orchestration failure
+    provider = (
+        provider or get_provider()
+    )  # a bad AI_PROVIDER is a startup error, not an orchestration failure
     try:
-        manifest, index_map = build_manifest(products, restrictions, cart_quantities, household_size)
+        manifest, index_map = build_manifest(
+            products, restrictions, cart_quantities, household_size
+        )
         raw = provider.generate_json(task, manifest)
         output = validate_ai_output(task.value, raw, manifest)
     except Exception as exc:
