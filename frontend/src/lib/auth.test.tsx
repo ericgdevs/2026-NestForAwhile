@@ -18,6 +18,6 @@ beforeEach(() => {
 test("protected routes do not show private content when signed out", async () => {
   render(<App />);
 
-  await waitFor(() => expect(screen.getByText(/please sign in/i)).toBeInTheDocument());
+  await waitFor(() => expect(screen.getByRole("heading", { name: "Sign in" })).toBeInTheDocument());
   expect(screen.queryByText(/welcome to the grocery/i)).not.toBeInTheDocument();
 });

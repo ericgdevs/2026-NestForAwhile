@@ -6,46 +6,100 @@ export default function Checkout() {
   const [token, setToken] = useState("");
   const [errors, setErrors] = useState<string[]>([]);
   const [receipt, setReceipt] = useState<{ checkout_id: number; total_lb: number } | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function review() {
-    const result = await validateCheckout(token);
-    setErrors(result.errors);
-    if (result.valid) setReceipt(null);
+    setLoading(true);
+    try {
+      const result = await validateCheckout(token);
+      setErrors(result.errors);
+      if (result.valid) setReceipt(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   async function complete() {
-    setReceipt(await completeCheckout(token));
-    setErrors([]);
+    setLoading(true);
+    try {
+      setReceipt(await completeCheckout(token));
+      setErrors([]);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <div className="mx-auto max-w-xl space-y-5">
-        <h1 className="text-2xl font-semibold">Checkout</h1>
-        <label className="block text-sm font-medium">
-          Shopping session token
+    <main>
+      <div className="hero-banner">
+        <div>
+          <span className="eyebrow-chip">Volunteer verification</span>
+          <h1 className="page-title">Checkout</h1>
+          <p className="page-subtitle">
+            Validate client cart items against clinical dietary rules before completing the visit.
+          </p>
+        </div>
+      </div>
+
+      <section className="ui-card" style={{ maxWidth: "640px", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+        <label className="form-group">
+          <span className="form-label">Shopping session token</span>
           <input
-            className="mt-1 w-full rounded-lg border px-3 py-2"
+            className="form-input"
+            placeholder="Enter or scan session token"
             value={token}
             onChange={(event) => setToken(event.target.value)}
           />
         </label>
-        <div className="flex gap-2">
-          <button className="rounded-lg border px-4 py-2" onClick={() => void review()}>Review cart</button>
-          <button className="rounded-lg bg-slate-900 px-4 py-2 text-white" onClick={() => void complete()}>Complete checkout</button>
+
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <button className="btn btn-secondary" onClick={() => void review()} disabled={loading || !token.trim()}>
+            Review cart
+          </button>
+          <button className="btn btn-primary" onClick={() => void complete()} disabled={loading || !token.trim()}>
+            Complete checkout
+          </button>
         </div>
+
         {errors.length > 0 && (
-          <div className="rounded-lg bg-red-50 p-4 text-red-900">
-            <strong>Checkout needs attention</strong>
-            <ul className="list-disc pl-5">{errors.map((error) => <li key={error}>{error}</li>)}</ul>
+          <div
+            style={{
+              background: "var(--pastel-rose-bg)",
+              border: "1px solid var(--pastel-rose-border)",
+              color: "var(--pastel-rose-text)",
+              padding: "1rem 1.25rem",
+              borderRadius: "var(--radius-md)",
+            }}
+          >
+            <strong style={{ display: "block", marginBottom: "0.5rem" }}>Checkout needs attention</strong>
+            <ul style={{ margin: 0, paddingLeft: "1.25rem", lineHeight: 1.5 }}>
+              {errors.map((error) => (
+                <li key={error}>{error}</li>
+              ))}
+            </ul>
           </div>
         )}
+
         {receipt && (
-          <div className="rounded-lg bg-emerald-50 p-4 text-emerald-900">
-            Receipt #{receipt.checkout_id} · {receipt.total_lb} lb distributed
+          <div
+            style={{
+              background: "var(--pastel-green-bg)",
+              border: "1px solid var(--pastel-green-border)",
+              color: "var(--pastel-green-text)",
+              padding: "1.25rem",
+              borderRadius: "var(--radius-md)",
+              fontWeight: 600,
+              fontSize: "1.05rem",
+              display: "flex",
+              alignItems: "center",
+              gap: "0.6rem",
+            }}
+          >
+            <span aria-hidden="true">✓</span>
+            <span>Receipt #{receipt.checkout_id} · {receipt.total_lb} lb distributed</span>
           </div>
         )}
-      </div>
+      </section>
     </main>
   );
 }

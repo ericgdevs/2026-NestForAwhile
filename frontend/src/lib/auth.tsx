@@ -63,11 +63,11 @@ export function useAuth() {
 export function ProtectedRoute({ children }: { children: ReactNode }) {
   const { loading, user } = useAuth();
   if (loading) {
-    return <p className="p-6 text-slate-600">Checking your sign-in…</p>;
+    return <p>Checking your sign-in…</p>;
   }
   if (!user) {
     window.history.replaceState({}, "", "/login");
-    return <p className="p-6 text-slate-600">Please sign in to continue.</p>;
+    return <p>Please sign in to continue.</p>;
   }
   return children;
 }
