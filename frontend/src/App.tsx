@@ -11,6 +11,9 @@ import { Cart } from './pages/Cart'
 import { CartProvider } from './lib/cart'
 import { Recipes } from './pages/Recipes'
 import { Checkout } from './pages/Checkout'
+import { Audit } from './pages/Audit'
+import { Lots } from './pages/Lots'
+import { Reports } from './pages/Reports'
 import { Unauthorized } from './pages/Unauthorized'
 
 export default function App() {
@@ -29,6 +32,9 @@ export default function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/recipes" element={<Recipes />} />
               <Route path="/checkout" element={<Checkout />} />
+              <Route path="/audit" element={<Audit />} />
+              <Route path="/lots" element={<Lots />} />
+              <Route path="/reports" element={<Reports />} />
               <Route path="/inventory" element={<Placeholder title="Inventory" message="Warehouse inventory tools will appear here for staff and volunteers." />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
             </Route>
