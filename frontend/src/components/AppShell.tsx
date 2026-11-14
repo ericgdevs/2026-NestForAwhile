@@ -9,9 +9,17 @@ const clientLinks = [
   { href: "/recipes", label: "Recipes", icon: "✦" },
 ];
 
+const staffLinks = [
+  { href: "/", label: "Overview", icon: "⌂" },
+  { href: "/lots", label: "Inventory", icon: "▣" },
+  { href: "/waiting", label: "Queue", icon: "◷" },
+  { href: "/reports", label: "Reports", icon: "▤" },
+];
+
 export default function AppShell({ children }: { children: ReactNode }) {
   const { user } = useAuth();
   if (!user) return <>{children}</>;
+  const links = user.role === "Client" ? clientLinks : staffLinks;
 
   return (
     <div className="app-shell">
@@ -28,9 +36,22 @@ export default function AppShell({ children }: { children: ReactNode }) {
           {user.role}
         </div>
       </header>
+      <nav className="desktop-nav" aria-label="Primary navigation">
+        {links.map((link) => (
+          <a
+            aria-current={window.location.pathname === link.href ? "page" : undefined}
+            className={window.location.pathname === link.href ? "nav-item nav-item-active" : "nav-item"}
+            href={link.href}
+            key={link.href}
+          >
+            <span className="nav-icon" aria-hidden="true">{link.icon}</span>
+            <span>{link.label}</span>
+          </a>
+        ))}
+      </nav>
       <div className="app-content">{children}</div>
       <nav className="bottom-nav" aria-label="Primary navigation">
-        {clientLinks.map((link) => (
+        {links.map((link) => (
           <a
             className={window.location.pathname === link.href ? "nav-item nav-item-active" : "nav-item"}
             href={link.href}

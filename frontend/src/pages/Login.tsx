@@ -31,12 +31,29 @@ export default function Login() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <form className="soft-card w-full max-w-md space-y-6 p-7 sm:p-9" onSubmit={handleSubmit}>
-        <div className="space-y-4">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">A gentler grocery visit</p>
-          <h1 aria-label="Sign in" className="display-title">Sign in<br />to continue.</h1>
-          <p className="text-stone-500">Sign in to find food that fits your household.</p>
+    <main className="grid min-h-screen items-center gap-8 p-5 md:grid-cols-[minmax(0,1fr)_minmax(25rem,30rem)] md:gap-16 md:p-10 lg:mx-auto lg:max-w-7xl">
+      <section className="hidden rounded-[2rem] bg-[#173a5a] p-10 text-white md:block lg:p-14">
+        <div className="flex h-full min-h-[32rem] flex-col justify-between">
+          <div>
+            <div className="mb-12 flex items-center gap-3">
+              <span className="brand-mark bg-[#72b3ed] text-[#173a5a]" aria-hidden="true">E</span>
+              <span className="text-lg font-bold tracking-tight">Epic-Cure</span>
+            </div>
+            <p className="eyebrow text-[#a9d8fa]">Medically tailored groceries</p>
+            <h1 className="mt-5 max-w-lg text-5xl font-bold leading-[0.95] tracking-[-0.06em] lg:text-7xl">
+              Food support that feels human.
+            </h1>
+          </div>
+          <p className="max-w-sm text-sm leading-6 text-blue-100">
+            Find food that fits your household, understand what works for you, and shop with confidence.
+          </p>
+        </div>
+      </section>
+      <form className="soft-card w-full space-y-6 p-6 sm:p-9" onSubmit={handleSubmit}>
+        <div className="space-y-3">
+          <p className="eyebrow">Welcome back</p>
+          <h1 aria-label="Sign in" className="text-4xl font-bold tracking-[-0.06em] text-[#10283f]">Sign in to continue.</h1>
+          <p className="text-sm leading-6 text-slate-500">Use your Epic-Cure account to continue.</p>
         </div>
         <label className="block text-sm font-medium">
           Email

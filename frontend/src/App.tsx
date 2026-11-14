@@ -30,13 +30,18 @@ function StaffHome() {
   }, [user?.role]);
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <h1 className="text-2xl font-semibold">Epic-Cure MTG Warehouse</h1>
-      <p className="mt-2 text-slate-600">Welcome to the grocery support workspace.</p>
+    <main className="space-y-8">
+      <div>
+        <p className="eyebrow">Operations overview</p>
+        <h1 className="display-title mt-3">Keep the floor<br />moving.</h1>
+        <p className="mt-4 max-w-xl text-slate-600">A quick view of today’s grocery support work for the Epic-Cure team.</p>
+      </div>
       {capacity && (
-        <p className="mt-4 rounded-lg bg-white p-4 shadow-sm">
-          Active shoppers: <strong>{capacity.Active_Floor_Shoppers}</strong>
-        </p>
+        <section className="soft-card max-w-xl p-6">
+          <p className="eyebrow">Live capacity</p>
+          <p className="mt-3 text-4xl font-bold tracking-tight text-[#173a5a]">{capacity.Active_Floor_Shoppers}</p>
+          <p className="mt-1 text-sm text-slate-500">active shoppers on the floor</p>
+        </section>
       )}
     </main>
   );
