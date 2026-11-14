@@ -40,3 +40,4 @@
 | Implement | Copilot (Sonnet 5.5) | T092: deterministic four-section ReportData builder (service-level; no DOCX, no route, no python-docx), tests | Eric approved plan (3b: structured object, DOCX later) | Eric |
 | Implement | Copilot (Sonnet 5.5) | T052 (partial): ai/schemas.py with manifest models and Pydantic output models mirroring ai-schemas.json plus missing-ingredient and substitution outputs, tests | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | AI output validators (identifier leaks, unknown index, Restricted suggestions, status override), tests | Eric approved plan and decisions | Eric |
+| Implement | Copilot (Sonnet 5.5) | AI context manifest builder (identifier stripping, rules-driven status via classify(), index map, hash), tests | Eric approved plan and decisions | Eric |
