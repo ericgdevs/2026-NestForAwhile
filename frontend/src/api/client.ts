@@ -113,3 +113,11 @@ export type Recipe = {
 export function getRecipes(): Promise<{ recipes: Recipe[]; used_fallback: boolean }> {
   return apiRequest("/recipes", { method: "POST" });
 }
+
+export function validateCheckout(token: string): Promise<{ valid: boolean; errors: string[] }> {
+  return apiRequest(`/checkout/${encodeURIComponent(token)}/validate`, { method: "POST" });
+}
+
+export function completeCheckout(token: string): Promise<{ checkout_id: number; total_lb: number }> {
+  return apiRequest(`/checkout/${encodeURIComponent(token)}/complete`, { method: "POST" });
+}

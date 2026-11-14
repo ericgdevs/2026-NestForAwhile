@@ -5,6 +5,7 @@ import Home from "./pages/Home";
 import Scan from "./pages/Scan";
 import Cart from "./pages/Cart";
 import Recipes from "./pages/Recipes";
+import Checkout from "./pages/Checkout";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
@@ -58,6 +59,13 @@ function Router() {
     return (
       <ProtectedRoute>
         <Recipes />
+      </ProtectedRoute>
+    );
+  }
+  if (window.location.pathname === "/checkout") {
+    return (
+      <ProtectedRoute>
+        <Checkout />
       </ProtectedRoute>
     );
   }
