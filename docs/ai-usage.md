@@ -47,3 +47,4 @@
 | Implement T025 | Copilot (GPT-5.6 Terra) | Added the mobile-first app shell, auth context, protected route guard, and signed-out behavior test | None | Caden |
 | Implement T026 | Copilot (GPT-5.6 Terra) | Added accessible Green/Yellow/Red safety badges with icons, text, and focused rendering coverage | None | Caden |
 | Implement T027 | Copilot (GPT-5.6 Terra) | Added a multi-stage frontend/backend Docker build and conditional FastAPI static asset mounting | None | Caden |
+| Implement T029 | Copilot (GPT-5.6 Terra) | Added the production container startup script and Azure App Service image deployment workflow | None | Caden |

@@ -72,7 +72,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T026 [P] [ui] `frontend/src/components/StatusBadge.tsx`: Green/Yellow/Red with icon and text (never color alone), friendly wording
 - [X] T027 [deploy] Multi-stage `Dockerfile` (build frontend, serve with FastAPI) and the static-files mount line in `backend/app/main.py` (coordinate with Aditya)
 - [ ] T028 [deploy] `deploy/azure-setup.md` and provision Azure resource group, App Service, and PostgreSQL Flexible Server (commands recorded, no secrets)
-- [ ] T029 [deploy] `.github/workflows/deploy.yml` (build and deploy to App Service on merge to `main`) and `deploy/startup.sh` (`alembic upgrade head`, seed when `SEED_DEMO_DATA=true`)
+- [X] T029 [deploy] `.github/workflows/deploy.yml` (build and deploy to App Service on merge to `main`) and `deploy/startup.sh` (`alembic upgrade head`, seed when `SEED_DEMO_DATA=true`)
 - [ ] T030 [deploy] Set Azure app settings from `.env.example` (including `AI_PROVIDER=groq`; values stay in Azure) and verify the public URL serves `/health`
 
 **Checkpoint**: an empty but real app is live on Azure, CI is green, every PR now deploys.
