@@ -101,8 +101,12 @@ def test_bad_ai_provider_stays_a_startup_error(monkeypatch, value):
 
 def test_provider_selected_from_env_when_not_injected(monkeypatch):
     monkeypatch.setenv("AI_PROVIDER", "ollama")
-    with pytest.raises(AIOrchestrationError, match="NotImplementedError"):
+    monkeypatch.delenv("OLLAMA_HOST", raising=False)
+    monkeypatch.delenv("OLLAMA_MODEL", raising=False)
+    with pytest.raises(AIOrchestrationError) as info:
         run_ai_task(AITask.EXPLAIN, PRODUCTS, RESTRICTIONS)
+    assert isinstance(info.value.__cause__, ProviderError)
+    assert "OLLAMA_HOST and OLLAMA_MODEL must be configured" in str(info.value.__cause__)
 
 
 def test_unsupported_task_is_a_programming_error():

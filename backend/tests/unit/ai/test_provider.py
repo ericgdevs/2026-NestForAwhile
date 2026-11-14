@@ -1,6 +1,9 @@
+import json
+
+import httpx
 import pytest
 
-from app.ai.provider import AITask, GroqProvider, OllamaProvider, get_provider
+from app.ai.provider import AITask, GroqProvider, OllamaProvider, ProviderError, get_provider
 from app.ai.schemas import ContextManifest
 
 
@@ -23,20 +26,18 @@ def test_factory_rejects_unset(monkeypatch):
         get_provider()
 
 
-@pytest.mark.parametrize("cls", [GroqProvider, OllamaProvider])
-def test_stubs_make_no_calls(cls):
+def test_groq_stub_makes_no_calls():
     with pytest.raises(NotImplementedError):
-        cls().generate_json(AITask.EXPLAIN, ContextManifest(restrictions=[], items=[]))
+        GroqProvider().generate_json(AITask.EXPLAIN, ContextManifest(restrictions=[], items=[]))
 
 
-def test_provider_module_is_implementation_free():
+def test_provider_module_does_not_contain_groq_transport_logic():
     import app.ai.provider as module
     from pathlib import Path
 
     source = Path(module.__file__).read_text().lower()
-    for forbidden in ("import httpx", "import requests", "import groq", "from groq", "api.groq", "localhost:11434", "prompt", "system message"):
+    for forbidden in ("import groq", "from groq", "api.groq", "chat/completions"):
         assert forbidden not in source
-    assert not {"httpx", "groq", "requests"} & set(vars(module))
 
 
 def test_provider_interface_cannot_be_instantiated_directly():
@@ -51,6 +52,86 @@ def test_tasks_are_limited_to_the_four_allowed_roles():
 
 
 def test_provider_error_is_a_runtime_error():
-    from app.ai.provider import ProviderError
-
     assert issubclass(ProviderError, RuntimeError)
+
+
+@pytest.fixture
+def ollama_env(monkeypatch):
+    monkeypatch.setenv("OLLAMA_HOST", "http://ollama.test:11434/")
+    monkeypatch.setenv("OLLAMA_MODEL", "qwen-test")
+
+
+@pytest.fixture
+def manifest():
+    return ContextManifest(restrictions=[], items=[])
+
+
+def ollama_response(status_code=200, *, json_body=None, content=None):
+    return httpx.Response(
+        status_code,
+        json=json_body,
+        content=content,
+        request=httpx.Request("POST", "http://ollama.test:11434/api/generate"),
+    )
+
+
+def test_ollama_returns_raw_structured_json(monkeypatch, ollama_env, manifest):
+    captured = {}
+
+    def post(url, **kwargs):
+        captured["url"] = url
+        captured.update(kwargs)
+        return ollama_response(json_body={"done": True, "response": '{"text":"Use canned beans."}'})
+
+    monkeypatch.setattr("app.ai.provider.httpx.post", post)
+
+    assert OllamaProvider().generate_json(AITask.EXPLAIN, manifest) == {"text": "Use canned beans."}
+    assert captured["url"] == "http://ollama.test:11434/api/generate"
+    assert captured["json"]["model"] == "qwen-test"
+    assert captured["json"]["format"] == "json"
+    assert captured["json"]["stream"] is False
+    assert json.loads(captured["json"]["prompt"]) == {"task": "explain", "manifest": manifest.model_dump(mode="json")}
+    assert captured["timeout"] == 30
+
+
+def test_ollama_timeout_raises_provider_error(monkeypatch, ollama_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: (_ for _ in ()).throw(httpx.TimeoutException("slow")))
+
+    with pytest.raises(ProviderError, match="request failed"):
+        OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_ollama_connection_failure_raises_provider_error(monkeypatch, ollama_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: (_ for _ in ()).throw(httpx.ConnectError("down")))
+
+    with pytest.raises(ProviderError, match="request failed"):
+        OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_ollama_malformed_json_raises_provider_error(monkeypatch, ollama_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(content=b"not json"))
+
+    with pytest.raises(ProviderError, match="malformed JSON"):
+        OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_ollama_non_success_response_raises_provider_error(monkeypatch, ollama_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(500, json_body={"error": "failed"}))
+
+    with pytest.raises(ProviderError, match="request failed"):
+        OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_ollama_missing_response_content_raises_provider_error(monkeypatch, ollama_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(json_body={"done": True}))
+
+    with pytest.raises(ProviderError, match="content is missing"):
+        OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+@pytest.mark.parametrize("body", [{"done": False, "response": "{}"}, {"done": True, "response": []}, {"done": True, "response": "[]"}])
+def test_ollama_invalid_response_raises_provider_error(monkeypatch, ollama_env, manifest, body):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: ollama_response(json_body=body))
+
+    with pytest.raises(ProviderError, match="invalid response"):
+        OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
