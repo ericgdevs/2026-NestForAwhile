@@ -105,11 +105,11 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T042 [api] [US4] `backend/app/services/usda.py`: USDA FoodData Central enrichment for missing nutrients (`USDA_API_KEY`), cache, and the lookup order local → Open Food Facts → USDA in `nutrition.py`; fixture-based tests, scan stays under 3 s when cached
 - [X] T043 [ui] [US4] `frontend/src/components/BarcodeScanner.tsx`: smartphone camera scanning that works on iOS Safari (library choice needs approval, research R6)
 - [X] T044 [ui] [US4] `frontend/src/pages/Scan.tsx`: scanner plus always-visible manual SKU field and product result card (nutrition facts, image when available, status, explanation)
-- [ ] T045 [qa] [US4] Playwright `e2e/tests/us4-scan.spec.ts`: manual SKU for Green, Yellow, Red, unknown SKU; camera permission smoke test using Chromium fake media device
+- [X] T045 [qa] [US4] Playwright `e2e/tests/us4-scan.spec.ts`: manual SKU for Green, Yellow, Red, unknown SKU; camera permission smoke test using Chromium fake media device
 
 ## Phase 7: User Story 5 – Digital Cart (P1)
 
-- [ ] T046 [api] [US5] `backend/app/services/cart.py` and `routes/cart.py`: `GET /cart`, `POST /cart/items`, `PATCH` and `DELETE /cart/items/{product_id}`, `build_manifest()` for `Active_Cart_Manifest`; the server marks items that were recommended; tests include persistence within the session
+- [X] T046 [api] [US5] `backend/app/services/cart.py` and `routes/cart.py`: `GET /cart`, `POST /cart/items`, `PATCH` and `DELETE /cart/items/{product_id}`, `build_manifest()` for `Active_Cart_Manifest`; the server marks items that were recommended; tests include persistence within the session
 - [ ] T047 [ui] [US5] `frontend/src/pages/Cart.tsx` live cart (add, remove, change quantity) plus add-to-cart buttons on `Home.tsx` and `Scan.tsx`
 - [ ] T048 [qa] [US5] Playwright `e2e/tests/us5-cart.spec.ts`: add, change quantity, remove, reload keeps the cart
 
