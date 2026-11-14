@@ -54,7 +54,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
       <header className="topbar">
         {wordmark}
         <div className="topbar-meta">
-          <span className="role-tag">{user.role}</span>
+          {isClient ? (
+            <a className="signout" href="/profile">
+              <Icon name="profile" />
+              <span>Household</span>
+            </a>
+          ) : (
+            <span className="role-tag">{user.role}</span>
+          )}
           <button className="signout" type="button" onClick={() => void handleSignOut()}>
             <Icon name="logout" />
             <span>Sign out</span>
@@ -66,10 +73,18 @@ export default function AppShell({ children }: { children: ReactNode }) {
           <Links links={links} />
         </nav>
       )}
-      <div className="main">{children}</div>
+      <div className="main">
+        {isClient && user.Client_Enrollment_Status === "Pending" && (
+          <p className="alert alert-info" role="status" style={{ marginBottom: "1rem" }}>
+            <Icon name="alert" />
+            Your account is waiting for staff approval. You can shop now; staff will approve it before you check out.
+          </p>
+        )}
+        {children}
+      </div>
       {isClient && (
         <nav aria-label="Mobile navigation" className="tabbar">
-          <Links links={links} />
+          <Links links={links.filter((link) => link.href !== "/profile")} />
         </nav>
       )}
     </div>

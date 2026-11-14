@@ -3,7 +3,7 @@ import type { IconName } from "../components/Icon";
 
 export type AppRole = components["schemas"]["Role"];
 
-export const clientPaths = ["/profile", "/scan", "/cart", "/recipes"] as const;
+export const clientPaths = ["/profile", "/scan", "/list", "/cart", "/recipes"] as const;
 export const checkoutRoles: AppRole[] = ["Volunteer", "Warehouse Manager"];
 export const warehousePaths = ["/audit", "/replenishment", "/lots"] as const;
 export const managementPaths = ["/analytics", "/reports"] as const;
@@ -18,6 +18,7 @@ export function canVisit(role: AppRole, path: string): boolean {
     return role === "Warehouse Manager" || role === "Director";
   }
   if (path === "/waiting") return role === "Client";
+  if (path === "/approvals") return role === "Warehouse Manager";
   return true;
 }
 
@@ -25,6 +26,7 @@ export type NavLink = { href: string; label: string; icon: IconName };
 
 const allLinks: NavLink[] = [
   { href: "/scan", label: "Scan", icon: "scan" },
+  { href: "/list", label: "List", icon: "list" },
   { href: "/cart", label: "Cart", icon: "cart" },
   { href: "/recipes", label: "Recipes", icon: "recipes" },
   { href: "/profile", label: "Profile", icon: "profile" },
@@ -32,6 +34,7 @@ const allLinks: NavLink[] = [
   { href: "/audit", label: "Audit", icon: "audit" },
   { href: "/replenishment", label: "Restock", icon: "restock" },
   { href: "/lots", label: "Lots", icon: "lots" },
+  { href: "/approvals", label: "Approvals", icon: "profile" },
   { href: "/analytics", label: "Analytics", icon: "analytics" },
   { href: "/reports", label: "Reports", icon: "reports" },
 ];

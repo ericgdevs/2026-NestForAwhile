@@ -19,16 +19,12 @@ test("volunteer navigation lists only the screens a volunteer can open", async (
 test.describe("client on a phone", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("uses the bottom tab bar and opens recipe ideas from the bottom", async ({ page }) => {
+  test("uses the bottom tab bar with a List tab and Household in the top bar", async ({ page }) => {
     await signIn(page, "CLIENT");
     const tabs = page.getByRole("navigation", { name: "Mobile navigation" });
     await expect(tabs).toBeVisible();
-    await expect(tabs.getByRole("link")).toHaveText(["Home", "Scan", "Cart", "Recipes", "Profile"]);
-
-    const handle = page.getByRole("button", { name: /recipe ideas from your cart/i });
-    await handle.click();
-    await expect(handle).toHaveAttribute("aria-expanded", "true");
-    await expect(page.locator("#recipe-sheet-body")).toBeVisible();
+    await expect(tabs.getByRole("link")).toHaveText(["Home", "Scan", "List", "Cart", "Recipes"]);
+    await expect(page.getByRole("link", { name: "Household" })).toHaveAttribute("href", "/profile");
 
     // Clients are identified by role and household, never by name.
     await expect(page.getByText("Active Client")).toHaveCount(0);

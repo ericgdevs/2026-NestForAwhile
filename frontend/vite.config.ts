@@ -16,6 +16,7 @@ export default defineConfig({
       "/capacity": api,
       "/cart": api,
       "/checkout": api,
+      "/clients": api,
       "/health": api,
       "/inventory": api,
       "/me": api,
@@ -25,6 +26,7 @@ export default defineConfig({
       "/recipes": api,
       "/recommendations": api,
       "/reports": api,
+      "/shopping-list": api,
     },
   },
 });

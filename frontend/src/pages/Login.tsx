@@ -90,13 +90,9 @@ export default function Login() {
           <button className="btn btn-primary btn-block" disabled={submitting} type="submit">
             {submitting ? "Signing in…" : "Sign in"}
           </button>
-          <button
-            className="btn btn-secondary btn-block"
-            type="button"
-            onClick={() => setError("Please ask staff to create your account.")}
-          >
+          <a className="btn btn-secondary btn-block" href="/signup">
             Create Account
-          </button>
+          </a>
         </form>
       </div>
     </main>

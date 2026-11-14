@@ -1,47 +1,34 @@
 import { useEffect, useState } from "react";
 
-import { apiRequest, getMe } from "../api/client";
+import { getHousehold, saveHousehold } from "../api/client";
+import HouseholdEditor from "../components/HouseholdEditor";
 import Icon from "../components/Icon";
-
-const choices = [
-  "Low Sugar",
-  "Low Sodium",
-  "Heart Healthy",
-  "Kidney Friendly",
-  "Vegetarian",
-  "Vegan",
-  "Gluten Free",
-  "Nut Allergy",
-  "Dairy Free",
-] as const;
+import { fromMember, toMemberInput, type MemberDraft } from "../lib/household";
 
 export default function Profile() {
-  const [selected, setSelected] = useState<string[]>([]);
+  const [members, setMembers] = useState<MemberDraft[] | null>(null);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    getMe()
-      .then((profile) => setSelected(profile.profile?.restrictions ?? []))
-      .catch(() => undefined);
+    getHousehold()
+      .then((household) => setMembers(household.members.map(fromMember)))
+      .catch(() => setError("We couldn't load your household. Please try again."));
   }, []);
 
-  function toggle(choice: string) {
-    setSelected((current) =>
-      current.includes(choice) ? current.filter((item) => item !== choice) : [...current, choice],
-    );
+  function change(next: MemberDraft[]) {
+    setMembers(next);
     setSaved(false);
   }
 
   async function save() {
+    if (!members) return;
     setError("");
     setSaving(true);
     try {
-      await apiRequest("/me/profile", {
-        method: "PUT",
-        body: { restrictions: selected, allergies: [], preferences: [] },
-      });
+      const household = await saveHousehold(members.map(toMemberInput));
+      setMembers(household.members.map(fromMember));
       setSaved(true);
     } catch {
       setError("We couldn't save your choices. Please try again.");
@@ -54,43 +41,46 @@ export default function Profile() {
     <main>
       <header className="page-head">
         <div>
-          <h1>Dietary Restrictions &amp; Preferences</h1>
-          <p>Pick anything that helps us find food that works for you. You can change these any time.</p>
+          <h1>Your household</h1>
+          <p>Everyone you shop for, and what works for each of them. You can change these any time.</p>
         </div>
+        {members && (
+          <div className="figure">
+            <b>{members.length}</b>
+            <span>{members.length === 1 ? "person" : "people"}</span>
+          </div>
+        )}
       </header>
 
-      <section className="panel stack" style={{ maxWidth: "860px" }}>
-        <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
-          <legend className="field-label" style={{ marginBottom: "0.75rem" }}>
-            Choose all that apply
-          </legend>
-          <div className="choices">
-            {choices.map((choice) => (
-              <label className="choice" key={choice}>
-                <input checked={selected.includes(choice)} type="checkbox" onChange={() => toggle(choice)} />
-                <span>{choice}</span>
-              </label>
-            ))}
-          </div>
-        </fieldset>
-
-        {saved && (
-          <p className="alert alert-ok" role="status">
-            <Icon name="check" />
-            Your choices were saved.
-          </p>
-        )}
-        {error && (
+      {members === null ? (
+        error ? (
           <p className="alert alert-danger" role="alert">
             <Icon name="alert" />
             {error}
           </p>
-        )}
-
-        <button className="btn btn-primary" disabled={saving} style={{ alignSelf: "flex-start" }} type="button" onClick={save}>
-          {saving ? "Saving…" : "Save choices"}
-        </button>
-      </section>
+        ) : (
+          <p className="empty">Loading your household…</p>
+        )
+      ) : (
+        <div className="stack" style={{ maxWidth: "860px" }}>
+          <HouseholdEditor members={members} onChange={change} />
+          {saved && (
+            <p className="alert alert-ok" role="status">
+              <Icon name="check" />
+              Your choices were saved.
+            </p>
+          )}
+          {error && (
+            <p className="alert alert-danger" role="alert">
+              <Icon name="alert" />
+              {error}
+            </p>
+          )}
+          <button className="btn btn-primary" disabled={saving} style={{ alignSelf: "flex-start" }} type="button" onClick={save}>
+            {saving ? "Saving…" : "Save choices"}
+          </button>
+        </div>
+      )}
     </main>
   );
 }

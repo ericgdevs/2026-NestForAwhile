@@ -41,19 +41,65 @@ export function login(
   });
 }
 
-export function getMe(): Promise<components["schemas"]["Client"]> {
+type SafetyStatus = components["schemas"]["SafetyStatus"];
+export type Location = { aisle: string; shelf: string; bin: string };
+/** A household member a product isn't safe for, by nickname (never a real name). */
+export type NotFor = { nickname: string; reason: string };
+/** Household label fields the rules engine adds to products. */
+export type HouseholdLabel = { status: SafetyStatus; not_for?: NotFor[]; allergy_match?: boolean };
+
+export type Member = { nickname: string; age: number | null; restrictions: string[]; allergies: string[] };
+export type MemberInput = Partial<Omit<Member, "nickname">> & { nickname?: string; conditions?: string[] };
+
+export type Me = {
+  role?: components["schemas"]["Role"];
+  client_id?: number;
+  Household_Size?: number;
+  Client_Enrollment_Status?: "Active" | "Inactive" | "Pending";
+  profile?: { restrictions: string[]; allergies: string[]; preferences: string[] };
+  members?: Member[];
+};
+
+export function getMe(): Promise<Me> {
   return apiRequest("/me");
+}
+
+export type SignupRequest = { email: string; password: string; name: string; members: MemberInput[] };
+
+export function signup(payload: SignupRequest): Promise<components["schemas"]["LoginResult"]> {
+  return apiRequest("/auth/signup", { method: "POST", body: payload });
+}
+
+export function getHousehold(): Promise<{ members: Member[] }> {
+  return apiRequest("/me/household");
+}
+
+export function saveHousehold(members: MemberInput[]): Promise<{ members: Member[] }> {
+  return apiRequest("/me/household", { method: "PUT", body: { members } });
+}
+
+export function getMySession(): Promise<{ Shopping_Session_Token: string; client_id: number }> {
+  return apiRequest("/me/session");
+}
+
+export type PendingClient = { client_id: number; name: string; Household_Size: number; created_at: string };
+
+export function getPendingClients(): Promise<PendingClient[]> {
+  return apiRequest("/clients/pending");
+}
+
+export function approveClient(clientId: number) {
+  return apiRequest(`/clients/${clientId}/approve`, { method: "POST" });
 }
 
 export function getCapacity(): Promise<components["schemas"]["Capacity"]> {
   return apiRequest("/capacity");
 }
 
-export type Recommendation = {
+export type Recommendation = HouseholdLabel & {
   product_id: number;
   name: string;
   quantity: number;
-  status: components["schemas"]["SafetyStatus"];
   rationale: string;
   aisle: string;
   shelf: string;
@@ -64,7 +110,9 @@ export function getRecommendations(): Promise<Recommendation[]> {
   return apiRequest("/recommendations");
 }
 
-export type ScanResult = {
+export type Swap = HouseholdLabel & Location & { product_id: number; name: string };
+
+export type ScanResult = HouseholdLabel & {
   product_id: number | null;
   sku: string;
   barcode: string;
@@ -74,8 +122,8 @@ export type ScanResult = {
   sugar_g: number | null;
   sat_fat_g: number | null;
   potassium_mg: number | null;
-  status: components["schemas"]["SafetyStatus"];
   explanation: string;
+  swaps?: Swap[];
 };
 
 export function scanProduct(code: string): Promise<ScanResult> {
@@ -87,9 +135,11 @@ export type CartItem = {
   name: string;
   quantity: number;
   from_recommendation: boolean;
-  // Requested from the API in docs/proposals/recipe-cuisine-contract.md; absent until the backend ships them.
+  // Sent by api/client-flow (B3/cart nutrition); optional until that branch merges.
   sku?: string;
-  status?: components["schemas"]["SafetyStatus"];
+  status?: SafetyStatus;
+  not_for?: NotFor[];
+  allergy_match?: boolean;
   explanation?: string;
   sodium_mg?: number | null;
   sugar_g?: number | null;
@@ -113,20 +163,112 @@ export function deleteCartItem(product_id: number) {
 }
 
 export type Recipe = {
+  id?: number; // set on saved recipes
   title: string;
-  // cuisine is proposed in docs/proposals/recipe-cuisine-contract.md; absent until the backend ships it.
-  cuisine?: string;
+  cuisine?: string | null;
   ingredients: {
     name: string;
     product_id: number | null;
     in_cart_or_stock?: boolean;
-    location?: { aisle: string; shelf: string; bin: string } | null;
+    location?: Location | null;
   }[];
   steps: string[];
 };
 
-export function getRecipes(): Promise<{ recipes: Recipe[]; used_fallback: boolean }> {
-  return apiRequest("/recipes", { method: "POST" });
+export function getRecipes(
+  options: { scanned_product_id?: number; cuisine?: string } = {},
+): Promise<{ recipes: Recipe[]; used_fallback: boolean }> {
+  return apiRequest("/recipes", { method: "POST", body: options });
+}
+
+export function getSavedRecipes(): Promise<Recipe[]> {
+  return apiRequest("/me/recipes");
+}
+
+export function saveRecipe(recipe: Recipe): Promise<Recipe> {
+  const { title, cuisine, ingredients, steps } = recipe;
+  return apiRequest("/me/recipes", { method: "POST", body: { title, cuisine, ingredients, steps } });
+}
+
+export function deleteSavedRecipe(id: number) {
+  return apiRequest(`/me/recipes/${id}`, { method: "DELETE" });
+}
+
+export type ListLine = {
+  id: number;
+  text: string;
+  product_id: number | null;
+  name: string;
+  source: "you" | "recipe";
+  recipe: Recipe | null;
+  ticked: boolean;
+  in_stock: boolean;
+  location: Location | null;
+  status?: SafetyStatus;
+  not_for?: NotFor[];
+};
+
+export function getShoppingList(): Promise<{ items: ListLine[] }> {
+  return apiRequest("/shopping-list");
+}
+
+export function addToShoppingList(items: { text: string; product_id?: number | null }[], recipe?: Recipe) {
+  return apiRequest<{ items: ListLine[] }>("/shopping-list", { method: "POST", body: { items, recipe } });
+}
+
+export function tickListLine(id: number, ticked: boolean) {
+  return apiRequest<{ items: ListLine[] }>(`/shopping-list/${id}`, { method: "PATCH", body: { ticked } });
+}
+
+/** A recipe's "Add to list": its ingredients go on the shopping list (not the cart), tagged with the recipe. */
+export function addRecipeToList(recipe: Recipe, skipProductId?: number | null) {
+  const items = recipe.ingredients
+    .filter((ingredient) => ingredient.product_id === null || ingredient.product_id !== skipProductId)
+    .map((ingredient) => ({ text: ingredient.name, product_id: ingredient.product_id }));
+  // Nothing else to find (e.g. the recipe only uses the scanned item): already done.
+  return items.length ? addToShoppingList(items, recipe) : Promise.resolve(null);
+}
+
+export function deleteListLine(id: number) {
+  return apiRequest(`/shopping-list/${id}`, { method: "DELETE" });
+}
+
+export type ParsedLine = { text: string; product_id: number | null; name: string | null; status: SafetyStatus | null; location: Location | null };
+
+export function parseShoppingList(input: { text: string } | { image_base64: string; media_type: string }) {
+  return apiRequest<{ lines: ParsedLine[] }>("/shopping-list/parse", { method: "POST", body: input });
+}
+
+export type CheckoutReview = {
+  Shopping_Session_Token: string;
+  client_id: number;
+  Client_Enrollment_Status: "Active" | "Inactive" | "Pending" | null;
+  items: (HouseholdLabel & { product_id: number; name: string; quantity: number; acknowledged: boolean; overridden: boolean })[];
+  blocking: string[];
+  needs_ack: { product_id: number; name: string; not_for: NotFor[] }[];
+};
+
+export function lookupCheckout(by: { token: string } | { client_id: number }): Promise<CheckoutReview> {
+  const query = "token" in by ? `token=${encodeURIComponent(by.token)}` : `client_id=${by.client_id}`;
+  return apiRequest(`/checkout/lookup?${query}`);
+}
+
+const checkoutPath = (token: string, rest: string) => `/checkout/${encodeURIComponent(token)}/${rest}`;
+
+export function addCheckoutItem(token: string, code: string): Promise<CheckoutReview> {
+  return apiRequest(checkoutPath(token, "items"), { method: "POST", body: { code } });
+}
+
+export function removeCheckoutItem(token: string, productId: number): Promise<CheckoutReview> {
+  return apiRequest(checkoutPath(token, `items/${productId}`), { method: "DELETE" });
+}
+
+export function acknowledgeAllergy(token: string, productId: number): Promise<CheckoutReview> {
+  return apiRequest(checkoutPath(token, "acknowledge"), { method: "POST", body: { product_id: productId } });
+}
+
+export function overrideItem(token: string, productId: number, note: string): Promise<CheckoutReview> {
+  return apiRequest(checkoutPath(token, "override"), { method: "POST", body: { product_id: productId, note } });
 }
 
 export function validateCheckout(token: string): Promise<{ valid: boolean; errors: string[] }> {

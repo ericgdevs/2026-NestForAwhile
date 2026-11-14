@@ -236,7 +236,7 @@ select {
 }
 
 .shell-client .main {
-  padding-bottom: 9rem;
+  padding-bottom: 6rem; /* room for the bottom tab bar */
 }
 
 .tabbar {
@@ -332,10 +332,6 @@ select {
     grid-column: 2;
     width: 100%;
     padding: 0.5rem 2rem 4rem;
-  }
-
-  .shell-client .main {
-    padding-bottom: 7rem;
   }
 }
 
@@ -1014,73 +1010,6 @@ select.input {
   margin-top: 0.25rem;
 }
 
-/* Bottom recipe sheet: the one authored motion */
-.sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: calc(68px + env(safe-area-inset-bottom));
-  z-index: 35;
-  max-height: calc(100vh - 140px);
-  display: flex;
-  flex-direction: column;
-  background: var(--panel);
-  border-radius: var(--r-lg) var(--r-lg) 0 0;
-  box-shadow: var(--shadow-3);
-  transform: translateY(calc(100% - 64px));
-  transition: transform 420ms var(--ease-out);
-}
-
-.sheet[data-open="true"] {
-  transform: translateY(0);
-}
-
-.sheet-handle {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  min-height: 64px;
-  padding: 0 1rem;
-  border: 0;
-  border-bottom: 5px solid var(--ink);
-  background: none;
-  color: var(--ink);
-  font-size: 1.0625rem;
-  font-weight: 900;
-  text-align: left;
-  cursor: pointer;
-}
-
-.sheet-handle .icon {
-  transition: transform 420ms var(--ease-out);
-}
-
-.sheet[data-open="true"] .sheet-handle .icon:last-child {
-  transform: rotate(180deg);
-}
-
-.sheet-body {
-  overflow-y: auto;
-  padding: 1rem;
-  min-height: 40vh;
-}
-
-/* Closed: keep it out of the tab order and screen readers once the slide-down finishes */
-.sheet[data-open="false"] .sheet-body {
-  visibility: hidden;
-  transition: visibility 0s 420ms;
-}
-
-@media (min-width: 1024px) {
-  .sheet {
-    left: calc(248px + 2rem);
-    right: 2rem;
-    bottom: 0;
-    max-width: 1136px;
-  }
-}
-
 /* ---------- Login ---------- */
 
 .login {
@@ -1177,4 +1106,141 @@ select.input {
   *::after {
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ---------- Household "not for" line ---------- */
+
+.not-for {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin: -0.25rem 0 0.5rem;
+  font-size: 0.9375rem;
+  color: var(--warn-ink);
+}
+
+.not-for .icon {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.1875rem;
+}
+
+.not-for-allergy {
+  padding: 0.375rem 0.625rem;
+  border-radius: var(--r-sm);
+  background: var(--stop-bg);
+  color: var(--stop-ink);
+  font-weight: 700;
+}
+
+.choice-set {
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.choice-set legend {
+  margin-bottom: 0.5rem;
+}
+
+.signup-form {
+  max-width: 640px;
+}
+
+/* ---------- Shopping list ---------- */
+
+.list-input {
+  min-height: 6rem;
+  padding: 0.75rem 0.875rem;
+  resize: vertical;
+}
+
+.list-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.list-line {
+  display: grid;
+  gap: 0.375rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--ink);
+}
+
+.list-line:first-child {
+  border-top: 0;
+}
+
+.list-line-done .list-tick strong {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.list-tick {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.list-tick input {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+  accent-color: var(--blue);
+}
+
+.list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding-left: 2.125rem;
+}
+
+.list-recipe {
+  padding-left: 2.125rem;
+  font-size: 0.9375rem;
+}
+
+.list-recipe summary {
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  color: var(--blue);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.list-remove {
+  justify-self: start;
+  margin-left: 2.125rem;
+  min-height: 44px;
+}
+
+/* ---------- Checkout QR ---------- */
+
+.checkout-qr {
+  margin: 0;
+  display: grid;
+  justify-items: center;
+  gap: 0.75rem;
+}
+
+.checkout-qr svg {
+  width: min(100%, 280px);
+  height: auto;
+}
+
+.checkout-qr figcaption {
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.checkout-qr figcaption b {
+  font-size: 2rem;
+  font-weight: 900;
+  margin-left: 0.375rem;
 }

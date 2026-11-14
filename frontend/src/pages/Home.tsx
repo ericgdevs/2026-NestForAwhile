@@ -1,9 +1,13 @@
 import { useEffect, useState } from "react";
 
 import { getRecommendations, saveCartItem, type Recommendation } from "../api/client";
+import BarcodeScanner from "../components/BarcodeScanner";
 import Icon from "../components/Icon";
-import RecipeSheet from "../components/RecipeSheet";
+import NotForLine from "../components/NotForLine";
 import { StatusBadge } from "../components/StatusBadge";
+
+// Home's scanner hands off to the Scan page, which owns the full result, swaps, and recipes.
+const openScan = (code: string) => window.location.assign(`/scan?code=${encodeURIComponent(code)}`);
 
 export default function Home({ householdSize }: { householdSize?: number }) {
   const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
@@ -59,6 +63,7 @@ export default function Home({ householdSize }: { householdSize?: number }) {
             return (
               <article key={item.product_id} className="label-panel">
                 <StatusBadge bar status={item.status} />
+                <NotForLine allergy={item.allergy_match} notFor={item.not_for} />
                 <h2>{item.name}</h2>
                 <hr className="rule-heavy" />
                 <div className="figure-row">
@@ -92,7 +97,26 @@ export default function Home({ householdSize }: { householdSize?: number }) {
         </section>
       )}
 
-      <RecipeSheet />
+      <section aria-label="Scan a product" className="panel stack" style={{ marginTop: "2rem", maxWidth: "40rem" }}>
+        <h2 className="panel-title">Scan a product</h2>
+        <BarcodeScanner onDetected={openScan} />
+        <form
+          className="inline-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const code = new FormData(event.currentTarget).get("code");
+            if (typeof code === "string" && code.trim()) openScan(code.trim());
+          }}
+        >
+          <label className="sr-only" htmlFor="home-sku">
+            SKU or barcode
+          </label>
+          <input className="input" id="home-sku" name="code" placeholder="Or type the SKU" />
+          <button className="btn btn-primary" type="submit">
+            Check
+          </button>
+        </form>
+      </section>
     </main>
   );
 }

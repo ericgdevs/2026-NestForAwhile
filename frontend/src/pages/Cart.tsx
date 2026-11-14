@@ -1,16 +1,19 @@
 import { useEffect, useState } from "react";
 
 import { deleteCartItem, getCart, saveCartItem, type CartItem } from "../api/client";
+import CheckoutQr from "../components/CheckoutQr";
 import Icon from "../components/Icon";
+import NotForLine from "../components/NotForLine";
 import NutritionFacts from "../components/NutritionFacts";
 import { StatusBadge } from "../components/StatusBadge";
 
-// The cart API doesn't send nutrition yet (see docs/proposals); show the panel once any value arrives.
+// api/client-flow sends nutrition per item; until it merges, the panel shows once any value arrives.
 const hasNutrition = (item: CartItem) =>
   [item.sodium_mg, item.sugar_g, item.sat_fat_g, item.potassium_mg].some((value) => value !== undefined);
 
 export default function Cart() {
   const [items, setItems] = useState<CartItem[]>([]);
+  const [showQr, setShowQr] = useState(false);
 
   async function refresh() {
     const cart = await getCart();
@@ -58,6 +61,7 @@ export default function Cart() {
           {items.map((item) => (
             <article key={item.product_id} className="label-panel">
               {item.status && <StatusBadge bar status={item.status} />}
+              <NotForLine allergy={item.allergy_match} notFor={item.not_for} />
               <h2>{item.name}</h2>
               {item.sku && <p className="meta tabular">SKU {item.sku}</p>}
               <hr className="rule-heavy" />
@@ -93,6 +97,25 @@ export default function Cart() {
               </div>
             </article>
           ))}
+        </section>
+      )}
+
+      {items.length > 0 && (
+        <section aria-label="Checkout" className="panel stack" style={{ marginTop: "1rem", maxWidth: "28rem" }}>
+          <button
+            aria-expanded={showQr}
+            className="btn btn-primary"
+            type="button"
+            onClick={() => setShowQr((open) => !open)}
+          >
+            <Icon name="checkout" /> {showQr ? "Hide checkout code" : "Show at checkout"}
+          </button>
+          {showQr && (
+            <>
+              <p className="panel-sub">Show this to the volunteer at the exit desk.</p>
+              <CheckoutQr />
+            </>
+          )}
         </section>
       )}
 
