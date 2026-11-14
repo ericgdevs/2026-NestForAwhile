@@ -63,7 +63,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T017 [api] Alembic init and migration `0001` for all tables in `backend/alembic/`; test `upgrade head` on SQLite
 - [X] T018 [api] `backend/app/auth.py`: Argon2 hashing, JWT in HttpOnly cookie (`COOKIE_SECURE` from config), `get_current_user`, `Role` enum, `require_roles(...)`; tests for wrong password, expired token, wrong role (403)
 - [X] T019 [api] Seed users in `backend/seed/load.py`: one synthetic user per role plus synthetic clients (Active and non-Active, various `Household_Size`) and dietary profiles (emails use `@example.test`)
-- [ ] T020 [api] Seed catalog in `backend/seed/load.py`: synthetic products (barcodes, nutrition, images, allergens), lots across aisles/shelves/bins with mixed expiry dates and thresholds, synthetic donors/grants
+- [X] T020 [api] Seed catalog in `backend/seed/load.py`: synthetic products (barcodes, nutrition, images, allergens), lots across aisles/shelves/bins with mixed expiry dates and thresholds, synthetic donors/grants
 - [X] T021 [docs] `backend/app/rules/clinical_rules_matrix.json`: thresholds and exclusions for Low Sugar, Low Sodium, Heart Healthy, Kidney Friendly, Vegetarian, Vegan, Gluten Free, Nut Allergy, Dairy Free; mark values as synthetic placeholders until Epic Cure guidance is confirmed
 - [X] T022 [api] `backend/app/rules/tiers.py` (`Dietary_Tier_ID` mapping) and `classify.py` (`classify(product, profile)` → Approved/Capped/Restricted + plain-language reason; allergen/exclusion → Restricted; missing data → Capped); table-driven tests in `backend/tests/unit/test_rules.py`
 - [ ] T023 [qa] `backend/tests/conftest.py`: temp SQLite per test, seeded data, logged-in client per role, mocked AI provider fixture
