@@ -88,7 +88,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 4: User Story 2 – Dietary Profile in Plain Language (P1)
 
-- [ ] T034 [api] [US2] `backend/app/routes/profile.py`: `PUT /me/profile` saves encrypted restrictions/allergies/preferences and recomputes `Dietary_Tier_ID` via rules; tests for persistence, encryption at rest, invalid option rejected
+- [X] T034 [api] [US2] `backend/app/routes/profile.py`: `PUT /me/profile` saves encrypted restrictions/allergies/preferences and recomputes `Dietary_Tier_ID` via rules; tests for persistence, encryption at rest, invalid option rejected
 - [ ] T035 [ui] [US2] `frontend/src/pages/Profile.tsx`: "Dietary Restrictions & Preferences" with the nine plain-language choices, editable any time
 - [ ] T036 [qa] [US2] Playwright `e2e/tests/us2-profile.spec.ts`: select, save, sign out/in, selections persist
 
