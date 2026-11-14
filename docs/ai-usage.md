@@ -21,3 +21,4 @@
 | Review fix | Copilot | Documented the required Impeccable global setup instead of committing a platform-specific engine | Kept the portable global hook | Caden |
 | Implement T001 | Copilot (GPT-5.6 Terra) | Created the backend, frontend, e2e, deploy, and scripts skeleton directories and verified required ignore patterns | None | Caden |
 | Implement T004 | Copilot (GPT-5.6 Terra) | Added the documented environment-variable template with placeholders only | None | Caden |
+| Implement T005 | Copilot (GPT-5.6 Terra) | Added pull-request backend CI for Ruff and pytest | None | Caden |
