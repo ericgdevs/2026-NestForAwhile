@@ -26,22 +26,25 @@ jobs:
       - name: Install browsers
         working-directory: e2e
         run: npm ci && npx playwright install --with-deps chromium
-      - name: Start backend
+      - name: Build frontend
+        working-directory: frontend
+        run: npm run build
+      - name: Migrate, seed and start backend
+        working-directory: backend
         env:
           JWT_SECRET: synthetic-e2e-secret
           SEED_DEMO_DATA: "true"
           DATABASE_URL: sqlite:///./e2e.db
         run: |
           export FIELD_ENCRYPTION_KEY="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')"
-          (cd backend && python -m seed.load) &
-          uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8000 &
-      - name: Build and start frontend
-        working-directory: frontend
-        run: npm run build && npm run preview -- --host 127.0.0.1 --port 5173 &
+          alembic upgrade head
+          python -m seed.load
+          uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          curl --retry 30 --retry-delay 1 --retry-connrefused --fail http://127.0.0.1:8000/health
       - name: Run Playwright
         working-directory: e2e
         env:
-          BASE_URL: http://127.0.0.1:5173
+          BASE_URL: http://127.0.0.1:8000
           E2E_CLIENT_EMAIL: client.active@example.test
           E2E_CLIENT_PASSWORD: demo-password
           E2E_VOLUNTEER_EMAIL: volunteer@example.test
