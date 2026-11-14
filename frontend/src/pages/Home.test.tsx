@@ -16,6 +16,7 @@ vi.mock("../api/client", () => ({
       bin: "B1",
     },
   ]),
+  saveCartItem: vi.fn(),
 }));
 
 test("renders recommendation rationale, quantity, and safety status", async () => {

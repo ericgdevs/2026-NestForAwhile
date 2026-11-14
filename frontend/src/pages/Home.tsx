@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { getRecommendations, type Recommendation } from "../api/client";
+import { getRecommendations, saveCartItem, type Recommendation } from "../api/client";
 import { StatusBadge } from "../components/StatusBadge";
 
 export default function Home() {
@@ -32,6 +32,12 @@ export default function Home() {
               <p className="mt-2 text-sm">
                 Suggested quantity: <strong>{item.quantity}</strong>
               </p>
+              <button
+                className="mt-3 rounded-lg border px-3 py-2 text-sm"
+                onClick={() => void saveCartItem(item.product_id, item.quantity)}
+              >
+                Add to cart
+              </button>
             </article>
           ))}
         </section>

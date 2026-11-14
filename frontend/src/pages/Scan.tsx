@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { scanProduct, type ScanResult } from "../api/client";
+import { saveCartItem, scanProduct, type ScanResult } from "../api/client";
 import BarcodeScanner from "../components/BarcodeScanner";
 import { StatusBadge } from "../components/StatusBadge";
 
@@ -72,6 +72,14 @@ export default function Scan() {
               <div><dt className="text-slate-500">Potassium</dt><dd>{result.potassium_mg ?? "Unknown"} mg</dd></div>
             </dl>
             {result.image_url && <img alt="" className="max-h-48 rounded-lg" src={result.image_url} />}
+            {result.product_id && (
+              <button
+                className="rounded-lg border px-3 py-2"
+                onClick={() => void saveCartItem(result.product_id!, 1)}
+              >
+                Add to cart
+              </button>
+            )}
           </article>
         )}
       </div>

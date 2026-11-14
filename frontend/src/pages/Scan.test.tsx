@@ -20,6 +20,7 @@ vi.mock("../api/client", () => ({
     status: "Approved",
     explanation: "This item matches the selected dietary profile.",
   }),
+  saveCartItem: vi.fn(),
 }));
 
 test("supports manual SKU lookup and renders the result card", async () => {

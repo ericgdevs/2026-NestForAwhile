@@ -64,3 +64,4 @@
 | Implement T044 | Copilot (GPT-5.6 Terra) | Added the scan page with camera/manual lookup, nutrition facts, image support, explanation, and safety status | None | Caden |
 | Implement T045 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for manual scan success/failure and camera scanner availability | None | Caden |
 | Implement T046 | Copilot (GPT-5.6 Terra) | Added active-session cart persistence APIs, manifest generation, and focused route coverage | None | Caden |
+| Implement T047 | Copilot (GPT-5.6 Terra) | Added the live cart page with quantity controls, removal, and recommendation markers | None | Caden |

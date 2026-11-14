@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import Scan from "./pages/Scan";
+import Cart from "./pages/Cart";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
@@ -42,6 +43,13 @@ function Router() {
     return (
       <ProtectedRoute>
         <Scan />
+      </ProtectedRoute>
+    );
+  }
+  if (window.location.pathname === "/cart") {
+    return (
+      <ProtectedRoute>
+        <Cart />
       </ProtectedRoute>
     );
   }

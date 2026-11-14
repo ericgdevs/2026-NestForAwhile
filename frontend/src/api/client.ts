@@ -81,3 +81,25 @@ export type ScanResult = {
 export function scanProduct(code: string): Promise<ScanResult> {
   return apiRequest(`/products/scan/${encodeURIComponent(code)}`);
 }
+
+export type CartItem = {
+  product_id: number;
+  name: string;
+  quantity: number;
+  from_recommendation: boolean;
+};
+
+export function getCart(): Promise<{ items: CartItem[] }> {
+  return apiRequest("/cart");
+}
+
+export function saveCartItem(product_id: number, quantity: number) {
+  return apiRequest<{ items: CartItem[] }>("/cart/items", {
+    method: "POST",
+    body: { product_id, quantity },
+  });
+}
+
+export function deleteCartItem(product_id: number) {
+  return apiRequest(`/cart/items/${product_id}`, { method: "DELETE" });
+}
