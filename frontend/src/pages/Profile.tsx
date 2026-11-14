@@ -18,6 +18,7 @@ export default function Profile() {
   const [selected, setSelected] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     getMe()
@@ -34,6 +35,7 @@ export default function Profile() {
 
   async function save() {
     setError("");
+    setSaving(true);
     try {
       await apiRequest("/me/profile", {
         method: "PUT",
@@ -42,37 +44,87 @@ export default function Profile() {
       setSaved(true);
     } catch {
       setError("We couldn't save your choices. Please try again.");
+    } finally {
+      setSaving(false);
     }
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <div className="mx-auto max-w-2xl space-y-6">
+    <main>
+      <div className="hero-banner">
         <div>
-          <h1 className="text-2xl font-semibold">Dietary Restrictions &amp; Preferences</h1>
-          <p className="mt-2 text-slate-600">
+          <span className="eyebrow-chip">Dietary profile</span>
+          <h1 className="page-title">
+            Dietary Restrictions &amp; Preferences
+          </h1>
+          <p className="page-subtitle">
             Choose any options that help us find a better grocery match. You can edit these anytime.
           </p>
         </div>
-        <fieldset className="grid gap-3 sm:grid-cols-2">
-          <legend className="sr-only">Dietary choices</legend>
-          {choices.map((choice) => (
-            <label key={choice} className="flex items-center gap-3 rounded-lg bg-white p-4 shadow-sm">
-              <input
-                type="checkbox"
-                checked={selected.includes(choice)}
-                onChange={() => toggle(choice)}
-              />
-              <span>{choice}</span>
-            </label>
-          ))}
-        </fieldset>
-        {saved && <p className="text-sm text-emerald-800">Your choices were saved.</p>}
-        {error && <p className="text-sm text-red-800">{error}</p>}
-        <button className="rounded-lg bg-slate-900 px-4 py-2 font-medium text-white" onClick={save}>
-          Save choices
-        </button>
       </div>
+
+      <section className="ui-card" style={{ maxWidth: "800px" }}>
+        <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
+          <legend className="stat-label" style={{ marginBottom: "1.25rem" }}>
+            Dietary choices
+          </legend>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem", marginBottom: "1.75rem" }}>
+            {choices.map((choice) => {
+              const isChecked = selected.includes(choice);
+              return (
+                <label
+                  key={choice}
+                  className={`choice-pill ${isChecked ? "choice-pill-selected" : ""}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggle(choice)}
+                  />
+                  <span>{choice}</span>
+                </label>
+              );
+            })}
+          </div>
+        </fieldset>
+
+        {saved && (
+          <div
+            style={{
+              background: "var(--pastel-green-bg)",
+              border: "1px solid var(--pastel-green-border)",
+              color: "var(--pastel-green-text)",
+              padding: "0.75rem 1.25rem",
+              borderRadius: "var(--radius-md)",
+              marginBottom: "1.25rem",
+              fontSize: "0.9rem",
+              fontWeight: 600,
+            }}
+          >
+            Your choices were saved.
+          </div>
+        )}
+
+        {error && (
+          <div
+            style={{
+              background: "var(--pastel-rose-bg)",
+              border: "1px solid var(--pastel-rose-border)",
+              color: "var(--pastel-rose-text)",
+              padding: "0.75rem 1.25rem",
+              borderRadius: "var(--radius-md)",
+              marginBottom: "1.25rem",
+              fontSize: "0.9rem",
+            }}
+          >
+            {error}
+          </div>
+        )}
+
+        <button className="btn btn-primary" onClick={save} disabled={saving}>
+          {saving ? "Saving…" : "Save choices"}
+        </button>
+      </section>
     </main>
   );
 }
