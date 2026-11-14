@@ -56,3 +56,29 @@ def test_distribution_and_visit_totals(seeded):
     assert [(r.category, r.units, r.pounds) for r in reports.distribution_totals(seeded, *WIDE)] == [("x", 2, 3.0)]
     metrics = reports.visit_metrics(seeded, *WIDE)
     assert (metrics.families_served, metrics.pounds_distributed) == (1, 3.0)
+
+
+def test_build_report_has_four_sections_and_is_deterministic(seeded):
+    _complete(seeded, [(_linked_product(seeded, "Rice", 5, weight_lb=1.0), 2)])
+    first, second = (reports.build_report(seeded, "grant", *WIDE) for _ in range(2))
+    assert first == second and first.model_dump_json() == second.model_dump_json()
+    assert set(first.model_dump()) == {"type", "period_start", "period_end", "donor_metrics", "grant_attribution",
+                                       "distribution_totals", "visit_metrics"}
+
+
+def test_build_report_has_no_identifiers(seeded):
+    from seed.personas import PERSONAS
+
+    _complete(seeded, [(_linked_product(seeded, "Rice", 5), 1)])
+    text = reports.build_report(seeded, "donor", *WIDE).model_dump_json().lower()
+    banned = [p["name"] for p in PERSONAS] + [p["email"] for p in PERSONAS] + ["@", "client", "email", "phone", "session"]
+    assert not [b for b in banned if b.lower() in text]
+
+
+def test_build_report_rejects_bad_input(seeded):
+    import pytest
+
+    with pytest.raises(ValueError):
+        reports.build_report(seeded, "other", *WIDE)
+    with pytest.raises(ValueError):
+        reports.build_report(seeded, "donor", WIDE[1], WIDE[0])

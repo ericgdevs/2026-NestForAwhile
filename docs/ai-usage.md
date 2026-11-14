@@ -37,3 +37,4 @@
 | Implement | Copilot (Sonnet 5.5) | T064: atomic checkout (FIFO guarded decrement, movements, receipt, visit, session end), interventions, /checkout routes; renamed cookie param in auth.py to free the session_token path name; tests | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | T088: analytics service (contract metrics plus service-level category/tier/checkout-history breakdowns) and GET /analytics, identifier-scan tests | Eric approved plan and decisions (2a: breakdowns stay internal) | Eric |
 | Implement | Copilot (Sonnet 5.5) | T091: donor_id/grant_id on inventory_lots (model, migration 0002, seed) and attribution/distribution/visit aggregations in reports.py, tests | Eric approved the data-model change (1a) | Eric |
+| Implement | Copilot (Sonnet 5.5) | T092: deterministic four-section ReportData builder (service-level; no DOCX, no route, no python-docx), tests | Eric approved plan (3b: structured object, DOCX later) | Eric |

@@ -3,7 +3,7 @@ from datetime import date
 from sqlmodel import Session, select
 
 from app.models import Checkout, DonationSource, GrantFundingStream, InventoryLot, InventoryMovement, Product, Visit
-from app.schemas import AttributionRow, DistributionRow, VisitMetrics
+from app.schemas import AttributionRow, DistributionRow, ReportData, VisitMetrics
 
 UNATTRIBUTED = "Unattributed"
 
@@ -55,3 +55,16 @@ def visit_metrics(session: Session, start: date, end: date) -> VisitMetrics:
               if _in_period(v.completed_at, start, end)]
     return VisitMetrics(visits_completed=len(visits), families_served=len({v.client_id for v in visits}),
                         pounds_distributed=round(sum(v.pounds_distributed or 0 for v in visits), 2))
+
+
+def build_report(session: Session, kind: str, start: date, end: date) -> ReportData:
+    """Deterministic, anonymized report object; the same data and period always give the same result."""
+    if kind not in ("donor", "grant"):
+        raise ValueError("Report type must be 'donor' or 'grant'")
+    if start > end:
+        raise ValueError("period_start must not be after period_end")
+    return ReportData(type=kind, period_start=start, period_end=end,
+                      donor_metrics=source_attribution(session, "donor", start, end),
+                      grant_attribution=source_attribution(session, "grant", start, end),
+                      distribution_totals=distribution_totals(session, start, end),
+                      visit_metrics=visit_metrics(session, start, end))

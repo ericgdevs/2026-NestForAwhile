@@ -152,3 +152,15 @@ class VisitMetrics(BaseModel):
     visits_completed: int
     families_served: int
     pounds_distributed: float
+
+
+class ReportData(BaseModel):
+    """The four report sections; a DOCX renderer can consume this later without new queries."""
+
+    type: Literal["donor", "grant"]
+    period_start: date
+    period_end: date
+    donor_metrics: list[AttributionRow]
+    grant_attribution: list[AttributionRow]
+    distribution_totals: list[DistributionRow]
+    visit_metrics: VisitMetrics
