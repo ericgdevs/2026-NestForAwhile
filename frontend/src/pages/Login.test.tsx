@@ -34,3 +34,9 @@ test("shows friendly messages for invalid and inactive accounts", async () => {
   fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
   expect(await screen.findByText(/not active yet/i)).toBeInTheDocument();
 });
+
+test("explains how to create an account", () => {
+  render(<Login />);
+  fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
+  expect(screen.getByText(/ask staff to create your account/i)).toBeInTheDocument();
+});

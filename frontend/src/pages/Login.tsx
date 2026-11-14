@@ -33,7 +33,6 @@ export default function Login() {
     <main className="flex min-h-screen items-center justify-center p-6">
       <form className="soft-card w-full max-w-md space-y-6 p-7 sm:p-9" onSubmit={handleSubmit}>
         <div className="space-y-4">
-          <span className="brand-mark" aria-hidden="true">N</span>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">A gentler grocery visit</p>
           <h1 aria-label="Sign in" className="display-title">Sign in<br />to continue.</h1>
           <p className="text-stone-500">Sign in to find food that fits your household.</p>
@@ -67,6 +66,13 @@ export default function Login() {
           disabled={submitting}
         >
           {submitting ? "Signing in…" : "Sign in"}
+        </button>
+        <button
+          className="w-full rounded-full border border-stone-300 px-4 py-3 font-semibold text-stone-700 transition hover:border-stone-500"
+          type="button"
+          onClick={() => setError("Please ask staff to create your account.")}
+        >
+          Create Account
         </button>
       </form>
     </main>
