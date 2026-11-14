@@ -199,7 +199,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 18: Polish and Cross-Cutting
 
-- [ ] T095 [qa] CI OpenAPI drift check `scripts/check_openapi.py`: FastAPI's generated schema must match `contracts/openapi.yaml`; add to `backend.yml`
+- [X] T095 [qa] CI OpenAPI drift check `scripts/check_openapi.py`: FastAPI's generated schema must match `contracts/openapi.yaml`; add to `backend.yml`
 - [ ] T096 [qa] Accessibility pass: axe checks in Playwright on login, scan, cart, checkout (status never color-only), fix findings as separate PRs (dependency approval)
 - [X] T097 [qa] Privacy and security audit: seed/test data synthetic only, no secrets in repo, analytics anonymized, Argon2 and encrypted fields verified, wording "designed with HIPAA safeguards" only
 - [X] T098 [docs] `README.md`: architecture, run instructions (Ollama locally, Groq on Azure), team streams, link to specs
