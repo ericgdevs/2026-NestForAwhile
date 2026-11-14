@@ -74,12 +74,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
         </nav>
       )}
       <div className="main">
-        {isClient && user.Client_Enrollment_Status === "Pending" && (
-          <p className="alert alert-info" role="status" style={{ marginBottom: "1rem" }}>
-            <Icon name="alert" />
-            Your account is waiting for staff approval. You can shop now; staff will approve it before you check out.
-          </p>
-        )}
         {children}
       </div>
       {isClient && (

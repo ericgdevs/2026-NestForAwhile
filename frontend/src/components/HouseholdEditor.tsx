@@ -126,7 +126,7 @@ export default function HouseholdEditor({ members, onChange, showConditions = fa
           {showConditions && (
             <ChoiceSet
               legend="Health conditions (optional)"
-              options={asOptions(CONDITIONS)}
+              options={CONDITIONS}
               selected={member.conditions}
               onToggle={(value) => toggleFor(index, "conditions", value)}
             />

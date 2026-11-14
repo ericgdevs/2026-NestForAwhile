@@ -85,8 +85,8 @@ export default function Signup() {
           {step === 1 && (
             <>
               <p className="panel-sub">
-                Add everyone you shop for. Health conditions are optional: we use them once to pick safe
-                food rules and never save them.
+                Add everyone you shop for. Health conditions are optional. We keep them private and
+                encrypted, and only use them to pick safe food rules.
               </p>
               <HouseholdEditor members={members} onChange={setMembers} showConditions />
             </>
@@ -99,7 +99,7 @@ export default function Signup() {
               </p>
               <p className="alert alert-info">
                 <Icon name="alert" />
-                You can start shopping right away. Staff will approve your account before you check out.
+                Staff will approve your account at the warehouse. Then sign in again to start shopping.
               </p>
             </div>
           )}
