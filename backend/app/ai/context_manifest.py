@@ -3,7 +3,7 @@ import json
 from collections.abc import Iterable
 
 from app.ai.schemas import ContextManifest, ManifestItem
-from app.ai.validators import assert_no_identifiers
+from app.ai.validators import AIValidationError, assert_no_identifiers
 from app.rules.classify import classify
 
 NUTRIENTS = (
@@ -11,6 +11,18 @@ NUTRIENTS = (
     "protein_g", "potassium_mg", "phosphorus_mg", "carbs_g",
 )
 _STATUS_LABEL = {0: "Approved", 1: "Capped", 2: "Restricted"}
+
+
+def _assert_no_product_identifiers(manifest: ContextManifest, products: list) -> None:
+    """Reject any real sku/barcode/image_url value (or a bare id) inside manifest text."""
+    texts = [t.lower() for t in [*manifest.restrictions, *(
+        s for i in manifest.items for s in (i.name, i.category, *i.allergens, *i.diet_flags))]]
+    for product in products:
+        for value in (product.sku, product.barcode, product.image_url):
+            if value and any(str(value).lower() in t for t in texts):
+                raise AIValidationError("product identifier found in manifest text")
+        if str(product.id) in texts:
+            raise AIValidationError("product id found in manifest text")
 
 
 def _household_bucket(size: int | None):
@@ -27,6 +39,7 @@ def build_manifest(
 ) -> tuple[ContextManifest, dict[int, int]]:
     """Build the AI-safe manifest. Returns (manifest, index -> real product_id); keep the map server-side."""
     cart_quantities = cart_quantities or {}
+    products = list(products)
     items, index_map = [], {}
     for index, product in enumerate(products):
         index_map[index] = product.id
@@ -44,6 +57,7 @@ def build_manifest(
         restrictions=list(restrictions), household_size_bucket=_household_bucket(household_size), items=items,
     )
     assert_no_identifiers(manifest.model_dump())
+    _assert_no_product_identifiers(manifest, products)
     return manifest, index_map
 
 

@@ -45,3 +45,28 @@ def test_hash_is_stable_and_content_sensitive():
     b, _ = build_manifest(PRODUCTS, ["Nut Allergy"])
     c, _ = build_manifest(PRODUCTS, ["Nut Allergy"], {501: 1})
     assert manifest_hash(a) == manifest_hash(b) != manifest_hash(c)
+
+
+@pytest.mark.parametrize("field, value", [
+    ("name", "Beans SKU501"), ("category", "https://img.test/a.png"), ("diet_flags", ["0123456789012"]),
+])
+def test_real_product_values_in_text_are_blocked(field, value):
+    with pytest.raises(AIValidationError):
+        build_manifest([product(501, **{field: value})], [])
+
+
+def test_bare_product_id_as_text_is_blocked():
+    with pytest.raises(AIValidationError):
+        build_manifest([product(501, name="501")], [])
+
+
+@pytest.mark.parametrize("name", ["Contact jane@example.test", "Call 555-123-4567", "Code 0123456789012"])
+def test_email_phone_barcode_patterns_in_names_are_blocked(name):
+    with pytest.raises(AIValidationError):
+        build_manifest([product(1, name=name)], [])
+
+
+def test_manifest_has_no_identifier_fields():
+    manifest, _ = build_manifest(PRODUCTS, [])
+    keys = set(json.dumps(manifest.model_dump()).replace("}", ",").split('"')[1::2])
+    assert not keys & {"id", "sku", "barcode", "image_url", "email", "phone", "client_id"}

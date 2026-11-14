@@ -13,12 +13,14 @@ class AIValidationError(ValueError):
 
 
 FORBIDDEN_KEYS = {"id", "sku", "barcode", "image_url", "email", "phone", "client_id", "user_id", "username", "first_name", "last_name"}
-STATUS_KEYS = {"status", "tier", "dietary_tier_id", "classification", "approved", "capped", "restricted"}
+# Any key containing one of these is treated as an attempt to set or change a status/classification.
+STATUS_KEY_PARTS = ("status", "tier", "classif", "verdict", "override", "approved", "capped", "restricted")
 IDENTIFIER_PATTERNS = [
     re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+"),
     re.compile(r"https?://|www\.", re.I),
     re.compile(r"\+?\d[\d\s().-]{8,}\d"),
     re.compile(r"\d{8,}"),
+    re.compile(r"\bsku\b[\s:#-]*\w*\d", re.I),
 ]
 TASK_MODELS = {
     "explain": ExplanationOutput,
@@ -51,7 +53,7 @@ def assert_no_identifiers(payload) -> None:
 
 def _assert_no_status_override(raw) -> None:
     for path, key, _ in _walk(raw):
-        if key is not None and key.lower() in STATUS_KEYS:
+        if key is not None and any(part in re.sub(r"[^a-z]", "", key.lower()) for part in STATUS_KEY_PARTS):
             raise AIValidationError(f"AI may not set or change status ({path})")
 
 
@@ -70,10 +72,14 @@ def validate_ai_output(task: str, raw: str | dict, manifest: ContextManifest):
     """Parse AI output for a task and enforce the rules-first guarantees; returns the typed output."""
     if task not in TASK_MODELS:
         raise AIValidationError(f"unsupported AI task: {task}")
+    if not isinstance(raw, (str, dict)):
+        raise AIValidationError("AI output must be a JSON string or object")
     try:
         data = json.loads(raw) if isinstance(raw, str) else raw
     except json.JSONDecodeError as exc:
         raise AIValidationError("malformed JSON") from exc
+    if not isinstance(data, dict):
+        raise AIValidationError("AI output must be a JSON object")
     _assert_no_status_override(data)
     try:
         output = TASK_MODELS[task].model_validate(data)

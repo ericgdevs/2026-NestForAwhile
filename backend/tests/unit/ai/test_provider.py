@@ -27,3 +27,24 @@ def test_factory_rejects_unset(monkeypatch):
 def test_stubs_make_no_calls(cls):
     with pytest.raises(NotImplementedError):
         cls().generate_json(AITask.EXPLAIN, ContextManifest(restrictions=[], items=[]))
+
+
+def test_provider_module_is_implementation_free():
+    import app.ai.provider as module
+    from pathlib import Path
+
+    source = Path(module.__file__).read_text().lower()
+    for forbidden in ("import httpx", "import requests", "import groq", "from groq", "api.groq", "localhost:11434", "prompt", "system message"):
+        assert forbidden not in source
+    assert not {"httpx", "groq", "requests"} & set(vars(module))
+
+
+def test_provider_interface_cannot_be_instantiated_directly():
+    from app.ai.provider import AIProvider
+
+    with pytest.raises(TypeError):
+        AIProvider()
+
+
+def test_tasks_are_limited_to_the_four_allowed_roles():
+    assert {t.value for t in AITask} == {"explain", "recipes", "missing_ingredients", "substitutions"}

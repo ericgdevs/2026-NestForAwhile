@@ -42,3 +42,4 @@
 | Implement | Copilot (Sonnet 5.5) | AI output validators (identifier leaks, unknown index, Restricted suggestions, status override), tests | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | AI context manifest builder (identifier stripping, rules-driven status via classify(), index map, hash), tests | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | T049 (partial): ai/provider.py provider interface, groq/ollama stubs (no calls), AI_PROVIDER factory, tests | Eric approved plan and decisions | Eric |
+| Review | Copilot (Sonnet 5.5) | T049/T052 audit: hardened manifest (product sku/barcode/url/id values blocked), validators (status-like keys, strict indexes, malformed/non-dict output, SKU pattern), schema docs/examples, negative and provider-abstraction tests | Eric approved plan (status words allowed in free text) | Eric |
