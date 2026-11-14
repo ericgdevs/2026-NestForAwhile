@@ -24,3 +24,4 @@
 | Implement T005 | Copilot (GPT-5.6 Terra) | Added pull-request backend CI for Ruff and pytest | None | Caden |
 | Implement T006 | Copilot (GPT-5.6 Terra) | Added pull-request frontend lint, typecheck, Vitest, and build checks | None | Caden |
 | Implement T007 | Copilot (GPT-5.6 Terra) | Added hygiene CI that rejects tracked .env files and the prohibited compliance claim | None | Caden |
+| Implement T021 | Copilot (GPT-5.6 Terra) | Added the versioned clinical rules matrix with synthetic nutrient thresholds and dietary/allergen exclusions | None | Caden |

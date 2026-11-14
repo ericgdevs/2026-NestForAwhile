@@ -1,0 +1,61 @@
+{
+  "version": "placeholder-2026-11-14",
+  "status": "synthetic placeholders pending Epic Cure guidance",
+  "unit": "per serving",
+  "rules": {
+    "Low Sugar": {
+      "nutrient": "sugar_g",
+      "capped_above": 12,
+      "restricted_above": 24,
+      "exclusions": []
+    },
+    "Low Sodium": {
+      "nutrient": "sodium_mg",
+      "capped_above": 480,
+      "restricted_above": 960,
+      "exclusions": []
+    },
+    "Heart Healthy": {
+      "nutrient": "sat_fat_g",
+      "capped_above": 4,
+      "restricted_above": 8,
+      "exclusions": []
+    },
+    "Kidney Friendly": {
+      "nutrient": "potassium_mg",
+      "capped_above": 300,
+      "restricted_above": 600,
+      "exclusions": []
+    },
+    "Vegetarian": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish"]
+    },
+    "Vegan": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish", "contains_egg", "contains_dairy"]
+    },
+    "Gluten Free": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_gluten"]
+    },
+    "Nut Allergy": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_peanut", "contains_tree_nut"]
+    },
+    "Dairy Free": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_dairy"]
+    }
+  }
+}
