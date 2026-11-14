@@ -130,12 +130,12 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [ ] T059 [ai] [US6] Ollama local-development setup: `scripts/dev/ollama_setup.sh` (pull the chosen model), README snippet, and `/health` reporting provider availability
 - [ ] T060 [ai] [US6] Run the evaluation on Ollama candidates and on the Groq open-weight model, record the choice in `docs/ai-eval-results.md`, and set the default model names in `.env.example`
 - [X] T061 [ui] [US6] `frontend/src/pages/Recipes.tsx`: recipes with in-cart/in-stock ingredients, missing ingredients with aisle/shelf/bin, friendly notice when the fallback was used
-- [ ] T062 [qa] [US6] Playwright `e2e/tests/us6-recipes.spec.ts`: recipes appear, missing-ingredient locations shown, no Restricted ingredient, fallback path with the AI provider unreachable
+- [X] T062 [qa] [US6] Playwright `e2e/tests/us6-recipes.spec.ts`: recipes appear, missing-ingredient locations shown, no Restricted ingredient, fallback path with the AI provider unreachable
 
 ## Phase 9: User Story 7 – Clinical Checkout Guardrail (P1)
 
-- [ ] T063 [api] [US7] `backend/app/services/checkout.py` and `routes/checkout.py`: `POST /checkout/{session_token}/validate` (Volunteer/Manager) re-classifies every cart line; any Restricted line, unknown product, or stock shortfall returns a hard stop; tests
-- [ ] T064 [api] [US7] Atomic completion in `services/checkout.py`: one transaction decrements lots in FIFO order, writes movements, receipt (`checkouts`, `checkout_items`), visit with pounds, ends the session; `POST /checkout/{session_token}/interventions` records `removed_item`; tests for rollback on failure and two checkouts racing for the last unit
+- [X] T063 [api] [US7] `backend/app/services/checkout.py` and `routes/checkout.py`: `POST /checkout/{session_token}/validate` (Volunteer/Manager) re-classifies every cart line; any Restricted line, unknown product, or stock shortfall returns a hard stop; tests
+- [X] T064 [api] Atomic completion in `services/checkout.py`: one transaction decrements lots in FIFO order, writes movements, receipt (`checkouts`, `checkout_items`), visit with pounds, ends the session; `POST /checkout/{session_token}/interventions` records `removed_item`; tests for rollback on failure and two checkouts racing for the last unit
 - [ ] T065 [ui] [US7] `frontend/src/pages/Checkout.tsx` (volunteer): enter session token, review cart, hard-stop dialog with intervention action, receipt view
 - [ ] T066 [qa] [US7] Playwright `e2e/tests/us7-checkout.spec.ts`: clean cart completes with a receipt and inventory drops; Restricted item hard-stops, then completes after intervention
 

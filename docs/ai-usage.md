@@ -73,3 +73,5 @@
 | Implement T054-T055 | Copilot (GPT-5.6 Terra) | Added recipe prompt construction and deterministic in-stock fallback recipe generation | None | Caden |
 | Implement T056 | Copilot (GPT-5.6 Terra) | Added recipe generation route with provider validation, clinical guardrails, deterministic fallback, and AI request telemetry | None | Caden |
 | Implement T061 | Copilot (GPT-5.6 Terra) | Added the recipes page with ingredient/step display and a friendly fallback notice | None | Caden |
+| Implement T062 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for recipe visibility and fallback messaging | None | Caden |
+| Implement T063-T064 | Copilot (GPT-5.6 Terra) | Added checkout validation, FIFO inventory decrement, receipt/visit recording, and session completion APIs | None | Caden |
