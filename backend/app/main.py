@@ -9,6 +9,7 @@ from app.routes.capacity import router as capacity_router
 from app.routes.cart import router as cart_router
 from app.routes.products import router as products_router
 from app.routes.profile import router as profile_router
+from app.routes.recipes import router as recipes_router
 from app.routes.recommendations import router as recommendations_router
 
 app = FastAPI(title="NestForAwhile MTG Warehouse API", version="0.1.0")
@@ -17,6 +18,7 @@ app.include_router(capacity_router)
 app.include_router(cart_router)
 app.include_router(profile_router)
 app.include_router(recommendations_router)
+app.include_router(recipes_router)
 app.include_router(products_router)
 
 
