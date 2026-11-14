@@ -8,26 +8,16 @@ class LoginRequest(BaseModel):
     password: str
 
 
-class UserRead(BaseModel):
-    id: int
-    role: Role
-
-
-class MeResponse(BaseModel):
-    user: UserRead
-    Client_Enrollment_Status: EnrollmentStatus | None = None
-    Household_Size: int | None = Field(default=None, ge=1)
-    Dietary_Tier_ID: int | None = None
-
-
-class LoginResponse(BaseModel):
-    Shopping_Session_Token: str
-
-
 class QueueState(BaseModel):
     status: QueueStatus
     position: int | None = None
     message: str = ""
+
+
+class LoginResult(BaseModel):
+    role: Role
+    Shopping_Session_Token: str | None = None
+    queue: QueueState | None = None
 
 
 class CapacityResponse(BaseModel):
@@ -59,3 +49,10 @@ class RecommendationRead(BaseModel):
     suggested_qty: int = Field(ge=1)
     rationale: str
     status: str  # Approved | Capped, never Restricted
+
+
+class ClientRead(BaseModel):
+    name: str | None = None
+    Household_Size: int | None = Field(default=None, ge=1)
+    Client_Enrollment_Status: EnrollmentStatus | None = None
+    profile: DietaryProfileRead | None = None

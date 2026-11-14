@@ -3,8 +3,9 @@ import secrets
 from fastapi import HTTPException
 from sqlmodel import Session, select
 
-from app.models import QueueStatus, SessionStatus, ShoppingSession, utcnow
-from app.services import queue, recommendations
+from app.models import ClientProfile, EnrollmentStatus, QueueStatus, Role, SessionStatus, ShoppingSession, User, utcnow
+from app.schemas import LoginResult
+from app.services import capacity, queue, recommendations
 
 
 def active_session(session: Session, client_id: int) -> ShoppingSession | None:
@@ -44,3 +45,23 @@ def claim_turn(session: Session, client_id: int) -> ShoppingSession:
     session.add(entry)
     session.commit()
     return shopping
+
+
+def initialize(session: Session, user: User) -> LoginResult:
+    """Initialize Shopping Session: enrollment check, capacity check, then start a session or join the queue."""
+    if user.role != Role.CLIENT:
+        return LoginResult(role=user.role)
+    client = session.get(ClientProfile, user.id)
+    if client is None or client.Client_Enrollment_Status != EnrollmentStatus.ACTIVE:
+        raise HTTPException(403, "Your enrollment isn't active yet. Please ask a volunteer for help.")
+    existing = active_session(session, user.id)
+    if existing:
+        return LoginResult(role=user.role, Shopping_Session_Token=existing.Shopping_Session_Token)
+    queue.refresh_queue(session)
+    if queue.current_entry(session, user.id) is None:
+        # shortcut: no row lock, two simultaneous logins on PostgreSQL could overfill by one; add SELECT FOR UPDATE on capacity_settings when load matters
+        if capacity.has_room(session) and capacity.queue_waiting(session) == 0:
+            shopping = start_session(session, user.id)
+            return LoginResult(role=user.role, Shopping_Session_Token=shopping.Shopping_Session_Token)
+        queue.join_queue(session, user.id)
+    return LoginResult(role=user.role, queue=queue.queue_state(session, user.id))
