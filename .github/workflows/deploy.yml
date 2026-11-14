@@ -39,4 +39,10 @@ jobs:
           app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
+      - name: Smoke test deployed health endpoint
+        if: ${{ secrets.PUBLIC_BASE_URL != '' }}
+        env:
+          BASE_URL: ${{ secrets.PUBLIC_BASE_URL }}
+        run: ./scripts/smoke_public.sh
+
       - uses: azure/logout@v2
