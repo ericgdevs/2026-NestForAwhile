@@ -2,11 +2,11 @@ import type { ReactElement } from "react";
 import { Agentation } from "agentation";
 
 import AppShell from "./components/AppShell";
+import VisitGate from "./components/VisitGate";
 import { AuthProvider, ProtectedRoute, useAuth } from "./lib/auth";
 import { canVisit } from "./lib/roles";
 import Analytics from "./pages/Analytics";
 import Approvals from "./pages/Approvals";
-import AwaitingApproval from "./pages/AwaitingApproval";
 import Audit from "./pages/Audit";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -21,7 +21,6 @@ import Reports from "./pages/Reports";
 import Scan from "./pages/Scan";
 import ShoppingList from "./pages/ShoppingList";
 import Signup from "./pages/Signup";
-import Waiting from "./pages/Waiting";
 
 const screens: Record<string, () => ReactElement> = {
   "/profile": () => <Profile />,
@@ -33,7 +32,6 @@ const screens: Record<string, () => ReactElement> = {
   "/audit": () => <Audit />,
   "/replenishment": () => <Replenishment />,
   "/lots": () => <Lots />,
-  "/waiting": () => <Waiting />,
   "/analytics": () => <Analytics />,
   "/reports": () => <Reports />,
   "/approvals": () => <Approvals />,
@@ -59,13 +57,12 @@ function Router() {
       </div>
     );
   }
-  if (user.role === "Client" && user.Client_Enrollment_Status === "Pending" && path !== "/profile") {
-    return <AwaitingApproval />;
-  }
-  const screen = screens[path];
-  if (screen) return <ProtectedRoute>{screen()}</ProtectedRoute>;
   if (path === "/login") return <Login />;
-  return <ProtectedRoute>{user.role === "Client" ? <Home householdSize={user.Household_Size} /> : <Overview />}</ProtectedRoute>;
+  const screen = screens[path];
+  const page = screen ? screen() : user.role === "Client" ? <Home householdSize={user.Household_Size} /> : <Overview />;
+  // Clients see shopping screens only during an active visit; Household stays reachable.
+  const gated = user.role === "Client" && path !== "/profile" ? <VisitGate>{page}</VisitGate> : page;
+  return <ProtectedRoute>{gated}</ProtectedRoute>;
 }
 
 export default function App() {

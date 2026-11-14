@@ -17,7 +17,6 @@ export function canVisit(role: AppRole, path: string): boolean {
   if (managementPaths.includes(path as (typeof managementPaths)[number])) {
     return role === "Warehouse Manager" || role === "Director";
   }
-  if (path === "/waiting") return role === "Client";
   if (path === "/approvals") return role === "Warehouse Manager";
   return true;
 }

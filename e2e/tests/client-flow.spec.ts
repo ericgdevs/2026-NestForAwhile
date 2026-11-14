@@ -73,6 +73,10 @@ test("volunteer confirms an allergy item before completing checkout", async ({ p
   await page.getByRole("button", { name: "Confirmed with client" }).click();
   await page.getByRole("button", { name: "Complete checkout" }).click();
   await expect(page.getByText(/Receipt #/)).toBeVisible();
+
+  // The client's phone moves on by itself once checkout is done.
+  await client.goto("/cart");
+  await expect(client.getByRole("heading", { name: "Visit complete" })).toBeVisible();
 });
 
 test("manager sees pending accounts with names and approves one", async ({ page }) => {

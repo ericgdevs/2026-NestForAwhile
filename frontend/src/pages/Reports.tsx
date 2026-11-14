@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { downloadReport } from "../api/client";
 import Icon from "../components/Icon";
 
 const reports = [
@@ -23,14 +24,7 @@ export default function Reports() {
     setError("");
     setDownloading(type);
     try {
-      const response = await fetch(`/reports/${type}`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: "{}",
-      });
-      if (!response.ok) throw new Error("Report generation failed");
-      const blob = await response.blob();
+      const blob = await downloadReport(type);
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
