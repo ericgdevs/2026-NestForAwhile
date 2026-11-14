@@ -117,7 +117,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 **Goal**: provider-selected AI proposes recipes; structured-output validation and the rules engine gate every result; the rules-only fallback guarantees an answer.
 
-- [ ] T049 [ai] [US6] `backend/app/ai/provider.py`: provider interface and factory driven by `AI_PROVIDER` (`ollama` or `groq`; anything else is a startup error), plus the AI variables in `config.py` (coordinate with Aditya)
+- [X] T049 [ai] [US6] `backend/app/ai/provider.py`: provider interface and factory driven by `AI_PROVIDER` (`ollama` or `groq`; anything else is a startup error), plus the AI variables in `config.py` (coordinate with Aditya)
 - [ ] T050 [ai] [US6] `backend/app/ai/ollama_provider.py`: local Ollama client with JSON-schema output and 30 s timeout; httpx-mocked tests for success, timeout, connection refused
 - [ ] T051 [ai] [US6] `backend/app/ai/groq_provider.py`: Groq free-tier chat-completions client (`GROQ_API_KEY`, `GROQ_MODEL`), JSON output, 30 s timeout, retry/backoff on 429; httpx-mocked tests for success, rate limit, 5xx, missing key
 - [ ] T052 [ai] [US6] `backend/app/ai/schemas.py`: Pydantic models mirroring `contracts/ai-schemas.json` and `validate_recipe_output()`; tests for malformed JSON, extra fields, empty list, unknown `product_id`
