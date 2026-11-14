@@ -2,6 +2,7 @@ import { AuthProvider, ProtectedRoute } from "./lib/auth";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 import Home from "./pages/Home";
+import Scan from "./pages/Scan";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
@@ -34,6 +35,13 @@ function Router() {
     return (
       <ProtectedRoute>
         <Profile />
+      </ProtectedRoute>
+    );
+  }
+  if (window.location.pathname === "/scan") {
+    return (
+      <ProtectedRoute>
+        <Scan />
       </ProtectedRoute>
     );
   }

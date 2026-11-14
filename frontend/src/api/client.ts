@@ -63,3 +63,21 @@ export type Recommendation = {
 export function getRecommendations(): Promise<Recommendation[]> {
   return apiRequest("/recommendations");
 }
+
+export type ScanResult = {
+  product_id: number | null;
+  sku: string;
+  barcode: string;
+  name: string;
+  image_url: string | null;
+  sodium_mg: number | null;
+  sugar_g: number | null;
+  sat_fat_g: number | null;
+  potassium_mg: number | null;
+  status: components["schemas"]["SafetyStatus"];
+  explanation: string;
+};
+
+export function scanProduct(code: string): Promise<ScanResult> {
+  return apiRequest(`/products/scan/${encodeURIComponent(code)}`);
+}

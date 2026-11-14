@@ -61,3 +61,4 @@
 | Implement T041 | Copilot (GPT-5.6 Terra) | Added a short-timeout, fixture-testable Open Food Facts barcode mapper with resilient failure handling | None | Caden |
 | Implement T042 | Copilot (GPT-5.6 Terra) | Added cached USDA FoodData Central enrichment and local → Open Food Facts → USDA scan fallback ordering with mocked tests | None | Caden |
 | Implement T043 | Copilot (GPT-5.6 Terra) | Added an iOS-friendly ZXing camera scanner with rear-camera constraints, cleanup, and manual-entry fallback messaging | None | Caden |
+| Implement T044 | Copilot (GPT-5.6 Terra) | Added the scan page with camera/manual lookup, nutrition facts, image support, explanation, and safety status | None | Caden |
