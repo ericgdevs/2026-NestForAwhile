@@ -1,5 +1,20 @@
 import { useState } from "react";
 
+import Icon from "../components/Icon";
+
+const reports = [
+  {
+    type: "donor",
+    title: "Donor report",
+    body: "Donor metrics, pounds distributed, and visit totals.",
+  },
+  {
+    type: "grant",
+    title: "Grant report",
+    body: "Grant attribution, food distribution totals, and visit metrics.",
+  },
+] as const;
+
 export default function Reports() {
   const [downloading, setDownloading] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -31,74 +46,41 @@ export default function Reports() {
 
   return (
     <main>
-      <div className="hero-banner">
+      <header className="page-head">
         <div>
-          <span className="eyebrow-chip">Funding &amp; Compliance</span>
-          <h1 className="page-title">Reports</h1>
-          <p className="page-subtitle">
-            Export structured DOCX documents containing donor attribution, food totals, and visit metrics.
-          </p>
+          <h1>Reports</h1>
+          <p>Download a Word (DOCX) report built from anonymized checkout records.</p>
         </div>
+      </header>
+
+      <div className="grid grid-2">
+        {reports.map((report) => (
+          <article className="label-panel" key={report.type}>
+            <h2>{report.title}</h2>
+            <hr className="rule-heavy" />
+            <p className="why" style={{ marginBottom: "1rem" }}>
+              {report.body}
+            </p>
+            <button
+              className="btn btn-primary btn-block"
+              disabled={downloading !== null}
+              style={{ marginTop: "auto" }}
+              type="button"
+              onClick={() => void download(report.type)}
+            >
+              <Icon name="reports" />
+              {downloading === report.type ? "Generating…" : `Download ${report.type} report`}
+            </button>
+          </article>
+        ))}
       </div>
 
-      <section className="ui-card" style={{ maxWidth: "680px", display: "flex", flexDirection: "column", gap: "1.5rem" }}>
-        <div>
-          <h2 style={{ fontSize: "1.25rem", fontWeight: 700, margin: "0 0 0.35rem" }}>Export reports</h2>
-          <p style={{ margin: 0, fontSize: "0.9rem", color: "var(--text-muted)" }}>
-            Select a report format below. The system populates data from verified checkout logs.
-          </p>
-        </div>
-
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "1rem" }}>
-          <div className="stat-tile stat-tile-blue" style={{ justifyContent: "space-between", gap: "1rem" }}>
-            <div>
-              <span className="stat-label">Donor attribution</span>
-              <p style={{ margin: "0.35rem 0 0", fontSize: "0.9rem", color: "var(--text-body)" }}>
-                Aggregated donor volume, pounds distributed, and synthetic partner impact.
-              </p>
-            </div>
-            <button
-              className="btn btn-primary"
-              onClick={() => download("donor")}
-              disabled={downloading !== null}
-            >
-              {downloading === "donor" ? "Generating…" : "Download donor report"}
-            </button>
-          </div>
-
-          <div className="stat-tile stat-tile-green" style={{ justifyContent: "space-between", gap: "1rem" }}>
-            <div>
-              <span className="stat-label">Grant metrics</span>
-              <p style={{ margin: "0.35rem 0 0", fontSize: "0.9rem", color: "var(--text-body)" }}>
-                Four-section grant documentation with visit counts and inventory allocations.
-              </p>
-            </div>
-            <button
-              className="btn btn-secondary"
-              onClick={() => download("grant")}
-              disabled={downloading !== null}
-            >
-              {downloading === "grant" ? "Generating…" : "Download grant report"}
-            </button>
-          </div>
-        </div>
-
-        {error && (
-          <p
-            style={{
-              margin: 0,
-              fontSize: "0.88rem",
-              color: "var(--pastel-rose-text)",
-              background: "var(--pastel-rose-bg)",
-              border: "1px solid var(--pastel-rose-border)",
-              padding: "0.75rem 1rem",
-              borderRadius: "var(--radius-md)",
-            }}
-          >
-            {error}
-          </p>
-        )}
-      </section>
+      {error && (
+        <p className="alert alert-danger" role="alert" style={{ marginTop: "1rem" }}>
+          <Icon name="alert" />
+          {error}
+        </p>
+      )}
     </main>
   );
 }
