@@ -41,3 +41,4 @@
 | Implement T019 | Copilot (GPT-5.6 Terra) | Added synthetic role, client enrollment, household-size, and dietary-profile seed data with isolated tests | None | Caden |
 | Implement T020 | Copilot (GPT-5.6 Terra) | Added synthetic catalog, nutrition/allergen flags, inventory lots with mixed expiries, donors, grants, and seed coverage | None | Caden |
 | Risk fix | Copilot (GPT-5.6 Terra) | Upgraded Vitest to the patched 4.1.12 release, resolving the reported Vitest, @vitest/mocker, and tinypool advisories without changing the approved frontend stack | None | Caden |
+| Risk fix | Copilot (GPT-5.6 Terra) | Removed tracked TypeScript/Vite build outputs, added precise ignore rules, and changed the frontend build to typecheck without emitting artifacts | None | Caden |
