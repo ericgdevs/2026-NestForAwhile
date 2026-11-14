@@ -1,7 +1,7 @@
 from datetime import UTC, datetime
 
 import pytest
-from sqlmodel import select
+from sqlmodel import Session, select
 
 from app.models import (Checkout, CheckoutItem, Intervention, InventoryLot, InventoryMovement, Role, SessionStatus,
                         ShoppingSession, Visit)
@@ -89,6 +89,42 @@ def test_stale_stock_read_cannot_oversell_last_unit(seeded, monkeypatch):
     result = checkout_service.complete_checkout(seeded, first.Shopping_Session_Token, user_id=1)
     assert result.status == "blocked" and result.blocked_items[0].product_id == rice.id
     assert _stock(seeded, rice) == [0] and not seeded.exec(select(InventoryMovement)).all()
+
+
+def test_session_claim_prevents_duplicate_checkout_with_stale_session_reads(seeded):
+    rice = add_product(seeded, "Rice", 2)
+    shopping = start_with_cart(seeded, [(rice, 1)])
+    first = Session(seeded.get_bind())
+    second = Session(seeded.get_bind())
+    try:
+        first_shopping = first.get(ShoppingSession, shopping.id)
+        second_shopping = second.get(ShoppingSession, shopping.id)
+        assert first_shopping.status == second_shopping.status == SessionStatus.ACTIVE
+
+        assert checkout_service._claim_session_for_checkout(first, first_shopping)
+        first.commit()
+        assert not checkout_service._claim_session_for_checkout(second, second_shopping)
+        second.rollback()
+    finally:
+        first.close()
+        second.close()
+
+
+def test_queue_promotion_failure_rolls_back_checkout(seeded, monkeypatch):
+    rice = add_product(seeded, "Rice", 5)
+    shopping = start_with_cart(seeded, [(rice, 1)])
+
+    def fail_promotion(_):
+        raise RuntimeError("queue unavailable")
+
+    monkeypatch.setattr(checkout_service, "_refresh_queue", fail_promotion)
+    with pytest.raises(RuntimeError, match="queue unavailable"):
+        checkout_service.complete_checkout(seeded, shopping.Shopping_Session_Token, user_id=1)
+
+    assert _stock(seeded, rice) == [5]
+    assert seeded.get(ShoppingSession, shopping.id).status == SessionStatus.ACTIVE
+    for model in (Checkout, CheckoutItem, InventoryMovement, Visit):
+        assert not seeded.exec(select(model)).all()
 
 
 def test_checkout_roles_and_unknown_token(login_as, seeded):

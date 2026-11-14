@@ -1,14 +1,14 @@
-from datetime import date
+from datetime import date, timedelta, timezone
 
 from fastapi import HTTPException
 from sqlalchemy import update
 from sqlmodel import Session, select
 
-from app.models import (Cart, CartItem, Checkout, CheckoutItem, Intervention, InventoryLot, Product, SessionStatus,
-                        ShoppingSession, Visit, utcnow)
+from app.models import (Cart, CartItem, Checkout, CheckoutItem, Intervention, InventoryLot, Product, QueueEntry,
+                        QueueStatus, SessionStatus, ShoppingSession, Visit, utcnow)
 from app.rules.classify import Status, classify
 from app.schemas import CartItemRead, CheckoutResult, InterventionCreate
-from app.services import fifo, movements, profiles, queue
+from app.services import capacity, fifo, movements, profiles, queue
 
 
 def get_active_session(session: Session, token: str) -> ShoppingSession:
@@ -62,8 +62,37 @@ def _checkout_row(session: Session, shopping: ShoppingSession, user_id: int) -> 
     return row
 
 
+def _claim_session_for_checkout(session: Session, shopping: ShoppingSession) -> bool:
+    """Atomically transition the session so only one concurrent completion can proceed."""
+    claim = session.execute(
+        update(ShoppingSession)
+        .where(ShoppingSession.id == shopping.id, ShoppingSession.status == SessionStatus.ACTIVE)
+        .values(status=SessionStatus.COMPLETED, ended_at=utcnow())
+    )
+    return claim.rowcount == 1
+
+
+def _refresh_queue(session: Session) -> None:
+    """Stage queue expiry and promotion; the checkout commit makes both changes atomic."""
+    window = timedelta(minutes=capacity.get_settings(session).claim_window_minutes)
+    now = utcnow()
+    for entry in session.exec(select(QueueEntry).where(QueueEntry.status == QueueStatus.READY)):
+        ready_at = entry.ready_at
+        if ready_at and (ready_at if ready_at.tzinfo else ready_at.replace(tzinfo=timezone.utc)) + window < now:
+            entry.status = QueueStatus.EXPIRED
+            session.add(entry)
+    session.flush()
+    for entry in queue._waiting_fifo(session):
+        if not capacity.has_room(session):
+            break
+        entry.status = QueueStatus.READY
+        entry.ready_at = now
+        session.add(entry)
+        session.flush()
+
+
 def _decrement_fifo(session: Session, checkout: Checkout, product: Product, quantity: int) -> int:
-    """Take stock oldest lot first with a guarded UPDATE; returns the first lot used."""
+    """Take stock in shared lot order with a guarded UPDATE; returns the first lot used."""
     remaining, first_lot = quantity, None
     for lot in fifo.usable_lots_fifo(session, product.id):
         if remaining == 0:
@@ -95,6 +124,9 @@ def complete_checkout(session: Session, token: str, user_id: int) -> CheckoutRes
 
     restrictions = profiles.rule_restrictions(profiles.get_dietary_profile(session, shopping.client_id))
     try:
+        if not _claim_session_for_checkout(session, shopping):
+            session.rollback()
+            raise HTTPException(409, "This shopping session was already checked out.")
         checkout = _checkout_row(session, shopping, user_id)
         total_lb = 0.0
         for item in items:
@@ -103,12 +135,12 @@ def complete_checkout(session: Session, token: str, user_id: int) -> CheckoutRes
             session.add(CheckoutItem(checkout_id=checkout.id, product_id=product.id, lot_id=lot_id, quantity=item.quantity,
                                      status_at_checkout=classify(product, restrictions).status.name.capitalize()))
             total_lb += (product.weight_lb or 0) * item.quantity
-        now = utcnow()
+        now = shopping.ended_at
         checkout.status, checkout.total_lb, checkout.completed_at, checkout.validated_by = "completed", total_lb, now, user_id
         session.add(Visit(client_id=shopping.client_id, session_id=shopping.id, started_at=shopping.started_at,
                           completed_at=now, pounds_distributed=total_lb))
-        shopping.status, shopping.ended_at = SessionStatus.COMPLETED, now
-        session.add_all([checkout, shopping])
+        session.add(checkout)
+        _refresh_queue(session)
         session.commit()
     except StockConflict as conflict:
         session.rollback()
@@ -119,7 +151,6 @@ def complete_checkout(session: Session, token: str, user_id: int) -> CheckoutRes
     except Exception:
         session.rollback()
         raise
-    queue.refresh_queue(session)
     return CheckoutResult(status="completed", receipt_id=checkout.id)
 
 

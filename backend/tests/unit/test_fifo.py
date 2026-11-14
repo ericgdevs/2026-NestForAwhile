@@ -29,14 +29,14 @@ def test_expiring_soon_boundary(session, product, days, flagged):
     assert fifo.is_expiring_soon(lot, TODAY) is flagged
 
 
-def test_fifo_order_arrival_then_expiry_then_id(session, product):
+def test_fifo_order_expiry_then_arrival_then_id(session, product):
     day = datetime(2026, 1, 2, tzinfo=UTC)
     newer = _lot(session, product.id, datetime(2026, 1, 3, tzinfo=UTC), TODAY + timedelta(days=1))
     later_expiry = _lot(session, product.id, day, TODAY + timedelta(days=30))
     sooner_expiry = _lot(session, product.id, day, TODAY + timedelta(days=10))
     oldest = _lot(session, product.id, datetime(2026, 1, 1, tzinfo=UTC), None)
     order = [lot.id for lot in fifo.all_lots_fifo(session)]
-    assert order == [oldest.id, sooner_expiry.id, later_expiry.id, newer.id]
+    assert order == [newer.id, sooner_expiry.id, later_expiry.id, oldest.id]
 
 
 def test_usable_lots_skip_expired_and_empty(session, product):

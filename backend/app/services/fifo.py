@@ -8,8 +8,8 @@ EXPIRING_SOON_DAYS = 7
 
 
 def fifo_key(lot: InventoryLot) -> tuple:
-    """FIFO always wins: oldest arrival first, then soonest expiry, then id for a stable order."""
-    return (lot.received_at, lot.expiration_date or date.max, lot.id)
+    """Consume earliest-expiring stock first, then receipt time and id for stable ties."""
+    return (lot.expiration_date or date.max, lot.received_at, lot.id)
 
 
 def is_expired(lot: InventoryLot, today: date) -> bool:
