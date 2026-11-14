@@ -6,7 +6,7 @@ Planned commands. They work once the implementation tasks exist. Synthetic data 
 ```bash
 cp .env.example .env     # fill in locally; never commit .env
 ```
-`.env.example` documents: `DATABASE_URL` (default SQLite file), `JWT_SECRET`, `FIELD_ENCRYPTION_KEY`, `OLLAMA_BASE_URL` (default `http://127.0.0.1:11434`), `OLLAMA_MODEL`, `USDA_API_KEY`, `ALLOWED_ORIGINS`.
+`.env.example` documents: `DATABASE_URL` (default SQLite file), `JWT_SECRET`, `FIELD_ENCRYPTION_KEY`, `AI_PROVIDER` (`ollama` locally, `groq` in Azure), `OLLAMA_BASE_URL` (default `http://127.0.0.1:11434`), `OLLAMA_MODEL`, `GROQ_API_KEY`, `GROQ_MODEL`, `USDA_API_KEY`, `ALLOWED_ORIGINS`.
 
 ## 2. Local AI (development)
 ```bash
@@ -28,8 +28,8 @@ cd frontend && npm install && npm run gen:api && npm run dev
 ```
 `gen:api` regenerates TypeScript types from `specs/001-mtg-warehouse-system/contracts/openapi.yaml`.
 
-## 5. Demo AI on UNF HPC (deployed path)
-Follow `docs/unf-hpc-guide.md`: UNF VPN on, submit the Ollama Slurm job (GPU partition, `--time` set), open the SSH tunnel from your machine, then set `OLLAMA_BASE_URL` to the tunnel endpoint. Cancel the job afterwards.
+## 5. Deployed AI (Azure)
+Set `AI_PROVIDER=groq`, `GROQ_MODEL` (an open-weight model), and `GROQ_API_KEY` as Azure App Service settings; never commit the key. If Groq is unreachable or rate-limited, recipes fall back to the deterministic rules-only path.
 
 ## 6. Test
 ```bash
