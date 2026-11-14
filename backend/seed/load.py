@@ -60,7 +60,14 @@ def _get_or_create_location(session: Session, aisle: str, shelf: str, bin_: str)
 
 
 def load_catalog(session: Session) -> None:
-    for entry in PRODUCTS:
+    for model, rows in ((DonationSource, DONORS), (GrantFundingStream, GRANTS)):
+        for row in rows:
+            if not session.exec(select(model).where(model.name == row["name"])).first():
+                session.add(model(**row))
+    session.flush()
+    donor = session.exec(select(DonationSource).order_by(DonationSource.id)).first()
+    grant = session.exec(select(GrantFundingStream).order_by(GrantFundingStream.id)).first()
+    for index, entry in enumerate(PRODUCTS):
         if session.exec(select(Product).where(Product.barcode == entry["barcode"])).first():
             continue
         fields = {k: v for k, v in entry.items() if k not in ("location", "quantity", "expires_in_days", "reorder_threshold")}
@@ -68,13 +75,11 @@ def load_catalog(session: Session) -> None:
         session.add(product)
         session.flush()
         location = _get_or_create_location(session, *entry["location"])
+        # Every lot has a donor; alternate lots are also grant-funded so both reports have data
         session.add(InventoryLot(product_id=product.id, location_id=location.id, quantity=entry["quantity"],
                                  expiration_date=date.today() + timedelta(days=entry["expires_in_days"]),
-                                 reorder_threshold=entry["reorder_threshold"]))
-    for model, rows in ((DonationSource, DONORS), (GrantFundingStream, GRANTS)):
-        for row in rows:
-            if not session.exec(select(model).where(model.name == row["name"])).first():
-                session.add(model(**row))
+                                 reorder_threshold=entry["reorder_threshold"], donor_id=donor.id,
+                                 grant_id=grant.id if index % 2 == 0 else None))
     session.commit()
 
 

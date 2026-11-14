@@ -133,3 +133,22 @@ class Analytics(BaseModel):
     inventory_usage: int
     recommendation_adoption_rate: float
     waste_reduction: WasteReduction
+
+
+class AttributionRow(BaseModel):
+    label: str
+    units_distributed: int
+    pounds_distributed: float
+    on_hand_units: int
+
+
+class DistributionRow(BaseModel):
+    category: str
+    units: int
+    pounds: float
+
+
+class VisitMetrics(BaseModel):
+    visits_completed: int
+    families_served: int
+    pounds_distributed: float

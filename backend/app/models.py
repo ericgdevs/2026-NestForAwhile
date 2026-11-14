@@ -178,6 +178,8 @@ class InventoryLot(SQLModel, table=True):
     received_at: datetime = Field(default_factory=utcnow)
     expiration_date: date | None = None
     reorder_threshold: int = 0
+    donor_id: int | None = Field(default=None, foreign_key="donors.id")
+    grant_id: int | None = Field(default=None, foreign_key="grants.id")
 
 
 class InventoryMovement(SQLModel, table=True):
