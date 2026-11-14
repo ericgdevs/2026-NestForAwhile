@@ -157,19 +157,19 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 12: User Story 8 – Inventory Audit Scanner (P2)
 
-- [ ] T075 [api] [US8] `backend/app/services/audit.py` and `routes/inventory.py`: `GET /inventory/audit/{code}` and `POST /inventory/audit`; variance = counted − expected, `audit_events` row, lot update, and movement in one transaction; negative counts rejected; tests
+- [X] T075 [api] [US8] `backend/app/services/audit.py` and `routes/inventory.py`: `GET /inventory/audit/{code}` and `POST /inventory/audit`; variance = counted − expected, `audit_events` row, lot update, and movement in one transaction; negative counts rejected; tests
 - [ ] T076 [ui] [US8] `frontend/src/pages/Audit.tsx`: Scan Item → Current Count → Actual Count → Variance → confirm (reuses `BarcodeScanner`)
 - [ ] T077 [qa] [US8] Playwright `e2e/tests/us8-audit.spec.ts`: count differs, variance shown, inventory and audit log updated
 
 ## Phase 13: User Story 9 – Replenishment Workflow (P2)
 
-- [ ] T078 [api] [US9] `backend/app/services/replenishment.py` and `GET /inventory/replenishment?sort=`: items below threshold with aisle/shelf/bin and priority; tests
+- [X] T078 [api] [US9] `backend/app/services/replenishment.py` and `GET /inventory/replenishment?sort=`: items below threshold with aisle/shelf/bin and priority; tests
 - [ ] T079 [ui] [US9] `frontend/src/pages/Replenishment.tsx`: list with location and priority sort
 - [ ] T080 [qa] [US9] Playwright `e2e/tests/us9-replenishment.spec.ts`: lowering stock adds the item; sort changes order
 
 ## Phase 14: User Story 10 – FIFO Management (P2)
 
-- [ ] T081 [api] [US10] `GET /inventory/lots` in `routes/inventory.py`: lots in FIFO order with `expiring_soon` for 7 days or less; boundary tests (day 7 flagged, day 8 not, expired excluded from recommendations and checkout)
+- [X] T081 [api] [US10] `GET /inventory/lots` in `routes/inventory.py`: lots in FIFO order with `expiring_soon` for 7 days or less; boundary tests (day 7 flagged, day 8 not, expired excluded from recommendations and checkout)
 - [ ] T082 [ui] [US10] `frontend/src/pages/Lots.tsx` and a dashboard warning banner for expiring lots
 - [ ] T083 [qa] [US10] Playwright `e2e/tests/us10-fifo.spec.ts`: order, flag, and visible warning
 
