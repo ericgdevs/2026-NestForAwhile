@@ -33,3 +33,4 @@
 | Implement T011 | Copilot (GPT-5.6 Terra) | Added environment-backed settings, SQLAlchemy engine/session setup, and SQLite connectivity tests | None | Caden |
 | Implement T012 | Copilot (GPT-5.6 Terra) | Added Fernet encryption helpers, encrypted SQLAlchemy text storage, and ciphertext-at-rest tests | None | Caden |
 | Implement T013 | Copilot (GPT-5.6 Terra) | Added SQLAlchemy identity, client, encrypted dietary profile, and visit models with focused metadata tests | None | Caden |
+| Implement T014 | Copilot (GPT-5.6 Terra) | Added catalog, inventory lot, movement, and audit event models with required inventory metadata tests | None | Caden |
