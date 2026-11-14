@@ -8,3 +8,4 @@ Every decision the team makes: what we decided, who decided it, why, and which A
 | 2026-11-14 | Add Agentation as a development dependency | Caden | Enable Agentation in this repository | Copilot web search -> recommended the official npm package -> kept |
 | 2026-11-14 | Add Ponytail as a development dependency | Caden | Make Ponytail available in this repository | Copilot web search -> recommended the official npm package -> kept |
 | 2026-11-14 | Install Impeccable globally with Copilot integration | Caden | Make design skills available across projects | Copilot web search -> recommended global installation -> kept |
+| 2026-11-14 | Document Impeccable setup instead of committing its engine | Caden | Avoid a platform-specific 20 MB binary in the repository | Ponytail review -> identified non-reproducible global setup -> kept documentation fix |
