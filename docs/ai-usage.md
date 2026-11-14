@@ -60,3 +60,4 @@
 | Implement T040 | Copilot (GPT-5.6 Terra) | Added local barcode/SKU nutrition lookup with deterministic safety classification and friendly missing-product errors | None | Caden |
 | Implement T041 | Copilot (GPT-5.6 Terra) | Added a short-timeout, fixture-testable Open Food Facts barcode mapper with resilient failure handling | None | Caden |
 | Implement T042 | Copilot (GPT-5.6 Terra) | Added cached USDA FoodData Central enrichment and local → Open Food Facts → USDA scan fallback ordering with mocked tests | None | Caden |
+| Implement T043 | Copilot (GPT-5.6 Terra) | Added an iOS-friendly ZXing camera scanner with rear-camera constraints, cleanup, and manual-entry fallback messaging | None | Caden |
