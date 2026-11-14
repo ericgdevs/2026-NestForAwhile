@@ -82,10 +82,40 @@ def test_list_sorts_by_aisle_tags_recipes_and_tick_adds_to_cart(database, logged
 
     aisles = [line["location"]["aisle"] for line in listed]
     assert aisles == sorted(aisles)
-    assert oats_line["source"] == "recipe" and oats_line["recipe"]["title"] == "Oat porridge"
+    assert oats_line["source"] == "recipe" and [r["title"] for r in oats_line["recipes"]] == [
+        "Oat porridge"
+    ]
     assert next(line for line in listed if line["product_id"] != oats.id)["source"] == "you"
     cart = database.query(Cart).filter_by(session_id=session.id).one()
     assert (
         database.query(CartItem).filter_by(cart_id=cart.id, product_id=oats.id).one().quantity == 1
     )
     assert other.status_code == 403
+
+
+def test_same_item_twice_is_one_line_tagged_with_every_recipe(database, logged_in_client):
+    cookies = logged_in_client(Role.CLIENT).cookies
+    beans = database.query(Product).filter_by(sku="SYN-BEANS-001").one()
+    tacos = {"title": "Bean tacos", "ingredients": [], "steps": ["Warm."]}
+    chili = {"title": "Bean chili", "ingredients": [], "steps": ["Simmer."]}
+    try:
+        api = _api(database)
+        for recipe in (tacos, chili, tacos):
+            api.post(
+                "/shopping-list",
+                json={"items": [{"text": "beans", "product_id": beans.id}], "recipe": recipe},
+                cookies=cookies,
+            )
+        api.post("/shopping-list", json={"items": [{"text": "black beans"}]}, cookies=cookies)
+        api.post("/shopping-list", json={"items": [{"text": "Unicorn milk"}]}, cookies=cookies)
+        lines = api.post(
+            "/shopping-list", json={"items": [{"text": "unicorn milk"}]}, cookies=cookies
+        ).json()["items"]
+    finally:
+        app.dependency_overrides.clear()
+
+    bean_lines = [line for line in lines if line["product_id"] == beans.id]
+    assert len(bean_lines) == 1
+    assert [r["title"] for r in bean_lines[0]["recipes"]] == ["Bean tacos", "Bean chili"]
+    assert bean_lines[0]["source"] == "you"  # also added by hand ("black beans" matched it)
+    assert len([line for line in lines if line["product_id"] is None]) == 1

@@ -18,10 +18,12 @@ from app.services.cart import active_session, get_or_create_cart
 from app.services.nutrition import members_for
 from app.services.shopping_list import (
     aisle_order,
+    find_same_line,
     first_lots,
     item_view,
     location_of,
     match_line,
+    merge_into_line,
     split_lines,
 )
 
@@ -86,19 +88,18 @@ def add_items(
     payload: AddRequest, user: User = Depends(client_only), database: Session = Depends(get_db)
 ):
     stocked = first_lots(database)
+    existing = _items(database, user)
     for line in payload.items:
         product_id = line.product_id
         if product_id is None and (match := match_line(line.text, stocked)) is not None:
             product_id = match.id
-        database.add(
-            ShoppingListItem(
-                client_id=user.id,
-                product_id=product_id,
-                text=line.text,
-                source="recipe" if payload.recipe else "you",
-                recipe=payload.recipe,
-            )
-        )
+        item = find_same_line(existing, product_id, line.text)
+        if item is None:
+            item = ShoppingListItem(client_id=user.id, product_id=product_id, text=line.text)
+            item.source, item.recipe = "recipe" if payload.recipe else "you", []
+            database.add(item)
+            existing.append(item)
+        merge_into_line(item, payload.recipe)
     database.commit()
     return _list_view(database, user)
 
