@@ -68,3 +68,4 @@
 | Implement T048 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for cart add, quantity changes, removal, and reload persistence | None | Caden |
 | Implement T049 | Copilot (GPT-5.6 Terra) | Added the AI provider protocol and Ollama/Groq factory with explicit unsupported-provider validation | None | Caden |
 | Implement T050-T051 | Copilot (GPT-5.6 Terra) | Added httpx-based Ollama and Groq structured JSON provider clients with timeout and configuration handling | None | Caden |
+| Implement T052 | Copilot (GPT-5.6 Terra) | Added strict Pydantic recipe output models and product-ID validation against the AI contract | None | Caden |

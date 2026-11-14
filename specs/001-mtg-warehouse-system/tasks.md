@@ -120,7 +120,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T049 [ai] [US6] `backend/app/ai/provider.py`: provider interface and factory driven by `AI_PROVIDER` (`ollama` or `groq`; anything else is a startup error), plus the AI variables in `config.py` (coordinate with Aditya)
 - [X] T050 [ai] [US6] `backend/app/ai/ollama_provider.py`: local Ollama client with JSON-schema output and 30 s timeout; httpx-mocked tests for success, timeout, connection refused
 - [X] T051 [ai] [US6] `backend/app/ai/groq_provider.py`: Groq free-tier chat-completions client (`GROQ_API_KEY`, `GROQ_MODEL`), JSON output, 30 s timeout, retry/backoff on 429; httpx-mocked tests for success, rate limit, 5xx, missing key
-- [ ] T052 [ai] [US6] `backend/app/ai/schemas.py`: Pydantic models mirroring `contracts/ai-schemas.json` and `validate_recipe_output()`; tests for malformed JSON, extra fields, empty list, unknown `product_id`
+- [X] T052 [ai] [US6] `backend/app/ai/schemas.py`: Pydantic models mirroring `contracts/ai-schemas.json` and `validate_recipe_output()`; tests for malformed JSON, extra fields, empty list, unknown `product_id`
 - [ ] T053 [api] [US6] `backend/app/services/inventory_locations.py` and `services/recipe_guard.py`: look up aisle/shelf/bin for missing ingredients; drop recipes with a Restricted ingredient or a missing ingredient that has no stock and no location; tests
 - [ ] T054 [ai] [US6] `backend/app/ai/recipes.py`: prompt builder from `Active_Cart_Manifest`, scanned item, in-stock inventory, and the client's restrictions in plain list form
 - [ ] T055 [ai] [US6] `backend/app/ai/fallback.py`: deterministic rules-only recipes built from in-cart and in-stock items, filtered by the same rules; tests
