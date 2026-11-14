@@ -9,6 +9,7 @@
     "lint": "oxlint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "gen:api": "openapi-typescript ../specs/001-mtg-warehouse-system/contracts/openapi.yaml -o src/api/generated/schema.ts",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -31,10 +32,11 @@
     "@vitejs/plugin-react": "^6.1.2",
     "autoprefixer": "^10.6.2",
     "jsdom": "^29.1.1",
+    "openapi-typescript": "^7.13.0",
     "oxlint": "^1.90.0",
     "postcss": "^8.5.33",
     "tailwindcss": "^3.4.17",
-    "typescript": "~7.0.2",
+    "typescript": "^5.9.3",
     "vite": "^8.3.6",
     "vitest": "^4.1.12"
   }
