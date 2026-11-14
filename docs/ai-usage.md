@@ -35,3 +35,4 @@
 | Implement T013 | Copilot (GPT-5.6 Terra) | Added SQLAlchemy identity, client, encrypted dietary profile, and visit models with focused metadata tests | None | Caden |
 | Implement T014 | Copilot (GPT-5.6 Terra) | Added catalog, inventory lot, movement, and audit event models with required inventory metadata tests | None | Caden |
 | Implement T015 | Copilot (GPT-5.6 Terra) | Added shopping session, capacity, queue, cart, recommendation, checkout, and intervention models with metadata tests | None | Caden |
+| Implement T016 | Copilot (GPT-5.6 Terra) | Added donor, grant, report, and anonymized AI request models with privacy-focused metadata tests | None | Caden |

@@ -259,7 +259,47 @@ class Intervention(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
 
 
+class Donor(Base):
+    __tablename__ = "donors"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    attribution_label: Mapped[str] = mapped_column(String(255), nullable=False)
+
+
+class Grant(Base):
+    __tablename__ = "grants"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    name: Mapped[str] = mapped_column(String(255), nullable=False)
+    attribution_label: Mapped[str] = mapped_column(String(255), nullable=False)
+
+
+class Report(Base):
+    __tablename__ = "reports"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    type: Mapped[str] = mapped_column(String(16), nullable=False)
+    period_start: Mapped[date] = mapped_column(Date, nullable=False)
+    period_end: Mapped[date] = mapped_column(Date, nullable=False)
+    generated_by: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    generated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+
+
+class AIRequest(Base):
+    __tablename__ = "ai_requests"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    kind: Mapped[str] = mapped_column(String(32), nullable=False)
+    model: Mapped[str] = mapped_column(String(128), nullable=False)
+    latency_ms: Mapped[int] = mapped_column(Integer, nullable=False)
+    valid: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    used_fallback: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+
+
 __all__ = [
+    "AIRequest",
     "AuditEvent",
     "CapacitySetting",
     "Cart",
@@ -268,12 +308,15 @@ __all__ = [
     "Checkout",
     "CheckoutItem",
     "DietaryProfile",
+    "Donor",
+    "Grant",
     "Intervention",
     "InventoryLot",
     "InventoryMovement",
     "Product",
     "QueueEntry",
     "Recommendation",
+    "Report",
     "ShoppingSession",
     "User",
     "Visit",
