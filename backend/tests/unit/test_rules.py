@@ -28,7 +28,9 @@ def product(**overrides):
 )
 def test_nutrient_thresholds(restriction, field, capped, restricted):
     assert classify(product(**{field: capped}), {"restrictions": [restriction]})[0] == CAPPED
-    assert classify(product(**{field: restricted}), {"restrictions": [restriction]})[0] == RESTRICTED
+    assert (
+        classify(product(**{field: restricted}), {"restrictions": [restriction]})[0] == RESTRICTED
+    )
 
 
 @pytest.mark.parametrize(
@@ -46,7 +48,9 @@ def test_exclusions_are_restricted(restriction, flag):
 
 
 def test_missing_relevant_data_is_capped():
-    assert classify({"diet_flags": None, "allergens": None}, {"restrictions": ["Vegan"]})[0] == CAPPED
+    assert (
+        classify({"diet_flags": None, "allergens": None}, {"restrictions": ["Vegan"]})[0] == CAPPED
+    )
 
 
 def test_tier_mapping_uses_strictest_selected_restriction():

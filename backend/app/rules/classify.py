@@ -60,7 +60,9 @@ def classify(product: Any, profile: Any) -> tuple[str, str]:
                 "Dairy Free": {"contains_dairy"},
             }.get(restriction, set())
             if allergens.intersection(allergy_flag) or flags.intersection(allergy_flag):
-                statuses.append((2, f"This item contains an ingredient restricted by {restriction}."))
+                statuses.append(
+                    (2, f"This item contains an ingredient restricted by {restriction}.")
+                )
                 continue
 
         excluded = set(rule["exclusions"])
