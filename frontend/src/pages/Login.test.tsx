@@ -35,10 +35,9 @@ test("shows friendly messages for invalid and inactive accounts", async () => {
   expect(await screen.findByText(/not active yet/i)).toBeInTheDocument();
 });
 
-test("explains how to create an account", () => {
+test("links to self sign-up", () => {
   render(<Login />);
-  fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
-  expect(screen.getByText(/ask staff to create your account/i)).toBeInTheDocument();
+  expect(screen.getByRole("link", { name: "Create Account" })).toHaveAttribute("href", "/signup");
 });
 
 test("toggles password visibility", () => {

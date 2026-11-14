@@ -149,3 +149,8 @@
 | Deploy | Gemini | Added Deploy (Vercel + Supabase) section | None | Eric |
 | Deploy | Gemini | Logged Vercel + Supabase deployment decision | None | Eric |
 | Deploy | Claude Code (Sonnet 5.5) | psycopg prepare_threshold=None for Supabase pooler; serve vercel_app locally/CI | Eric reviewed | Eric |
+| Apply login page feedback | Copilot (Sonnet 5.5) / Agentation | Removed the brand and label-legend section from the sign-in page and its CSS; wordmark top bar now shows at every width | Caden supplied the page feedback | Caden |
+| Cart layout + dev proxy fix | Copilot (Sonnet 5.5) / Agentation | Restyled Cart as Home-style label cards; fixed the Vite dev proxy so page loads of /cart, /checkout, /recipes, /analytics, /reports serve the app instead of API JSON | Caden supplied the page feedback and chose the reading | Caden |
+| Cart nutrition panel | Copilot (Sonnet 5.5) / Agentation | Built cart cards with status, SKU, nutrition facts and quantity (shared NutritionFacts component with Scan); wrote the backend request for Aditya; added 2 Vitest tests | Caden supplied the page feedback and the no-backend constraint | Caden |
+| Client flow design + plan | Copilot (Sonnet 5.5) | Ran a design conversation, wrote the client flow design and builder-checked it, then wrote the implementation plan (docs/superpowers/plans/2026-11-14-client-flow-plan.md) | Caden answered every design question and approved the design | Caden |
+| Client flow frontend (F1–F10, T1) | Copilot (Sonnet 5.5) / Impeccable / Ponytail | Sign-up, household editor, approvals, scan labels/swaps/recipes, shopping list, cart QR, volunteer checkout, Playwright journey specs | Caden approved the design, plan and QR package | Caden |

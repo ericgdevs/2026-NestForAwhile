@@ -215,7 +215,7 @@ Phone-first single column inside a centered container (max 1200px, 16px gutters,
 - **At 1024px and up:** a 248px sticky ink sidebar holds the wordmark and nav; the top bar moves onto the ground and turns light; content gets 32px side padding.
 - **Grids:** two and three columns from 720px; auto grids go two columns from 720px and three from 1280px.
 - **Tables:** below 640px each row becomes a stacked label block with the column name on the left, ruled by an ink hairline.
-- **Login:** stacked on phones; at 900px a split of ink brand side (with a sample label legend) and a centered 420px form panel.
+- **Login:** an ink top bar with the wordmark over a centered 420px form panel at every width.
 
 ## Elevation & Depth
 
@@ -224,7 +224,7 @@ A hybrid: the label panels get a structural ink border and a medium shadow, plai
 ### Shadow Vocabulary
 - **Resting** (`0 1px 2px rgba(11,27,51,0.06), 0 6px 16px -6px rgba(11,27,51,0.12)`): plain panels.
 - **Raised** (`0 2px 4px rgba(11,27,51,0.06), 0 16px 32px -12px rgba(11,27,51,0.24)`): product label panels and the login form.
-- **Lifted** (`0 4px 8px rgba(11,27,51,0.08), 0 28px 56px -16px rgba(11,27,51,0.34)`): the top recipe pick, the recipe sheet, the login legend.
+- **Lifted** (`0 4px 8px rgba(11,27,51,0.08), 0 28px 56px -16px rgba(11,27,51,0.34)`): the top recipe pick, the recipe sheet.
 - **Primary glow** (`0 1px 2px rgba(11,27,51,0.12), 0 6px 14px -6px rgba(31,95,191,0.6)`): the primary button only.
 - **Tab bar** (`0 -10px 28px -14px rgba(11,27,51,0.3)`): upward shadow on the fixed client tab bar.
 

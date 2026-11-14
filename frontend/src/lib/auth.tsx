@@ -1,9 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import type { components } from "../api/generated";
-import { apiRequest, getMe, login } from "../api/client";
+import { apiRequest, getMe, login, type Me } from "../api/client";
 
-type UserSession = components["schemas"]["Client"] & {
+type UserSession = Me & {
   role: components["schemas"]["Role"];
 };
 
@@ -12,6 +12,7 @@ type AuthContextValue = {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  refresh: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -25,7 +26,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       .then((profile) =>
         setUser({
           ...profile,
-          role: (profile as components["schemas"]["Client"] & { role?: UserSession["role"] }).role ?? "Client",
+          role: profile.role ?? "Client",
         }),
       )
       .catch(() => setUser(null))
@@ -40,6 +41,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const session = await login({ email, password });
         const profile = await getMe();
         setUser({ ...profile, role: session.role });
+      },
+      async refresh() {
+        const profile = await getMe();
+        setUser({ ...profile, role: profile.role ?? "Client" });
       },
       async signOut() {
         await apiRequest("/auth/logout", { method: "POST" });
