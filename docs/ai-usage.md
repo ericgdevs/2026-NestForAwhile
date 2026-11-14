@@ -100,3 +100,4 @@
 | Fix sign-in screen | Copilot | Replaced the unauthenticated route placeholder with the actual sign-in form and added regression coverage | None | Caden |
 | Impeccable design pass | Copilot / Impeccable | Applied the supplied nutrition-app references as inspiration for a warm cream/coral visual system, mobile-style navigation, rounded cards, and clearer scan/cart/recipe flows | Caden supplied the visual direction and approved the design pass | Caden |
 | Apply page feedback | Copilot / Agentation | Removed the login mark and added a Create Account action with a clear staff guidance message | Caden supplied the page feedback | Caden |
+| Fix local login proxy | Copilot / Ponytail | Routed frontend API paths to the local FastAPI server so the seeded demo credentials work from the Vite dev server | None | Caden |
