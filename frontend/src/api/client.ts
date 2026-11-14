@@ -84,6 +84,21 @@ export function saveHousehold(members: MemberInput[]): Promise<{ members: Member
   return apiRequest("/me/household", { method: "PUT", body: { members } });
 }
 
+export type VisitState =
+  | { status: "awaiting_approval" | "inactive" | "none" }
+  | { status: "shopping"; Shopping_Session_Token: string }
+  | { status: "queued"; queue_status: "waiting" | "ready"; position: number | null; message: string }
+  | { status: "complete"; receipt: { checkout_id: number; total_lb: number; completed_at: string } };
+
+export function getVisit(): Promise<VisitState> {
+  return apiRequest("/me/visit");
+}
+
+/** Start or resume a visit while signed in (no password); joins the queue if the floor is full. */
+export function checkIn(): Promise<VisitState> {
+  return apiRequest("/me/check-in", { method: "POST" });
+}
+
 export function getMySession(): Promise<{ Shopping_Session_Token: string; client_id: number }> {
   return apiRequest("/me/session");
 }
@@ -206,7 +221,7 @@ export type ListLine = {
   product_id: number | null;
   name: string;
   source: "you" | "recipe";
-  recipe: Recipe | null;
+  recipes: Recipe[]; // every recipe this one line is for
   ticked: boolean;
   in_stock: boolean;
   location: Location | null;

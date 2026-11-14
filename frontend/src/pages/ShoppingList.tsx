@@ -46,19 +46,24 @@ function ListLineRow({ line, onChange }: { line: ListLine; onChange: (items: Lis
           <span className="panel-sub">{line.product_id ? "Out of stock today" : "We don't carry this today"}</span>
         )}
         {line.status && <StatusBadge status={line.status} />}
-        <span className="tag">{line.source === "recipe" && line.recipe ? `For: ${line.recipe.title}` : "You added"}</span>
+        {line.source === "you" && <span className="tag">You added</span>}
+        {line.recipes.map((recipe) => (
+          <span className="tag" key={recipe.title}>
+            For: {recipe.title}
+          </span>
+        ))}
       </div>
       <NotForLine notFor={line.not_for} />
-      {line.recipe && (
-        <details className="list-recipe">
-          <summary>Open recipe: {line.recipe.title}</summary>
+      {line.recipes.map((recipe) => (
+        <details className="list-recipe" key={recipe.title}>
+          <summary>Open recipe: {recipe.title}</summary>
           <ol className="steps">
-            {line.recipe.steps.map((step) => (
+            {recipe.steps.map((step) => (
               <li key={step}>{step}</li>
             ))}
           </ol>
         </details>
-      )}
+      ))}
       <button
         aria-label={`Remove ${line.name}`}
         className="btn btn-secondary list-remove"

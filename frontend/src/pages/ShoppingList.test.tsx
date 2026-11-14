@@ -5,8 +5,8 @@ import ShoppingList from "./ShoppingList";
 
 const recipe = { title: "Bean tacos", ingredients: [], steps: ["Warm the beans."] };
 const lines = [
-  { id: 1, text: "beans", product_id: 2, name: "Synthetic Black Beans", source: "recipe", recipe, ticked: false, in_stock: true, location: { aisle: "A2", shelf: "S2", bin: "B2" }, status: "Approved", not_for: [] },
-  { id: 2, text: "unicorn milk", product_id: null, name: "unicorn milk", source: "you", recipe: null, ticked: false, in_stock: false, location: null },
+  { id: 1, text: "beans", product_id: 2, name: "Synthetic Black Beans", source: "recipe", recipes: [recipe], ticked: false, in_stock: true, location: { aisle: "A2", shelf: "S2", bin: "B2" }, status: "Approved", not_for: [] },
+  { id: 2, text: "unicorn milk", product_id: null, name: "unicorn milk", source: "you", recipes: [], ticked: false, in_stock: false, location: null },
 ];
 
 const api = vi.hoisted(() => ({
@@ -53,4 +53,14 @@ test("typed list is matched, reviewed, then added", async () => {
 
   await waitFor(() => expect(api.addToShoppingList).toHaveBeenCalledWith([{ text: "oats", product_id: 1 }]));
   expect(api.parseShoppingList).toHaveBeenCalledWith({ text: "oats\ncaviar" });
+});
+
+test("one line shows every recipe it is for", async () => {
+  const chili = { title: "Bean chili", ingredients: [], steps: ["Simmer."] };
+  api.getShoppingList.mockResolvedValue({ items: [{ ...lines[0], source: "you", recipes: [recipe, chili] }] });
+  render(<ShoppingList />);
+  expect(await screen.findByText("For: Bean chili")).toBeInTheDocument();
+  expect(screen.getByText("For: Bean tacos")).toBeInTheDocument();
+  expect(screen.getByText("You added")).toBeInTheDocument();
+  expect(screen.getAllByText(/^Open recipe:/)).toHaveLength(2);
 });
