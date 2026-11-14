@@ -1,16 +1,17 @@
 from fastapi import APIRouter, Depends
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
-from app.auth import require_roles
-from app.db import get_session
-from app.models import Role
-from app.schemas import Analytics
-from app.services import analytics
+from app.auth import Role, require_roles
+from app.db import get_db
+from app.models import User
+from app.services.analytics import metrics
 
-router = APIRouter(tags=["analytics"])
+router = APIRouter()
 
 
-@router.get("/analytics", response_model=Analytics,
-            dependencies=[Depends(require_roles(Role.MANAGER, Role.DIRECTOR))])
-def get_analytics(session: Session = Depends(get_session)):
-    return analytics.get_analytics(session)
+@router.get("/analytics")
+def analytics(
+    database: Session = Depends(get_db),
+    _: User = Depends(require_roles(Role.WAREHOUSE_MANAGER, Role.DIRECTOR)),
+):
+    return metrics(database)

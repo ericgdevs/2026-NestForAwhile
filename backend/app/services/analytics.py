@@ -1,95 +1,56 @@
-from datetime import date
+from __future__ import annotations
 
-from sqlalchemy import func
-from sqlmodel import Session, select
+from datetime import date, timedelta
 
-from app.models import (Cart, CartItem, Checkout, CheckoutItem, ClientProfile, DietaryTier, InventoryLot,
-                        InventoryMovement, Product, Visit)
-from app.schemas import Analytics, WasteReduction
-from app.services import fifo
+from sqlalchemy import distinct, func, select
+from sqlalchemy.orm import Session
 
-
-def _completed_visits(session: Session):
-    return select(Visit).where(Visit.completed_at.is_not(None))
+from app.models import CartItem, CheckoutItem, InventoryLot, InventoryMovement, Visit
 
 
-def _scalar(session: Session, query) -> int | float:
-    return session.exec(query).one() or 0
-
-
-def recommendation_adoption_rate(session: Session) -> float:
-    """Checked-out units that were recommended, divided by all checked-out units."""
-    rows = session.exec(select(CheckoutItem.quantity, CartItem.from_recommendation)
-                        .join(Checkout, Checkout.id == CheckoutItem.checkout_id)
-                        .join(Cart, Cart.session_id == Checkout.session_id)
-                        .join(CartItem, (CartItem.cart_id == Cart.id) & (CartItem.product_id == CheckoutItem.product_id))
-                        .where(Checkout.status == "completed")).all()
-    total = sum(qty for qty, _ in rows)
-    return round(sum(qty for qty, rec in rows if rec) / total, 4) if total else 0.0
-
-
-def _checkout_movements(session: Session):
-    """(units taken, pounds, category, lot expiry, completed date) per checkout movement."""
-    rows = session.exec(select(InventoryMovement.change, Product.weight_lb, Product.category,
-                               InventoryLot.expiration_date, Checkout.completed_at)
-                        .join(InventoryLot, InventoryLot.id == InventoryMovement.lot_id)
-                        .join(Product, Product.id == InventoryLot.product_id)
-                        .join(Checkout, Checkout.id == InventoryMovement.ref_id)
-                        .where(InventoryMovement.reason == "checkout", Checkout.status == "completed")).all()
-    return [(-change, (weight or 0) * -change, category, expiry, done) for change, weight, category, expiry, done in rows]
-
-
-def waste_reduction(session: Session, today: date | None = None) -> WasteReduction:
-    today = today or date.today()
-    soon_lots = sum(1 for lot in fifo.all_lots_fifo(session) if fifo.is_expiring_soon(lot, today))
-    saved = sum(lb for _, lb, _, expiry, done in _checkout_movements(session)
-                if expiry is not None and 0 <= (expiry - done.date()).days <= fifo.EXPIRING_SOON_DAYS)
-    return WasteReduction(expiring_soon_lots=soon_lots, pounds_saved=round(saved, 2))
-
-
-def get_analytics(session: Session, today: date | None = None) -> Analytics:
-    visits = _completed_visits(session).subquery()
-    return Analytics(
-        families_served=_scalar(session, select(func.count(func.distinct(visits.c.client_id)))),
-        visits_completed=_scalar(session, select(func.count()).select_from(visits)),
-        pounds_distributed=round(float(_scalar(session, select(func.sum(visits.c.pounds_distributed)))), 2),
-        inventory_usage=sum(units for units, *_ in _checkout_movements(session)),
-        recommendation_adoption_rate=recommendation_adoption_rate(session),
-        waste_reduction=waste_reduction(session, today),
+def metrics(database: Session) -> dict:
+    completed_visits = select(Visit).where(Visit.completed_at.is_not(None)).subquery()
+    families = database.scalar(select(func.count(distinct(completed_visits.c.client_id)))) or 0
+    visits = database.scalar(select(func.count()).select_from(completed_visits)) or 0
+    pounds = (
+        database.scalar(
+            select(func.coalesce(func.sum(Visit.pounds_distributed), 0)).where(
+                Visit.completed_at.is_not(None)
+            )
+        )
+        or 0
     )
-
-
-# Service-level breakdowns (not exposed by the contract). shortcut: no small-cell suppression, add it before exposing publicly.
-
-def inventory_by_category(session: Session, today: date | None = None) -> dict[str, dict[str, int]]:
-    """On-hand (usable) and distributed units per product category, categories sorted."""
-    today = today or date.today()
-    categories = {p.id: p.category for p in session.exec(select(Product))}
-    result: dict[str, dict[str, int]] = {c: {"on_hand": 0, "distributed": 0} for c in sorted(set(categories.values()))}
-    for lot in session.exec(select(InventoryLot).where(InventoryLot.quantity > 0)):
-        if not fifo.is_expired(lot, today):
-            result[categories[lot.product_id]]["on_hand"] += lot.quantity
-    for units, _, category, _, _ in _checkout_movements(session):
-        result[category]["distributed"] += units
-    return result
-
-
-def clients_by_tier(session: Session) -> dict[str, int]:
-    """Client counts per dietary tier name, never client rows."""
-    rows = session.exec(select(DietaryTier.name, func.count(ClientProfile.user_id))
-                        .join(ClientProfile, ClientProfile.Dietary_Tier_ID == DietaryTier.Dietary_Tier_ID, isouter=True)
-                        .group_by(DietaryTier.Dietary_Tier_ID, DietaryTier.name).order_by(DietaryTier.Dietary_Tier_ID)).all()
-    return {name: count for name, count in rows}
-
-
-def checkout_history(session: Session) -> list[dict]:
-    """Completed checkouts per day: count, units and pounds, oldest day first."""
-    days: dict[date, dict] = {}
-    for checkout in session.exec(select(Checkout).where(Checkout.status == "completed")):
-        day = days.setdefault(checkout.completed_at.date(), {"date": checkout.completed_at.date(), "checkouts": 0,
-                                                             "units": 0, "pounds": 0.0})
-        day["checkouts"] += 1
-        day["pounds"] = round(day["pounds"] + (checkout.total_lb or 0), 2)
-    for units, _, _, _, done in _checkout_movements(session):
-        days[done.date()]["units"] += units
-    return [days[d] for d in sorted(days)]
+    usage = database.scalar(
+        select(func.coalesce(func.sum(-InventoryMovement.change), 0)).where(
+            InventoryMovement.reason == "checkout", InventoryMovement.change < 0
+        )
+    ) or 0
+    total_cart = database.scalar(select(func.count(CartItem.id))) or 0
+    recommended_cart = database.scalar(
+        select(func.count(CartItem.id)).where(CartItem.from_recommendation.is_(True))
+    ) or 0
+    today = date.today()
+    soon = today + timedelta(days=7)
+    expiring_lots = database.scalar(
+        select(func.count(InventoryLot.id)).where(
+            InventoryLot.quantity > 0,
+            InventoryLot.expiration_date >= today,
+            InventoryLot.expiration_date <= soon,
+        )
+    ) or 0
+    near_expiry_usage = database.scalar(
+        select(func.coalesce(func.sum(CheckoutItem.quantity), 0))
+        .join(InventoryLot, InventoryLot.id == CheckoutItem.lot_id)
+        .where(InventoryLot.expiration_date >= today, InventoryLot.expiration_date <= soon)
+    ) or 0
+    return {
+        "families_served": families,
+        "visits_completed": visits,
+        "pounds_distributed": float(pounds),
+        "inventory_usage": int(usage),
+        "recommendation_adoption_rate": recommended_cart / total_cart if total_cart else 0,
+        "waste_reduction": {
+            "expiring_soon_lots": expiring_lots,
+            "pounds_saved": float(near_expiry_usage),
+        },
+    }

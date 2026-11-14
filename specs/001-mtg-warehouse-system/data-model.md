@@ -33,7 +33,7 @@ State transitions: `waiting → ready → claimed`, `ready → expired`, `waitin
 
 **products**: `id`, `sku`, `barcode` (unique), `name`, `category`, `image_url`, `serving_size_g`, nutrition per serving (`calories`, `sodium_mg`, `sugar_g`, `added_sugar_g`, `sat_fat_g`, `fiber_g`, `protein_g`, `potassium_mg`, `phosphorus_mg`, `carbs_g`), `ingredients_text`, `allergens` (list), `diet_flags` (e.g., contains_gluten, contains_dairy, is_vegan), `weight_lb`, `source` (seed | open_food_facts | usda), `fetched_at`. Missing nutrition values are stored as null, never zero.
 
-**inventory_lots**: `id`, `product_id`, `quantity` (≥ 0), `received_at`, `expiration_date`, `aisle`, `shelf`, `bin`, `reorder_threshold`. FIFO order = earliest `expiration_date`, then `received_at`. Expiring soon = within 7 days. Expired lots are excluded from recommendations.
+**inventory_lots**: `id`, `product_id`, `quantity` (≥ 0), `received_at`, `expiration_date`, `aisle`, `shelf`, `bin`, `reorder_threshold`, nullable `donor_id`, nullable `grant_id`. FIFO order = earliest `expiration_date`, then `received_at`. Expiring soon = within 7 days. Expired lots are excluded from recommendations.
 
 **audit_events**: `id`, `lot_id` or `product_id`, `expected_qty`, `counted_qty` (≥ 0), `variance` (counted − expected), `counted_by`, `counted_at`. Written in the same transaction that updates the lot quantity. Flow: Scan Item → Current Count → Actual Count → Variance → Inventory Update → Audit Log.
 

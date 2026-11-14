@@ -1,18 +1,20 @@
-from fastapi import APIRouter, Depends, HTTPException
-from sqlmodel import Session
+from fastapi import APIRouter, Depends
+from sqlalchemy.orm import Session
 
-from app.auth import require_roles
-from app.db import get_session
-from app.models import Role, User
-from app.schemas import RecommendationRead
-from app.services import recommendations, sessions
+from app.auth import Role, require_roles
+from app.db import get_db
+from app.models import Client, User
+from app.services.recommendations import build_recommendations
 
-router = APIRouter(tags=["recommendations"])
+router = APIRouter()
 
 
-@router.get("/recommendations", response_model=list[RecommendationRead])
-def get_recommendations(user: User = Depends(require_roles(Role.CLIENT)), session: Session = Depends(get_session)):
-    shopping = sessions.active_session(session, user.id)
-    if shopping is None:
-        raise HTTPException(404, "Start a shopping session to see recommendations.")
-    return recommendations.list_for_session(session, user.id, shopping.id)
+@router.get("/recommendations")
+def recommendations(
+    current_user: User = Depends(require_roles(Role.CLIENT)),
+    database: Session = Depends(get_db),
+):
+    client = database.get(Client, current_user.id)
+    if client is None:
+        return []
+    return build_recommendations(database, client)

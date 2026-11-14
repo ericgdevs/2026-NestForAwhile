@@ -1,167 +1,146 @@
-from datetime import date, timedelta, timezone
+from __future__ import annotations
 
-from fastapi import HTTPException
-from sqlalchemy import update
-from sqlmodel import Session, select
+from datetime import UTC, date, datetime
 
-from app.models import (Cart, CartItem, Checkout, CheckoutItem, Intervention, InventoryLot, Product, QueueEntry,
-                        QueueStatus, SessionStatus, ShoppingSession, Visit, utcnow)
-from app.rules.classify import Status, classify
-from app.schemas import CartItemRead, CheckoutResult, InterventionCreate
-from app.services import capacity, fifo, movements, profiles, queue
+from sqlalchemy import select, update
+from sqlalchemy.orm import Session
 
-
-def get_active_session(session: Session, token: str) -> ShoppingSession:
-    shopping = session.exec(select(ShoppingSession).where(ShoppingSession.Shopping_Session_Token == token)).first()
-    if shopping is None or shopping.status != SessionStatus.ACTIVE:
-        raise HTTPException(404, "No active shopping session for that token.")
-    return shopping
-
-
-def cart_items(session: Session, shopping: ShoppingSession) -> list[CartItem]:
-    cart = session.exec(select(Cart).where(Cart.session_id == shopping.id)).first()
-    if cart is None:
-        return []
-    return list(session.exec(select(CartItem).where(CartItem.cart_id == cart.id).order_by(CartItem.product_id)))
+from app.models import (
+    Cart,
+    CartItem,
+    Checkout,
+    CheckoutItem,
+    Client,
+    InventoryLot,
+    InventoryMovement,
+    ShoppingSession,
+    User,
+    Visit,
+)
+from app.rules.classify import RESTRICTED, classify
+from app.services import queue
 
 
-def usable_quantity(session: Session, product_id: int, today: date | None = None) -> int:
-    return sum(lot.quantity for lot in fifo.usable_lots_fifo(session, product_id, today))
-
-
-def find_blocked_items(session: Session, shopping: ShoppingSession, today: date | None = None) -> list[CartItemRead]:
-    """Re-classify every cart line; Restricted, unknown products and stock shortfalls stop checkout."""
-    restrictions = profiles.rule_restrictions(profiles.get_dietary_profile(session, shopping.client_id))
-    blocked = []
-    for item in cart_items(session, shopping):
-        product = session.get(Product, item.product_id)
-        if product is None:
-            blocked.append(CartItemRead(product_id=item.product_id, quantity=item.quantity))
-            continue
-        status = classify(product, restrictions).status
-        if status == Status.RESTRICTED or usable_quantity(session, product.id, today) < item.quantity:
-            blocked.append(CartItemRead(product_id=product.id, name=product.name, quantity=item.quantity,
-                                        status=status.name.capitalize()))
-    return blocked
-
-
-class StockConflict(Exception):
-    """A lot changed under us between validation and decrement."""
-
-    def __init__(self, product_id: int):
-        self.product_id = product_id
-
-
-def _checkout_row(session: Session, shopping: ShoppingSession, user_id: int) -> Checkout:
-    """One checkout per session: blocked attempts and interventions attach to the same row."""
-    row = session.exec(select(Checkout).where(Checkout.session_id == shopping.id)).first()
-    if row is None:
-        row = Checkout(session_id=shopping.id, validated_by=user_id, status="blocked")
-        session.add(row)
-        session.flush()
-    return row
-
-
-def _claim_session_for_checkout(session: Session, shopping: ShoppingSession) -> bool:
-    """Atomically transition the session so only one concurrent completion can proceed."""
-    claim = session.execute(
-        update(ShoppingSession)
-        .where(ShoppingSession.id == shopping.id, ShoppingSession.status == SessionStatus.ACTIVE)
-        .values(status=SessionStatus.COMPLETED, ended_at=utcnow())
+def session_by_token(database: Session, token: str) -> ShoppingSession | None:
+    return database.scalar(
+        select(ShoppingSession).where(
+            ShoppingSession.Shopping_Session_Token == token,
+            ShoppingSession.status == "active",
+        )
     )
-    return claim.rowcount == 1
 
 
-def _refresh_queue(session: Session) -> None:
-    """Stage queue expiry and promotion; the checkout commit makes both changes atomic."""
-    window = timedelta(minutes=capacity.get_settings(session).claim_window_minutes)
-    now = utcnow()
-    for entry in session.exec(select(QueueEntry).where(QueueEntry.status == QueueStatus.READY)):
-        ready_at = entry.ready_at
-        if ready_at and (ready_at if ready_at.tzinfo else ready_at.replace(tzinfo=timezone.utc)) + window < now:
-            entry.status = QueueStatus.EXPIRED
-            session.add(entry)
-    session.flush()
-    for entry in queue._waiting_fifo(session):
-        if not capacity.has_room(session):
-            break
-        entry.status = QueueStatus.READY
-        entry.ready_at = now
-        session.add(entry)
-        session.flush()
+def validate_checkout(database: Session, session: ShoppingSession) -> list[str]:
+    cart = database.scalar(select(Cart).where(Cart.session_id == session.id))
+    if cart is None:
+        return ["Cart is empty."]
+    client = database.get(Client, session.client_id)
+    profile = client.dietary_profile if client else None
+    profile_data = {"restrictions": [], "allergies": []}
+    if profile:
+        import json
+
+        profile_data = {
+            "restrictions": json.loads(profile.restrictions),
+            "allergies": json.loads(profile.allergies),
+        }
+    errors = []
+    for item in database.scalars(select(CartItem).where(CartItem.cart_id == cart.id)):
+        lots = database.scalars(
+            select(InventoryLot)
+            .where(
+                InventoryLot.product_id == item.product_id,
+                InventoryLot.quantity > 0,
+                InventoryLot.expiration_date >= date.today(),
+            )
+            .order_by(InventoryLot.expiration_date)
+        ).all()
+        available = sum(lot.quantity for lot in lots)
+        product = lots[0].product if lots else None
+        if product is None or available < item.quantity:
+            errors.append(f"Insufficient stock for product {item.product_id}.")
+        elif classify(product, profile_data)[0] == RESTRICTED:
+            errors.append(f"Product {item.product_id} is restricted.")
+    return errors
 
 
-def _decrement_fifo(session: Session, checkout: Checkout, product: Product, quantity: int) -> int:
-    """Take stock in shared lot order with a guarded UPDATE; returns the first lot used."""
-    remaining, first_lot = quantity, None
-    for lot in fifo.usable_lots_fifo(session, product.id):
-        if remaining == 0:
-            break
-        take = min(remaining, lot.quantity)
-        hit = session.execute(update(InventoryLot).where(InventoryLot.id == lot.id, InventoryLot.quantity >= take)
-                              .values(quantity=InventoryLot.quantity - take))
-        if hit.rowcount != 1:
-            raise StockConflict(product.id)
-        movements.log_movement(session, lot.id, -take, "checkout", checkout.id)
-        first_lot = first_lot or lot.id
-        remaining -= take
-    if remaining:
-        raise StockConflict(product.id)
-    return first_lot
-
-
-def complete_checkout(session: Session, token: str, user_id: int) -> CheckoutResult:
-    """Hard-stop on any blocked line; otherwise decrement stock, log movements, write the receipt and end the session in one transaction."""
-    shopping = get_active_session(session, token)
-    items = cart_items(session, shopping)
-    if not items:
-        raise HTTPException(400, "The cart is empty.")
-    blocked = find_blocked_items(session, shopping)
-    if blocked:
-        _checkout_row(session, shopping, user_id)
-        session.commit()
-        return CheckoutResult(status="blocked", blocked_items=blocked)
-
-    restrictions = profiles.rule_restrictions(profiles.get_dietary_profile(session, shopping.client_id))
+def complete_checkout(database: Session, session: ShoppingSession, volunteer: User) -> Checkout:
+    errors = validate_checkout(database, session)
+    if errors:
+        raise ValueError("; ".join(errors))
+    completed_at = datetime.now(UTC)
     try:
-        if not _claim_session_for_checkout(session, shopping):
-            session.rollback()
-            raise HTTPException(409, "This shopping session was already checked out.")
-        checkout = _checkout_row(session, shopping, user_id)
-        total_lb = 0.0
-        for item in items:
-            product = session.get(Product, item.product_id)
-            lot_id = _decrement_fifo(session, checkout, product, item.quantity)
-            session.add(CheckoutItem(checkout_id=checkout.id, product_id=product.id, lot_id=lot_id, quantity=item.quantity,
-                                     status_at_checkout=classify(product, restrictions).status.name.capitalize()))
-            total_lb += (product.weight_lb or 0) * item.quantity
-        now = shopping.ended_at
-        checkout.status, checkout.total_lb, checkout.completed_at, checkout.validated_by = "completed", total_lb, now, user_id
-        session.add(Visit(client_id=shopping.client_id, session_id=shopping.id, started_at=shopping.started_at,
-                          completed_at=now, pounds_distributed=total_lb))
-        session.add(checkout)
-        _refresh_queue(session)
-        session.commit()
-    except StockConflict as conflict:
-        session.rollback()
-        product = session.get(Product, conflict.product_id)
-        line = next(i for i in items if i.product_id == conflict.product_id)
-        return CheckoutResult(status="blocked", blocked_items=[
-            CartItemRead(product_id=product.id, name=product.name, quantity=line.quantity)])
+        claim = database.execute(
+            update(ShoppingSession)
+            .where(ShoppingSession.id == session.id, ShoppingSession.status == "active")
+            .values(status="completed", ended_at=completed_at)
+        )
+        if claim.rowcount != 1:
+            raise ValueError("This shopping session was already checked out.")
+
+        cart = database.scalar(select(Cart).where(Cart.session_id == session.id))
+        checkout = Checkout(session_id=session.id, validated_by=volunteer.id, status="completed")
+        database.add(checkout)
+        database.flush()
+        total_weight = 0.0
+        for item in database.scalars(select(CartItem).where(CartItem.cart_id == cart.id)):
+            lots = database.scalars(
+                select(InventoryLot)
+                .where(
+                    InventoryLot.product_id == item.product_id,
+                    InventoryLot.quantity > 0,
+                    InventoryLot.expiration_date >= date.today(),
+                )
+                .order_by(InventoryLot.expiration_date, InventoryLot.received_at, InventoryLot.id)
+            ).all()
+            remaining = item.quantity
+            for lot in lots:
+                taken = min(remaining, lot.quantity)
+                decremented = database.execute(
+                    update(InventoryLot)
+                    .where(InventoryLot.id == lot.id, InventoryLot.quantity >= taken)
+                    .values(quantity=InventoryLot.quantity - taken)
+                )
+                if decremented.rowcount != 1:
+                    raise ValueError(f"Insufficient stock for product {item.product_id}.")
+                database.add(
+                    InventoryMovement(
+                        lot_id=lot.id,
+                        change=-taken,
+                        reason="checkout",
+                        ref_id=checkout.id,
+                    )
+                )
+                database.add(
+                    CheckoutItem(
+                        checkout_id=checkout.id,
+                        product_id=item.product_id,
+                        lot_id=lot.id,
+                        quantity=taken,
+                        status_at_checkout="Approved",
+                    )
+                )
+                total_weight += (lot.product.weight_lb or 0) * taken
+                remaining -= taken
+                if remaining == 0:
+                    break
+            if remaining:
+                raise ValueError(f"Insufficient stock for product {item.product_id}.")
+        checkout.total_lb = total_weight
+        checkout.completed_at = completed_at
+        session.status = "completed"
+        session.ended_at = completed_at
+        database.add(
+            Visit(
+                client_id=session.client_id,
+                session_id=session.id,
+                completed_at=completed_at,
+                pounds_distributed=total_weight,
+            )
+        )
+        queue.promote_waiting(database)
+        database.commit()
+        return checkout
     except Exception:
-        session.rollback()
+        database.rollback()
         raise
-    return CheckoutResult(status="completed", receipt_id=checkout.id)
-
-
-def record_intervention(session: Session, token: str, user_id: int, data: InterventionCreate) -> None:
-    """Remove the item from the cart and log it so the cart can be validated again."""
-    shopping = get_active_session(session, token)
-    line = next((i for i in cart_items(session, shopping) if i.product_id == data.product_id), None)
-    if line is None:
-        raise HTTPException(404, "That item is not in the cart.")
-    checkout = _checkout_row(session, shopping, user_id)
-    session.add(Intervention(checkout_id=checkout.id, product_id=data.product_id, volunteer_id=user_id,
-                             action=data.action, note=data.note))
-    session.delete(line)
-    session.commit()

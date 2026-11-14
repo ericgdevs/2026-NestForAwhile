@@ -1,40 +1,78 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
-from sqlmodel import Session, select
+from __future__ import annotations
 
-from app.auth import (COOKIE_NAME, create_access_token, email_digest, get_current_user, verify_password)
-from app.config import get_settings
-from app.db import get_session
-from app.models import ClientProfile, Role, User
-from app.schemas import ClientRead, LoginRequest, LoginResult
-from app.services import profiles, sessions
+import json
 
-router = APIRouter(tags=["auth"])
+from fastapi import APIRouter, Depends, HTTPException, Response, status
+from pydantic import BaseModel
+from sqlalchemy.orm import Session
+
+from app.auth import (
+    Role,
+    authenticate_user,
+    create_access_token,
+    get_current_user,
+    set_auth_cookie,
+)
+from app.db import get_db
+from app.models import Client, User
+from app.services.queue import end_client_session, queue_state
+from app.services.sessions import start_session
+
+router = APIRouter()
 
 
-@router.post("/auth/login", response_model=LoginResult)
-def login(body: LoginRequest, response: Response, session: Session = Depends(get_session)):
-    user = session.exec(select(User).where(User.email_hash == email_digest(body.email))).first()
-    if user is None or not user.is_active or not verify_password(body.password, user.password_hash):
-        raise HTTPException(401, "That email or password didn't work. Please try again.")
-    result = sessions.initialize(session, user)
-    settings = get_settings()
-    response.set_cookie(COOKIE_NAME, create_access_token(user.id, user.role), httponly=True,
-                        secure=settings.cookie_secure, samesite="lax", max_age=settings.jwt_expire_minutes * 60)
+class LoginRequest(BaseModel):
+    email: str
+    password: str
+
+
+@router.post("/auth/login")
+def login(payload: LoginRequest, response: Response, database: Session = Depends(get_db)):
+    user = authenticate_user(database, payload.email, payload.password)
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+
+    result: dict[str, object] = {"role": user.role}
+    if user.role == Role.CLIENT.value:
+        client = database.get(Client, user.id)
+        if client is None or client.Client_Enrollment_Status != "Active":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Client enrollment is not Active",
+            )
+        token = start_session(database, client)
+        result["Shopping_Session_Token"] = token
+        if token is None:
+            result["queue"] = queue_state(database, client.user_id)
+    set_auth_cookie(response, create_access_token(user.id, Role(user.role)))
     return result
 
 
-@router.post("/auth/logout", status_code=204)
-def logout(response: Response, user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    if user.role == Role.CLIENT:
-        sessions.end_session(session, user.id)
-    response.delete_cookie(COOKIE_NAME)
+@router.post("/auth/logout", status_code=status.HTTP_204_NO_CONTENT)
+def logout(
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    if current_user.role == Role.CLIENT.value:
+        end_client_session(database, current_user.id)
+    response.delete_cookie("session")
 
 
-@router.get("/me", response_model=ClientRead)
-def me(user: User = Depends(get_current_user), session: Session = Depends(get_session)):
-    client = session.get(ClientProfile, user.id)
-    if client is None:
-        return ClientRead()
-    return ClientRead(name=client.name, Household_Size=client.Household_Size,
-                      Client_Enrollment_Status=client.Client_Enrollment_Status,
-                      profile=profiles.get_dietary_profile(session, user.id))
+@router.get("/me")
+def me(current_user: User = Depends(get_current_user), database: Session = Depends(get_db)):
+    if current_user.role != Role.CLIENT.value:
+        return {"role": current_user.role}
+    client = database.get(Client, current_user.id)
+    profile = client.dietary_profile
+    return {
+        "role": current_user.role,
+        "name": client.name,
+        "Household_Size": client.Household_Size,
+        "Client_Enrollment_Status": client.Client_Enrollment_Status,
+        "profile": {
+            "restrictions": json.loads(profile.restrictions) if profile else [],
+            "allergies": json.loads(profile.allergies) if profile else [],
+            "preferences": json.loads(profile.preferences) if profile else [],
+        },
+    }
