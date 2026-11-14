@@ -142,8 +142,8 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 ## Phase 10: User Story 11 – Role-Based Access (P1)
 
 - [X] T067 [qa] [US11] `backend/tests/api/test_role_matrix.py`: every route × every role against the plan's permission matrix (allowed, 403, and 401 when logged out)
-- [ ] T068 [ui] [US11] `frontend/src/lib/roles.ts` and nav: each role sees only its screens; unauthorized page
-- [ ] T069 [qa] [US11] Playwright `e2e/tests/us11-roles.spec.ts`: each role sees only its menu, direct URL to another role's screen is denied, API call from the wrong role returns 403
+- [X] T068 [ui] [US11] `frontend/src/lib/roles.ts` and nav: each role sees only its screens; unauthorized page
+- [X] T069 [qa] [US11] Playwright `e2e/tests/us11-roles.spec.ts`: each role sees only its menu, direct URL to another role's screen is denied, API call from the wrong role returns 403
 
 ## Phase 11: User Story 14 – Public Deployment (P1)
 

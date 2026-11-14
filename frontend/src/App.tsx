@@ -9,6 +9,7 @@ import Checkout from "./pages/Checkout";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
+import { canVisit } from "./lib/roles";
 
 function StaffHome() {
   const { user } = useAuth();
@@ -34,6 +35,13 @@ function StaffHome() {
 }
 
 function Router() {
+  const { user, loading } = useAuth();
+  if (loading || !user) {
+    return window.location.pathname === "/login" ? <Login /> : <ProtectedRoute><Home /></ProtectedRoute>;
+  }
+  if (!canVisit(user.role, window.location.pathname)) {
+    return <main className="p-6"><h1 className="text-2xl font-semibold">Unauthorized</h1><p className="mt-2">This screen is not available for your role.</p></main>;
+  }
   if (window.location.pathname === "/profile") {
     return (
       <ProtectedRoute>
