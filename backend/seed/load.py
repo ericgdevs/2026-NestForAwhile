@@ -1,13 +1,16 @@
 """Idempotent synthetic seed loader. Run from backend/: python -m seed.load"""
 import json
 import os
+from datetime import date, timedelta
 
 from sqlmodel import Session, select
 
 from app.auth import email_digest, hash_password
-from app.models import ClientProfile, DietaryProfile, DietaryTier, Role, User
+from app.models import (ClientProfile, DietaryProfile, DietaryTier, DonationSource, GrantFundingStream,
+                        InventoryLocation, InventoryLot, Product, Role, User)
 from app.rules.matrix import restrictions_for_conditions
 from app.rules.tiers import TIERS, tier_for
+from seed.catalog import DONORS, GRANTS, PRODUCTS
 from seed.personas import PERSONAS, STAFF_USERS
 
 # Synthetic demo password only; override with SEED_PASSWORD
@@ -46,9 +49,39 @@ def load_users_and_personas(session: Session) -> None:
     session.commit()
 
 
+def _get_or_create_location(session: Session, aisle: str, shelf: str, bin_: str) -> InventoryLocation:
+    location = session.exec(select(InventoryLocation).where(
+        InventoryLocation.aisle == aisle, InventoryLocation.shelf == shelf, InventoryLocation.bin == bin_)).first()
+    if location is None:
+        location = InventoryLocation(aisle=aisle, shelf=shelf, bin=bin_)
+        session.add(location)
+        session.flush()
+    return location
+
+
+def load_catalog(session: Session) -> None:
+    for entry in PRODUCTS:
+        if session.exec(select(Product).where(Product.barcode == entry["barcode"])).first():
+            continue
+        fields = {k: v for k, v in entry.items() if k not in ("location", "quantity", "expires_in_days", "reorder_threshold")}
+        product = Product(**fields)
+        session.add(product)
+        session.flush()
+        location = _get_or_create_location(session, *entry["location"])
+        session.add(InventoryLot(product_id=product.id, location_id=location.id, quantity=entry["quantity"],
+                                 expiration_date=date.today() + timedelta(days=entry["expires_in_days"]),
+                                 reorder_threshold=entry["reorder_threshold"]))
+    for model, rows in ((DonationSource, DONORS), (GrantFundingStream, GRANTS)):
+        for row in rows:
+            if not session.exec(select(model).where(model.name == row["name"])).first():
+                session.add(model(**row))
+    session.commit()
+
+
 def seed_all(session: Session) -> None:
     load_tiers(session)
     load_users_and_personas(session)
+    load_catalog(session)
 
 
 if __name__ == "__main__":
