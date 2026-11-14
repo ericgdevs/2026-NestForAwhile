@@ -134,3 +134,4 @@
 | Review | Copilot (Sonnet 5.5) | Ran ruff format and lint fixes on the AI layer and its tests (docstring wrapping, isinstance union); no behaviour change, 194 tests pass | Eric approved plan (no E501 ignores) | Eric |
 | Docs | Gemini 3.8 Flash | Deduplicated ai-usage rows after the AI merge | Eric reviewed | Eric |
 | Prove queue promotion is atomic with checkout | Copilot (Sonnet 5.5) | Found promotion already runs inside the checkout transaction (no code change needed); added tests for rollback on promotion failure and for slot release plus promoting the next waiting client | Eric approved a tests-only fix | Eric |
+| Chore | Gemini Flash | Added union merge attributes for ai-usage and decisions docs | None | Eric |
