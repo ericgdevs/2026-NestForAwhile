@@ -6,6 +6,7 @@ on:
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,9 +24,21 @@ jobs:
       - name: Install frontend
         working-directory: frontend
         run: npm ci
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('e2e/package-lock.json') }}
       - name: Install browsers
         working-directory: e2e
-        run: npm ci && npx playwright install --with-deps chromium
+        run: |
+          npm ci
+          if [ "${{ steps.playwright-cache.outputs.cache-hit }}" != "true" ]; then
+            npx playwright install --with-deps chromium
+          else
+            npx playwright install-deps chromium
+          fi
       - name: Build frontend
         working-directory: frontend
         run: npm run build
@@ -35,6 +48,7 @@ jobs:
           JWT_SECRET: synthetic-e2e-secret
           SEED_DEMO_DATA: "true"
           DATABASE_URL: sqlite:///./e2e.db
+          AI_PROVIDER: ollama
         run: |
           export FIELD_ENCRYPTION_KEY="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')"
           alembic upgrade head
@@ -47,6 +61,14 @@ jobs:
           BASE_URL: http://127.0.0.1:8000
           E2E_CLIENT_EMAIL: client.active@example.test
           E2E_CLIENT_PASSWORD: demo-password
+          E2E_INACTIVE_EMAIL: client.inactive@example.test
+          E2E_INACTIVE_PASSWORD: demo-password
           E2E_VOLUNTEER_EMAIL: volunteer@example.test
           E2E_VOLUNTEER_PASSWORD: demo-password
+          E2E_WAREHOUSE_STAFF_EMAIL: warehouse.staff@example.test
+          E2E_WAREHOUSE_STAFF_PASSWORD: demo-password
+          E2E_WAREHOUSE_MANAGER_EMAIL: warehouse.manager@example.test
+          E2E_WAREHOUSE_MANAGER_PASSWORD: demo-password
+          E2E_DIRECTOR_EMAIL: director@example.test
+          E2E_DIRECTOR_PASSWORD: demo-password
         run: npx playwright test
