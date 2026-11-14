@@ -87,6 +87,14 @@ export type CartItem = {
   name: string;
   quantity: number;
   from_recommendation: boolean;
+  // Requested from the API in docs/proposals/recipe-cuisine-contract.md; absent until the backend ships them.
+  sku?: string;
+  status?: components["schemas"]["SafetyStatus"];
+  explanation?: string;
+  sodium_mg?: number | null;
+  sugar_g?: number | null;
+  sat_fat_g?: number | null;
+  potassium_mg?: number | null;
 };
 
 export function getCart(): Promise<{ items: CartItem[] }> {

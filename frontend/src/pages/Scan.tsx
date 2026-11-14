@@ -3,11 +3,8 @@ import { useState } from "react";
 import { saveCartItem, scanProduct, type ScanResult } from "../api/client";
 import BarcodeScanner from "../components/BarcodeScanner";
 import Icon from "../components/Icon";
+import NutritionFacts from "../components/NutritionFacts";
 import { StatusBadge } from "../components/StatusBadge";
-
-function amount(value: number | null, unit: string) {
-  return value === null ? "Not available" : `${value} ${unit}`;
-}
 
 export default function Scan() {
   const [code, setCode] = useState("");
@@ -89,24 +86,7 @@ export default function Scan() {
             <h2>{result.name}</h2>
             <p className="meta tabular">SKU {result.sku}</p>
             <hr className="rule-heavy" />
-            <dl className="facts">
-              <div>
-                <dt>Sodium</dt>
-                <dd>{amount(result.sodium_mg, "mg")}</dd>
-              </div>
-              <div>
-                <dt>Sugar</dt>
-                <dd>{amount(result.sugar_g, "g")}</dd>
-              </div>
-              <div>
-                <dt>Saturated fat</dt>
-                <dd>{amount(result.sat_fat_g, "g")}</dd>
-              </div>
-              <div>
-                <dt>Potassium</dt>
-                <dd>{amount(result.potassium_mg, "mg")}</dd>
-              </div>
-            </dl>
+            <NutritionFacts facts={result} />
             <hr className="rule-heavy" />
             <p className="why">
               <strong>Why: </strong>

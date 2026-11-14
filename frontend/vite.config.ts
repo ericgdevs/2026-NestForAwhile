@@ -1,24 +1,30 @@
-import { defineConfig } from "vite";
+import { defineConfig, type ProxyOptions } from "vite";
 import react from "@vitejs/plugin-react";
+
+// Screens like /cart share a path with the API: browser page loads (Accept: text/html) get the app, fetches go to FastAPI.
+const api: ProxyOptions = {
+  target: "http://127.0.0.1:8000",
+  bypass: (req) => (req.headers.accept?.includes("text/html") ? "/index.html" : undefined),
+};
 
 export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/analytics": "http://127.0.0.1:8000",
-      "/auth": "http://127.0.0.1:8000",
-      "/capacity": "http://127.0.0.1:8000",
-      "/cart": "http://127.0.0.1:8000",
-      "/checkout": "http://127.0.0.1:8000",
-      "/health": "http://127.0.0.1:8000",
-      "/inventory": "http://127.0.0.1:8000",
-      "/me": "http://127.0.0.1:8000",
-      "/products": "http://127.0.0.1:8000",
-      "/profile": "http://127.0.0.1:8000",
-      "/queue": "http://127.0.0.1:8000",
-      "/recipes": "http://127.0.0.1:8000",
-      "/recommendations": "http://127.0.0.1:8000",
-      "/reports": "http://127.0.0.1:8000",
+      "/analytics": api,
+      "/auth": api,
+      "/capacity": api,
+      "/cart": api,
+      "/checkout": api,
+      "/health": api,
+      "/inventory": api,
+      "/me": api,
+      "/products": api,
+      "/profile": api,
+      "/queue": api,
+      "/recipes": api,
+      "/recommendations": api,
+      "/reports": api,
     },
   },
 });

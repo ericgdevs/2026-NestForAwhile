@@ -33,39 +33,6 @@ export default function Login() {
 
   return (
     <main className="login">
-      <section className="login-brand" aria-label="About Epic-Cure">
-        <span className="wordmark">
-          <strong>Epic-Cure</strong>
-          <span>MTG Warehouse</span>
-        </span>
-        <p className="brand-line">Groceries that fit your health.</p>
-        <p>Scan any product to see, in plain words, whether it works for your diet.</p>
-        <div className="legend" aria-label="What the labels mean">
-          <strong>What the labels mean</strong>
-          <hr className="rule-heavy" />
-          <div className="facts">
-            <div>
-              <span className="status-badge status-badge-approved">
-                <Icon name="check" /> Good match
-              </span>
-              <span>Fits your choices</span>
-            </div>
-            <div>
-              <span className="status-badge status-badge-capped">
-                <Icon name="alert" /> Please check
-              </span>
-              <span>Fine in moderation</span>
-            </div>
-            <div>
-              <span className="status-badge status-badge-restricted">
-                <Icon name="stop" /> Not recommended
-              </span>
-              <span>Best to skip</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <header className="login-topbar">
         <span className="wordmark">
           <strong>Epic-Cure</strong>

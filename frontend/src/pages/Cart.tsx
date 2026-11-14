@@ -2,6 +2,12 @@ import { useEffect, useState } from "react";
 
 import { deleteCartItem, getCart, saveCartItem, type CartItem } from "../api/client";
 import Icon from "../components/Icon";
+import NutritionFacts from "../components/NutritionFacts";
+import { StatusBadge } from "../components/StatusBadge";
+
+// The cart API doesn't send nutrition yet (see docs/proposals); show the panel once any value arrives.
+const hasNutrition = (item: CartItem) =>
+  [item.sodium_mg, item.sugar_g, item.sat_fat_g, item.potassium_mg].some((value) => value !== undefined);
 
 export default function Cart() {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -41,43 +47,54 @@ export default function Cart() {
         </div>
       </header>
 
-      <section className="panel" aria-label="Cart items">
-        {items.length === 0 ? (
-          <div className="empty">
-            <Icon name="cart" />
-            <strong>Your cart is empty.</strong>
-            <span>Add your picks from Home or scan a product to get started.</span>
-          </div>
-        ) : (
-          <ul className="ingredients" style={{ margin: 0 }}>
-            {items.map((item) => (
-              <li key={item.product_id} style={{ alignItems: "center", padding: "0.75rem 0" }}>
-                <div>
-                  <h2 style={{ fontSize: "1.0625rem" }}>{item.name}</h2>
-                  {item.from_recommendation && <span className="tag">Recommended for you</span>}
-                </div>
-                <div className="stepper">
-                  <button
-                    aria-label={`Decrease ${item.name}`}
-                    type="button"
-                    onClick={() => void update(item, item.quantity - 1)}
-                  >
-                    −
-                  </button>
-                  <output aria-live="polite">{item.quantity}</output>
-                  <button
-                    aria-label={`Increase ${item.name}`}
-                    type="button"
-                    onClick={() => void update(item, item.quantity + 1)}
-                  >
-                    +
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
+      {items.length === 0 ? (
+        <div className="panel empty">
+          <Icon name="cart" />
+          <strong>Your cart is empty.</strong>
+          <span>Add your picks from Home or scan a product to get started.</span>
+        </div>
+      ) : (
+        <section aria-label="Cart items" className="grid grid-2">
+          {items.map((item) => (
+            <article key={item.product_id} className="label-panel">
+              {item.status && <StatusBadge bar status={item.status} />}
+              <h2>{item.name}</h2>
+              {item.sku && <p className="meta tabular">SKU {item.sku}</p>}
+              <hr className="rule-heavy" />
+              {hasNutrition(item) ? (
+                <NutritionFacts facts={item} />
+              ) : (
+                <p className="why">Nutrition facts not available yet.</p>
+              )}
+              {item.explanation && (
+                <p className="why">
+                  <strong>Why: </strong>
+                  {item.explanation}
+                </p>
+              )}
+              <hr className="rule-heavy" />
+              <div className="figure-row">
+                <span>Quantity in cart:</span> <b>{item.quantity}</b>
+              </div>
+              <hr className="rule-mid" />
+              {item.from_recommendation && (
+                <span className="tag" style={{ alignSelf: "flex-start", marginBottom: "0.75rem" }}>
+                  Recommended for you
+                </span>
+              )}
+              <div className="stepper" style={{ marginTop: "auto", alignSelf: "stretch", justifyContent: "space-between" }}>
+                <button aria-label={`Decrease ${item.name}`} type="button" onClick={() => void update(item, item.quantity - 1)}>
+                  −
+                </button>
+                <output aria-live="polite">{item.quantity}</output>
+                <button aria-label={`Increase ${item.name}`} type="button" onClick={() => void update(item, item.quantity + 1)}>
+                  +
+                </button>
+              </div>
+            </article>
+          ))}
+        </section>
+      )}
 
       {items.length > 0 && (
         <a className="btn btn-secondary" href="/recipes" style={{ marginTop: "1rem" }}>
