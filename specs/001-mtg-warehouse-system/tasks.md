@@ -102,7 +102,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 - [X] T040 [api] [US4] `backend/app/services/nutrition.py` (local lookup) and `routes/products.py`: `GET /products/scan/{code}` returns nutrition, image, status, explanation; unknown code gives a friendly 404; tests for Green, Yellow, Red, missing nutrition → Capped
 - [X] T041 [api] [US4] `backend/app/services/off.py`: Open Food Facts lookup by barcode with short timeout, mapping into `products`, cache; tests use saved fixtures (`backend/tests/fixtures/off_*.json`), never live network
-- [ ] T042 [api] [US4] `backend/app/services/usda.py`: USDA FoodData Central enrichment for missing nutrients (`USDA_API_KEY`), cache, and the lookup order local → Open Food Facts → USDA in `nutrition.py`; fixture-based tests, scan stays under 3 s when cached
+- [X] T042 [api] [US4] `backend/app/services/usda.py`: USDA FoodData Central enrichment for missing nutrients (`USDA_API_KEY`), cache, and the lookup order local → Open Food Facts → USDA in `nutrition.py`; fixture-based tests, scan stays under 3 s when cached
 - [ ] T043 [ui] [US4] `frontend/src/components/BarcodeScanner.tsx`: smartphone camera scanning that works on iOS Safari (library choice needs approval, research R6)
 - [ ] T044 [ui] [US4] `frontend/src/pages/Scan.tsx`: scanner plus always-visible manual SKU field and product result card (nutrition facts, image when available, status, explanation)
 - [ ] T045 [qa] [US4] Playwright `e2e/tests/us4-scan.spec.ts`: manual SKU for Green, Yellow, Red, unknown SKU; camera permission smoke test using Chromium fake media device

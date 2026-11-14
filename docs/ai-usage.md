@@ -59,3 +59,4 @@
 | Implement T039 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for safe recommendations, rationale visibility, and household quantities | None | Caden |
 | Implement T040 | Copilot (GPT-5.6 Terra) | Added local barcode/SKU nutrition lookup with deterministic safety classification and friendly missing-product errors | None | Caden |
 | Implement T041 | Copilot (GPT-5.6 Terra) | Added a short-timeout, fixture-testable Open Food Facts barcode mapper with resilient failure handling | None | Caden |
+| Implement T042 | Copilot (GPT-5.6 Terra) | Added cached USDA FoodData Central enrichment and local → Open Food Facts → USDA scan fallback ordering with mocked tests | None | Caden |
