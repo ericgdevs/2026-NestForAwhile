@@ -119,6 +119,15 @@ components:
       type: object
       properties:
         recipes: { type: array, items: { $ref: '#/components/schemas/Recipe' } }
+        missing_ingredients:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id: { type: integer }
+              name: { type: string }
+              reason: { type: string }
+              location: { type: object, properties: { aisle: { type: string }, shelf: { type: string }, bin: { type: string } } }
         used_fallback: { type: boolean }
     CheckoutResult:
       type: object
