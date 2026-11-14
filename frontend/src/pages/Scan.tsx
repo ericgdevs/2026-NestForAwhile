@@ -29,7 +29,7 @@ export default function Scan() {
           <p className="mt-3 max-w-md text-stone-500">Scan a barcode to get a clear, calm read on nutrition and dietary fit.</p>
         </div>
       </div>
-      <div className="soft-card overflow-hidden p-4">
+      <div className="soft-card overflow-hidden p-3 sm:p-4">
         <BarcodeScanner
           onDetected={(value) => {
             setCode(value);
@@ -38,7 +38,7 @@ export default function Scan() {
         />
       </div>
         <form
-          className="flex gap-2"
+          className="flex flex-col gap-2 sm:flex-row"
           onSubmit={(event) => {
             event.preventDefault();
             void scan();
@@ -54,13 +54,13 @@ export default function Scan() {
             value={code}
             onChange={(event) => setCode(event.target.value)}
           />
-          <button className="accent-button px-5 py-3" type="submit">
+          <button className="accent-button px-5 py-3 sm:min-w-24" type="submit">
             Check
           </button>
         </form>
         {error && <p className="text-sm text-red-800">{error}</p>}
         {result && (
-          <article className="soft-card space-y-4 p-5">
+          <article className="soft-card space-y-4 p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold">{result.name}</h2>
@@ -69,16 +69,16 @@ export default function Scan() {
               <StatusBadge status={result.status} />
             </div>
             <p>{result.explanation}</p>
-            <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
-              <div><dt className="text-slate-500">Sodium</dt><dd>{result.sodium_mg ?? "Unknown"} mg</dd></div>
-              <div><dt className="text-slate-500">Sugar</dt><dd>{result.sugar_g ?? "Unknown"} g</dd></div>
-              <div><dt className="text-slate-500">Sat. fat</dt><dd>{result.sat_fat_g ?? "Unknown"} g</dd></div>
-              <div><dt className="text-slate-500">Potassium</dt><dd>{result.potassium_mg ?? "Unknown"} mg</dd></div>
+            <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
+              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Sodium</dt><dd className="mt-1 font-semibold">{result.sodium_mg ?? "Unknown"} mg</dd></div>
+              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Sugar</dt><dd className="mt-1 font-semibold">{result.sugar_g ?? "Unknown"} g</dd></div>
+              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Sat. fat</dt><dd className="mt-1 font-semibold">{result.sat_fat_g ?? "Unknown"} g</dd></div>
+              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Potassium</dt><dd className="mt-1 font-semibold">{result.potassium_mg ?? "Unknown"} mg</dd></div>
             </dl>
             {result.image_url && <img alt="" className="max-h-48 rounded-lg" src={result.image_url} />}
             {result.product_id && (
               <button
-                className="rounded-lg border px-3 py-2"
+                className="accent-button px-4 py-2 text-sm"
                 onClick={() => void saveCartItem(result.product_id!, 1)}
               >
                 Add to cart

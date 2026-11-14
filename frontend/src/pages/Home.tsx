@@ -12,14 +12,14 @@ export default function Home() {
 
   return (
     <main className="space-y-8">
-      <div className="flex items-end justify-between gap-4">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">Good to see you</p>
           <h1 className="display-title mt-3">MTG Warehouse<br />shop smarter.</h1>
         </div>
-        <span className="pill text-xs font-bold text-stone-600">AI matched</span>
+        <span className="pill text-xs font-bold text-stone-600"><span className="status-dot" aria-hidden="true" />AI matched</span>
       </div>
-      <section className="soft-card overflow-hidden bg-[#2a2928] p-6 text-stone-50" aria-labelledby="recommendations-heading">
+      <section className="soft-card overflow-hidden bg-[#2a2928] p-5 text-stone-50 sm:p-6" aria-labelledby="recommendations-heading">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ffb28a]">Your next best picks</p>
@@ -34,7 +34,7 @@ export default function Home() {
             <p className="rounded-2xl bg-white/10 p-4 text-stone-300">No recommendations yet.</p>
           )}
           {recommendations.map((item) => (
-            <article key={item.product_id} className="rounded-2xl bg-[#f7f1e9] p-4 text-stone-900">
+            <article key={item.product_id} className="rounded-[1.25rem] bg-[#f7f1e9] p-4 text-stone-900 shadow-sm">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h3 className="font-semibold">{item.name}</h3>
                 <StatusBadge status={item.status} />
