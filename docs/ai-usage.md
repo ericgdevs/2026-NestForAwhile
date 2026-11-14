@@ -36,7 +36,6 @@
 | Implement T014 | Copilot (GPT-5.6 Terra) | Added catalog, inventory lot, movement, and audit event models with required inventory metadata tests | None | Caden |
 | Implement T015 | Copilot (GPT-5.6 Terra) | Added shopping session, capacity, queue, cart, recommendation, checkout, and intervention models with metadata tests | None | Caden |
 | Implement T016 | Copilot (GPT-5.6 Terra) | Added donor, grant, report, and anonymized AI request models with privacy-focused metadata tests | None | Caden |
-| Implement T017 | Copilot (GPT-5.6 Terra) | Added Alembic configuration, initial schema migration, and SQLite upgrade validation | None | Caden |
 | Implement T018 | Copilot (GPT-5.6 Terra) | Added Argon2 password verification, JWT cookie helpers, role dependencies, and auth failure tests | None | Caden |
 | Implement T019 | Copilot (GPT-5.6 Terra) | Added synthetic role, client enrollment, household-size, and dietary-profile seed data with isolated tests | None | Caden |
 | Implement T020 | Copilot (GPT-5.6 Terra) | Added synthetic catalog, nutrition/allergen flags, inventory lots with mixed expiries, donors, grants, and seed coverage | None | Caden |
@@ -54,7 +53,6 @@
 | Implement T034 | Copilot (GPT-5.6 Terra) | Added encrypted dietary profile updates, deterministic tier recomputation, validation, and route tests | None | Caden |
 | Implement T035 | Copilot (GPT-5.6 Terra) | Added the editable nine-choice dietary profile page with save feedback and focused UI coverage | None | Caden |
 | Implement T036 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for selecting, saving, and reloading dietary choices | None | Caden |
-| Implement T037 | Copilot (GPT-5.6 Terra) | Added deterministic inventory-aware recommendations with safety filtering, rationale, and household-scaled quantities | None | Caden |
 | Implement T038 | Copilot (GPT-5.6 Terra) | Added the personalized recommendation page with deterministic rationale, quantities, and accessible safety badges | None | Caden |
 | Implement T039 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for safe recommendations, rationale visibility, and household quantities | None | Caden |
 | Implement T040 | Copilot (GPT-5.6 Terra) | Added local barcode/SKU nutrition lookup with deterministic safety classification and friendly missing-product errors | None | Caden |
@@ -88,7 +86,6 @@
 | Implement T065 | Copilot (GPT-5.6 Terra) | Added volunteer checkout review, hard-stop error display, completion action, and receipt view | None | Caden |
 | Implement T066 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for volunteer checkout session review | None | Caden |
 | Implement T075/T078/T081 | Copilot (GPT-5.6 Terra) | Added inventory audit, replenishment, and FIFO lot APIs with focused route tests | None | Caden |
-| Implement T084/T085 | Copilot (GPT-5.6 Terra) | Added queue promotion, claim expiry, queue endpoints, and manager capacity updates with tests | None | Caden |
 | Implement T088 | Copilot (GPT-5.6 Terra) | Added anonymized analytics aggregation and excluded expired lots from checkout with route coverage | None | Caden |
 | Implement T091/T092 | Copilot (GPT-5.6 Terra) | Added donor/grant lot attribution, report aggregation, migration, and dependency-free DOCX generation with validation | None | Caden |
 | Implement T095 | Copilot (GPT-5.6 Terra) | Completed the contract route coverage with checkout intervention handling and a focused test | None | Caden |
@@ -129,18 +126,10 @@
 | Switch accent palette to blue | Copilot / Impeccable | Replaced the orange/coral accent system with cool blue backgrounds, highlights, buttons, focus states, and client-screen surfaces | Caden supplied the color direction | Caden |
 | Rebuild Epic-Cure UI | Copilot / Impeccable | Rebuilt the shared visual system, responsive shell, role-aware navigation, sign-in experience, and staff overview around plain-language task-first patterns | Caden approved the full UI rebuild direction | Caden |
 | Redesign UI with professional shadows and dashboard layout | Copilot / Impeccable | Refined visual system with multi-layer ambient shadows, rounded card architecture, pastel metric chips, and responsive navigation based on reference images | Caden provided reference designs and approved implementation plan | Caden |
-| Implement | Copilot (Sonnet 5.5) | T011/T012: config, db engine (SQLite/PostgreSQL), Fernet EncryptedText, deps, .env.example | None | Eric |
-| Implement | Copilot (Sonnet 5.5) | T013-T016: SQLModel tables (incl. DietaryTier, ClinicalRule, InventoryLocation, DonationSource, GrantFundingStream) with official field names, Pydantic schemas, model test | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T017: Alembic init + migration 0001 for all tables, upgrade-head test | Fixed generated migration import by hand | Eric |
-| Implement | Copilot (Sonnet 5.5) | T018: Argon2/JWT auth skeleton, Role guard, route skeletons (501) and tests | None | Eric |
-| Implement | Copilot (Sonnet 5.5) | T019: idempotent seed loader (tiers, one user per role, five synthetic personas) and tests | None | Eric |
-| Implement | Copilot (Sonnet 5.5) | T020: catalog seed framework (6 sample products, locations, lots, donors/grants) and loader tests | None | Eric |
-| Implement | Copilot (Sonnet 5.5) | T021: clinical_rules_matrix.json (synthetic placeholders, condition mapping) + validating loader and tests | None | Eric |
-| Implement | Copilot (Sonnet 5.5) | T022: tiers.py (placeholder tiers, strictest wins) and classify.py with table-driven tests | None | Eric |
-| Implement | Copilot (Sonnet 5.5) | T023: shared conftest fixtures (seeded DB, login_as per role, mock_ai stub) and fixture tests | None | Eric |
-| Implement | Copilot (Sonnet 5.5) | T031: session service (Initialize Shopping Session), POST /auth/login, POST /auth/logout, GET /me per contract, flow tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T037: deterministic recommendation service (stock, expiry, rules, household scaling), generated at session start, GET /recommendations and tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | US1.3: FIFO queue service (join, promote, expire), session start/end/claim primitives, GET/POST /queue/me and tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | US1.3: capacity service (computed Active_Floor_Shoppers/Queue_Waiting), GET/PUT /capacity, cookie renamed to `session` per contract | None | Eric |
 | Integration | Copilot (Sonnet 5.5) | Merged origin/main into the T051 branch: this branch's AI layer is the base; folded in main's recipe fallback and recipe instructions, added Groq 429 backoff and default model, rebuilt /recipes on run_ai_task plus rules guards with missing-ingredient locations, removed main's duplicate providers, adapted AI tests to main's classify() | Eric approved plan and decisions (this branch's AI layer is the base; Groq retry ported) | Eric |
 | Review | Copilot (Sonnet 5.5) | Ran ruff format and lint fixes on the AI layer and its tests (docstring wrapping, isinstance union); no behaviour change, 194 tests pass | Eric approved plan (no E501 ignores) | Eric |
+| Docs | Gemini 3.8 Flash | Deduplicated ai-usage rows after the AI merge | Eric reviewed | Eric |
