@@ -29,3 +29,9 @@
 | Spec (specify) | Copilot (Sonnet 5.5) | Drafted spec.md (14 stories, 24 FRs, 11 success criteria) and quality checklist from Eric's stories | Eric supplied all stories; reviewed and approved the plan | Eric |
 | Spec (constitution) | Copilot (Sonnet 5.5) | Drafted constitution v1.0.0 from Eric's principles; filled plan-template Constitution Check | Eric supplied all principles and rules; reviewed draft | Eric |
 | Implement (T024) | Copilot (Sonnet 5.5) | Added OpenAPI type generation and a cookie-aware typed fetch client with mocked error handling tests | Caden approved the dependency and reviewed the generated contract output | Caden |
+| Implement (T035) | Copilot (Sonnet 5.5) | Added the plain-language dietary profile page with mock saved-state feedback and selection tests | Caden reviewed the UI copy and choice list | Caden |
+| Implement (T038) | Copilot (Sonnet 5.5) | Added realistic mock recommendations with deterministic rationale and accessible status labels | Caden reviewed the recommendation copy | Caden |
+| Implement (T043) | Copilot (Sonnet 5.5) | Added an iOS-Safari-compatible ZXing scanner with a mandatory manual SKU fallback | Caden selected and approved @zxing/browser | Caden |
+| Implement (T044) | Copilot (Sonnet 5.5) | Added the scan page with synthetic safety results, explanations, nutrition facts, and unknown-code handling | Caden reviewed the mock product data | Caden |
+| Implement (T047) | Copilot (Sonnet 5.5) | Added a shared mock cart with quantity controls, removal, and add-to-cart actions from recommendations and scans | Caden reviewed the cart interaction scope | Caden |
+| Implement (T061) | Copilot (Sonnet 5.5) | Added inventory-aware mock recipes with fallback messaging and aisle/shelf/bin locations | Caden reviewed the fallback UX and synthetic ingredient data | Caden |
