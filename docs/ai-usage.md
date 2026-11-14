@@ -52,3 +52,4 @@
 | Implement T032 | Copilot (GPT-5.6 Terra) | Added the client login form, navigation, and friendly invalid/inactive-account messages with component tests | None | Caden |
 | Implement T033 | Copilot (GPT-5.6 Terra) | Added the US1 Playwright coverage and staff-facing active shopper count in the app shell | None | Caden |
 | Implement T034 | Copilot (GPT-5.6 Terra) | Added encrypted dietary profile updates, deterministic tier recomputation, validation, and route tests | None | Caden |
+| Implement T035 | Copilot (GPT-5.6 Terra) | Added the editable nine-choice dietary profile page with save feedback and focused UI coverage | None | Caden |

@@ -1,5 +1,6 @@
 import { AuthProvider, ProtectedRoute } from "./lib/auth";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
@@ -28,6 +29,13 @@ function Home() {
 }
 
 function Router() {
+  if (window.location.pathname === "/profile") {
+    return (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    );
+  }
   return window.location.pathname === "/login" ? (
     <Login />
   ) : (
