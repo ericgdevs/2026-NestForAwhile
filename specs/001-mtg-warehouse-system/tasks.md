@@ -66,7 +66,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T020 [api] Seed catalog in `backend/seed/load.py`: synthetic products (barcodes, nutrition, images, allergens), lots across aisles/shelves/bins with mixed expiry dates and thresholds, synthetic donors/grants
 - [X] T021 [docs] `backend/app/rules/clinical_rules_matrix.json`: thresholds and exclusions for Low Sugar, Low Sodium, Heart Healthy, Kidney Friendly, Vegetarian, Vegan, Gluten Free, Nut Allergy, Dairy Free; mark values as synthetic placeholders until Epic Cure guidance is confirmed
 - [X] T022 [api] `backend/app/rules/tiers.py` (`Dietary_Tier_ID` mapping) and `classify.py` (`classify(product, profile)` → Approved/Capped/Restricted + plain-language reason; allergen/exclusion → Restricted; missing data → Capped); table-driven tests in `backend/tests/unit/test_rules.py`
-- [ ] T023 [qa] `backend/tests/conftest.py`: temp SQLite per test, seeded data, logged-in client per role, mocked AI provider fixture
+- [X] T023 [qa] `backend/tests/conftest.py`: temp SQLite per test, seeded data, logged-in client per role, mocked AI provider fixture
 - [ ] T024 [P] [ui] OpenAPI types: `npm run gen:api` script (openapi-typescript from `contracts/openapi.yaml`) and typed fetch wrapper `frontend/src/api/client.ts` (cookies included) (dependency approval)
 - [ ] T025 [ui] App shell: `frontend/src/App.tsx` router, mobile-first layout, auth context, protected-route guard in `frontend/src/lib/auth.tsx`
 - [ ] T026 [P] [ui] `frontend/src/components/StatusBadge.tsx`: Green/Yellow/Red with icon and text (never color alone), friendly wording
