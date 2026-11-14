@@ -44,3 +44,4 @@
 | Risk fix | Copilot (GPT-5.6 Terra) | Removed tracked TypeScript/Vite build outputs, added precise ignore rules, and changed the frontend build to typecheck without emitting artifacts | None | Caden |
 | Implement T023 | Copilot (GPT-5.6 Terra) | Added isolated SQLite, seeded-data, role login, and mocked AI fixtures with a fixture smoke test | None | Caden |
 | Implement T024 | Copilot (GPT-5.6 Terra) | Generated OpenAPI TypeScript types and added a cookie-including typed API client with a fetch test | None | Caden |
+| Implement T025 | Copilot (GPT-5.6 Terra) | Added the mobile-first app shell, auth context, protected route guard, and signed-out behavior test | None | Caden |

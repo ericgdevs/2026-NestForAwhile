@@ -68,7 +68,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T022 [api] `backend/app/rules/tiers.py` (`Dietary_Tier_ID` mapping) and `classify.py` (`classify(product, profile)` → Approved/Capped/Restricted + plain-language reason; allergen/exclusion → Restricted; missing data → Capped); table-driven tests in `backend/tests/unit/test_rules.py`
 - [X] T023 [qa] `backend/tests/conftest.py`: temp SQLite per test, seeded data, logged-in client per role, mocked AI provider fixture
 - [X] T024 [P] [ui] OpenAPI types: `npm run gen:api` script (openapi-typescript from `contracts/openapi.yaml`) and typed fetch wrapper `frontend/src/api/client.ts` (cookies included) (dependency approval)
-- [ ] T025 [ui] App shell: `frontend/src/App.tsx` router, mobile-first layout, auth context, protected-route guard in `frontend/src/lib/auth.tsx`
+- [X] T025 [ui] App shell: `frontend/src/App.tsx` router, mobile-first layout, auth context, protected-route guard in `frontend/src/lib/auth.tsx`
 - [ ] T026 [P] [ui] `frontend/src/components/StatusBadge.tsx`: Green/Yellow/Red with icon and text (never color alone), friendly wording
 - [ ] T027 [deploy] Multi-stage `Dockerfile` (build frontend, serve with FastAPI) and the static-files mount line in `backend/app/main.py` (coordinate with Aditya)
 - [ ] T028 [deploy] `deploy/azure-setup.md` and provision Azure resource group, App Service, and PostgreSQL Flexible Server (commands recorded, no secrets)
