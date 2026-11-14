@@ -1,0 +1,254 @@
+openapi: 3.1.0
+info:
+  title: NestForAwhile MTG Warehouse API
+  version: 0.1.0
+  description: Contract boundary for generated TypeScript types. Roles are enforced server-side.
+servers:
+  - url: /api
+security:
+  - cookieAuth: []
+components:
+  securitySchemes:
+    cookieAuth: { type: apiKey, in: cookie, name: session }
+  schemas:
+    Role: { type: string, enum: [Client, Volunteer, Warehouse Staff, Warehouse Manager, Director] }
+    SafetyStatus: { type: string, enum: [Approved, Capped, Restricted], description: "Green / Yellow / Red. Set only by the rules engine." }
+    Error:
+      type: object
+      required: [detail]
+      properties: { detail: { type: string } }
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties: { email: { type: string }, password: { type: string } }
+    LoginResult:
+      type: object
+      required: [role]
+      properties:
+        role: { $ref: '#/components/schemas/Role' }
+        Shopping_Session_Token: { type: string, nullable: true }
+        queue: { $ref: '#/components/schemas/QueueState' }
+    QueueState:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [waiting, ready, claimed, expired, cancelled] }
+        position: { type: integer, nullable: true }
+        message: { type: string }
+    Capacity:
+      type: object
+      required: [Active_Floor_Shoppers, Max_Floor_Capacity, Queue_Waiting]
+      properties:
+        Active_Floor_Shoppers: { type: integer }
+        Max_Floor_Capacity: { type: integer, minimum: 1 }
+        Queue_Waiting: { type: integer }
+    DietaryProfile:
+      type: object
+      required: [restrictions, allergies]
+      properties:
+        restrictions: { type: array, items: { type: string } }
+        allergies: { type: array, items: { type: string } }
+        preferences: { type: array, items: { type: string } }
+        Dietary_Tier_ID: { type: integer, readOnly: true }
+    Client:
+      type: object
+      properties:
+        name: { type: string }
+        Household_Size: { type: integer, minimum: 1 }
+        Client_Enrollment_Status: { type: string, enum: [Active, Inactive, Pending] }
+        profile: { $ref: '#/components/schemas/DietaryProfile' }
+    Nutrition:
+      type: object
+      properties:
+        serving_size_g: { type: number, nullable: true }
+        calories: { type: number, nullable: true }
+        sodium_mg: { type: number, nullable: true }
+        sugar_g: { type: number, nullable: true }
+        sat_fat_g: { type: number, nullable: true }
+        fiber_g: { type: number, nullable: true }
+        protein_g: { type: number, nullable: true }
+    ProductResult:
+      type: object
+      required: [name, status, explanation]
+      properties:
+        product_id: { type: integer }
+        name: { type: string }
+        image_url: { type: string, nullable: true }
+        nutrition: { $ref: '#/components/schemas/Nutrition' }
+        status: { $ref: '#/components/schemas/SafetyStatus' }
+        explanation: { type: string }
+        in_stock: { type: boolean }
+    Recommendation:
+      type: object
+      required: [product_id, name, suggested_qty, rationale, status]
+      properties:
+        product_id: { type: integer }
+        name: { type: string }
+        suggested_qty: { type: integer, minimum: 1 }
+        rationale: { type: string }
+        status: { $ref: '#/components/schemas/SafetyStatus' }
+    CartItem:
+      type: object
+      required: [product_id, quantity]
+      properties:
+        product_id: { type: integer }
+        name: { type: string }
+        quantity: { type: integer, minimum: 1 }
+        status: { $ref: '#/components/schemas/SafetyStatus' }
+    Cart:
+      type: object
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/CartItem' } }
+    Recipe:
+      type: object
+      required: [title, steps, ingredients]
+      properties:
+        title: { type: string }
+        steps: { type: array, items: { type: string } }
+        ingredients:
+          type: array
+          items:
+            type: object
+            required: [name, in_cart_or_stock]
+            properties:
+              name: { type: string }
+              product_id: { type: integer, nullable: true }
+              in_cart_or_stock: { type: boolean }
+              location: { type: object, nullable: true, properties: { aisle: { type: string }, shelf: { type: string }, bin: { type: string } } }
+    RecipeResponse:
+      type: object
+      properties:
+        recipes: { type: array, items: { $ref: '#/components/schemas/Recipe' } }
+        used_fallback: { type: boolean }
+    CheckoutResult:
+      type: object
+      properties:
+        status: { type: string, enum: [completed, blocked] }
+        blocked_items: { type: array, items: { $ref: '#/components/schemas/CartItem' } }
+        receipt_id: { type: integer, nullable: true }
+    AuditSubmit:
+      type: object
+      required: [product_id, counted_qty]
+      properties: { product_id: { type: integer }, counted_qty: { type: integer, minimum: 0 } }
+    AuditResult:
+      type: object
+      properties: { expected_qty: { type: integer }, counted_qty: { type: integer }, variance: { type: integer } }
+    ReplenishmentItem:
+      type: object
+      properties:
+        product_id: { type: integer }
+        name: { type: string }
+        quantity: { type: integer }
+        reorder_threshold: { type: integer }
+        aisle: { type: string }
+        shelf: { type: string }
+        bin: { type: string }
+        priority: { type: integer }
+    Lot:
+      type: object
+      properties:
+        lot_id: { type: integer }
+        product_id: { type: integer }
+        quantity: { type: integer }
+        expiration_date: { type: string, format: date }
+        expiring_soon: { type: boolean }
+    Analytics:
+      type: object
+      properties:
+        families_served: { type: integer }
+        visits_completed: { type: integer }
+        pounds_distributed: { type: number }
+        inventory_usage: { type: integer }
+        recommendation_adoption_rate: { type: number }
+        waste_reduction: { type: object, properties: { expiring_soon_lots: { type: integer }, pounds_saved: { type: number } } }
+paths:
+  /auth/login:
+    post:
+      summary: Log in; starts a shopping session for Active clients if the floor has room, otherwise joins the queue
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } } }
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/LoginResult' } } } }
+        '401': { description: Invalid credentials, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '403': { description: Enrollment not Active, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /auth/logout:
+    post: { summary: Log out and end the session, responses: { '204': { description: Done } } }
+  /me:
+    get: { summary: Current user, role, and client profile, responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Client' } } } } } }
+  /me/profile:
+    put:
+      summary: Save dietary restrictions, allergies, preferences (Client). Server assigns Dietary_Tier_ID.
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/DietaryProfile' } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/DietaryProfile' } } } } }
+  /queue/me:
+    get: { summary: My queue state (Client), responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/QueueState' } } } } } }
+    post: { summary: Confirm I am here when my turn is ready (Client), responses: { '200': { description: Session created, content: { application/json: { schema: { $ref: '#/components/schemas/LoginResult' } } } }, '409': { description: Claim window expired } } }
+  /capacity:
+    get: { summary: Floor counts (Volunteer, Warehouse Staff, Warehouse Manager), responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Capacity' } } } } } }
+    put:
+      summary: Set Max_Floor_Capacity (Warehouse Manager)
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [Max_Floor_Capacity], properties: { Max_Floor_Capacity: { type: integer, minimum: 1 } } } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Capacity' } } } } }
+  /recommendations:
+    get: { summary: In-stock, rules-approved recommendations for my session (Client), responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Recommendation' } } } } } } }
+  /products/scan/{code}:
+    get:
+      summary: Barcode or SKU lookup with safety status (Client)
+      parameters: [{ name: code, in: path, required: true, schema: { type: string } }]
+      responses:
+        '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/ProductResult' } } } }
+        '404': { description: Not found, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /cart:
+    get: { summary: Live cart (Client), responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Cart' } } } } } }
+  /cart/items:
+    post:
+      summary: Add an item (Client)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CartItem' } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Cart' } } } } }
+  /cart/items/{product_id}:
+    parameters: [{ name: product_id, in: path, required: true, schema: { type: integer } }]
+    patch:
+      summary: Change quantity (Client)
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [quantity], properties: { quantity: { type: integer, minimum: 1 } } } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Cart' } } } } }
+    delete: { summary: Remove an item (Client), responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Cart' } } } } } }
+  /recipes:
+    post:
+      summary: Inventory-aware recipes from the scanned item, Active_Cart_Manifest, and current inventory (Client)
+      requestBody: { content: { application/json: { schema: { type: object, properties: { scanned_product_id: { type: integer, nullable: true } } } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RecipeResponse' } } } } }
+  /checkout/{session_token}/validate:
+    post:
+      summary: Validate and complete checkout; hard stop on Restricted items (Volunteer, Warehouse Manager)
+      parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }]
+      responses: { '200': { description: Completed or blocked, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutResult' } } } } }
+  /checkout/{session_token}/interventions:
+    post:
+      summary: Record a volunteer intervention, such as removing a restricted item (Volunteer, Warehouse Manager)
+      parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [product_id, action], properties: { product_id: { type: integer }, action: { type: string, enum: [removed_item] }, note: { type: string } } } } } }
+      responses: { '200': { description: OK } }
+  /inventory/audit/{code}:
+    get: { summary: Scan and view current quantity (Warehouse Staff, Warehouse Manager), parameters: [{ name: code, in: path, required: true, schema: { type: string } }], responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { product_id: { type: integer }, name: { type: string }, current_qty: { type: integer } } } } } } } }
+  /inventory/audit:
+    post:
+      summary: Submit counted quantity; computes variance, stores audit event, updates inventory (Warehouse Staff, Warehouse Manager)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/AuditSubmit' } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/AuditResult' } } } } }
+  /inventory/replenishment:
+    get:
+      summary: Items below threshold with aisle/shelf/bin (Warehouse Staff, Warehouse Manager)
+      parameters: [{ name: sort, in: query, schema: { type: string, enum: [priority, location, name], default: priority } }]
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/ReplenishmentItem' } } } } } }
+  /inventory/lots:
+    get: { summary: Lots in FIFO order with expiring-soon flag (Warehouse Staff, Warehouse Manager), responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Lot' } } } } } } }
+  /analytics:
+    get: { summary: Anonymized operational metrics (Warehouse Manager, Director), responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Analytics' } } } } } }
+  /reports/{type}:
+    post:
+      summary: Generate a donor or grant report as DOCX (Warehouse Manager, Director)
+      parameters: [{ name: type, in: path, required: true, schema: { type: string, enum: [donor, grant] } }]
+      requestBody: { content: { application/json: { schema: { type: object, properties: { period_start: { type: string, format: date }, period_end: { type: string, format: date } } } } } }
+      responses: { '200': { description: DOCX file, content: { application/vnd.openxmlformats-officedocument.wordprocessingml.document: { schema: { type: string, format: binary } } } } }
+  /health:
+    get: { summary: Liveness and AI availability, security: [], responses: { '200': { description: OK } } }
