@@ -19,14 +19,20 @@ def build_engine(database_url: str | None = None):
         url = url.replace("postgres://", "postgresql+psycopg://", 1)
     elif url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
-        
-    connect_args = {"check_same_thread": False} if url.startswith("sqlite") else {}
+
+    if url.startswith("sqlite"):
+        connect_args = {"check_same_thread": False}
+    elif url.startswith("postgresql"):
+        # Supabase's transaction pooler (port 6543) breaks psycopg prepared statements
+        connect_args = {"prepare_threshold": None}
+    else:
+        connect_args = {}
     poolclass = NullPool if url.startswith("postgresql") else None
-    
+
     kwargs = {"connect_args": connect_args, "future": True}
     if poolclass:
         kwargs["poolclass"] = poolclass
-        
+
     return create_engine(url, **kwargs)
 
 

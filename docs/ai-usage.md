@@ -144,3 +144,4 @@
 | Deploy | Gemini | Set API_BASE_URL to /api in production | None | Eric |
 | Deploy | Gemini | Added Deploy (Vercel + Supabase) section | None | Eric |
 | Deploy | Gemini | Logged Vercel + Supabase deployment decision | None | Eric |
+| Deploy | Claude Code (Sonnet 5.5) | psycopg prepare_threshold=None for Supabase pooler; serve vercel_app locally/CI | Eric reviewed | Eric |
