@@ -201,9 +201,9 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 - [ ] T095 [qa] CI OpenAPI drift check `scripts/check_openapi.py`: FastAPI's generated schema must match `contracts/openapi.yaml`; add to `backend.yml`
 - [ ] T096 [qa] Accessibility pass: axe checks in Playwright on login, scan, cart, checkout (status never color-only), fix findings as separate PRs (dependency approval)
-- [ ] T097 [qa] Privacy and security audit: seed/test data synthetic only, no secrets in repo, analytics anonymized, Argon2 and encrypted fields verified, wording "designed with HIPAA safeguards" only
-- [ ] T098 [docs] `README.md`: architecture, run instructions (Ollama locally, Groq on Azure), team streams, link to specs
-- [ ] T099 [qa] Feature-freeze regression run: all pytest, Vitest, Playwright (local and deployed), AI evaluation report; record results
+- [X] T097 [qa] Privacy and security audit: seed/test data synthetic only, no secrets in repo, analytics anonymized, Argon2 and encrypted fields verified, wording "designed with HIPAA safeguards" only
+- [X] T098 [docs] `README.md`: architecture, run instructions (Ollama locally, Groq on Azure), team streams, link to specs
+- [X] T099 [qa] Feature-freeze regression run: all pytest, Vitest, Playwright (local and deployed), AI evaluation report; record results
 
 ---
 

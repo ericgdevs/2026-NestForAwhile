@@ -81,6 +81,7 @@
 | Implement T068 | Copilot (GPT-5.6 Terra) | Added centralized role-to-screen authorization and an unauthorized screen response | None | Caden |
 | Implement T069 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for direct URL denial across role boundaries | None | Caden |
 | Implement T070 | Copilot (GPT-5.6 Terra) | Added deploy health smoke tooling and an optional post-deploy workflow check | None | Caden |
+| Implement T097-T099 | Copilot (GPT-5.6 Terra) | Added security/privacy audit documentation, project README, and recorded local regression results | None | Caden |
 | Implement T073-T074 | Copilot (GPT-5.6 Terra) | Added a local synthetic demo reset script and judging runbook | None | Caden |
 | Implement T095 | Copilot (GPT-5.6 Terra) | Added a lightweight FastAPI-to-contract OpenAPI path drift check to backend CI | None | Caden |
 | Implement T063-T064 | Copilot (GPT-5.6 Terra) | Added checkout validation, FIFO inventory decrement, receipt/visit recording, and session completion APIs | None | Caden |
