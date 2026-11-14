@@ -93,3 +93,4 @@
 | Implement T091/T092 | Copilot (GPT-5.6 Terra) | Added donor/grant lot attribution, report aggregation, migration, and dependency-free DOCX generation with validation | None | Caden |
 | Implement T095 | Copilot (GPT-5.6 Terra) | Completed the contract route coverage with checkout intervention handling and a focused test | None | Caden |
 | Implement T076/T079/T082/T086/T089/T093 | Copilot (GPT-5.6 Terra) | Added warehouse inventory, queue, analytics, and report screens with role routing and focused frontend coverage | None | Caden |
+| Implement T077/T080/T083/T087/T090/T094 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for the inventory, queue, analytics, and reports screens with safe credential skips | None | Caden |

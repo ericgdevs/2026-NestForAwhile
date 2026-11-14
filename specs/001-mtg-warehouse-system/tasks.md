@@ -159,19 +159,19 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 - [X] T075 [api] [US8] `backend/app/services/audit.py` and `routes/inventory.py`: `GET /inventory/audit/{code}` and `POST /inventory/audit`; variance = counted − expected, `audit_events` row, lot update, and movement in one transaction; negative counts rejected; tests
 - [X] T076 [ui] [US8] `frontend/src/pages/Audit.tsx`: Scan Item → Current Count → Actual Count → Variance → confirm (reuses `BarcodeScanner`)
-- [ ] T077 [qa] [US8] Playwright `e2e/tests/us8-audit.spec.ts`: count differs, variance shown, inventory and audit log updated
+- [X] T077 [qa] [US8] Playwright `e2e/tests/us8-audit.spec.ts`: count differs, variance shown, inventory and audit log updated
 
 ## Phase 13: User Story 9 – Replenishment Workflow (P2)
 
 - [X] T078 [api] [US9] `backend/app/services/replenishment.py` and `GET /inventory/replenishment?sort=`: items below threshold with aisle/shelf/bin and priority; tests
 - [X] T079 [ui] [US9] `frontend/src/pages/Replenishment.tsx`: list with location and priority sort
-- [ ] T080 [qa] [US9] Playwright `e2e/tests/us9-replenishment.spec.ts`: lowering stock adds the item; sort changes order
+- [X] T080 [qa] [US9] Playwright `e2e/tests/us9-replenishment.spec.ts`: lowering stock adds the item; sort changes order
 
 ## Phase 14: User Story 10 – FIFO Management (P2)
 
 - [X] T081 [api] [US10] `GET /inventory/lots` in `routes/inventory.py`: lots in FIFO order with `expiring_soon` for 7 days or less; boundary tests (day 7 flagged, day 8 not, expired excluded from recommendations and checkout)
 - [X] T082 [ui] [US10] `frontend/src/pages/Lots.tsx` and a dashboard warning banner for expiring lots
-- [ ] T083 [qa] [US10] Playwright `e2e/tests/us10-fifo.spec.ts`: order, flag, and visible warning
+- [X] T083 [qa] [US10] Playwright `e2e/tests/us10-fifo.spec.ts`: order, flag, and visible warning
 
 ## Phase 15: User Story US-1.3 – Capacity Enforcement and Queue (P2, from plan addendum)
 
@@ -180,20 +180,20 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T084 [api] [US-1.3] `backend/app/services/queue.py`: compute `Active_Floor_Shoppers`, `Queue_Waiting`; login joins the queue when full (extends T031); promotion `waiting → ready` in one transaction when a session ends (checkout, logout, lazy expiry); `ready` claim window expires; tests for FIFO order, last-slot race, expiry
 - [X] T085 [api] [US-1.3] `GET`/`POST /queue/me` (confirm when ready) and `PUT /capacity` (Manager; raising it promotes waiting clients); extend `GET /capacity` with all three counts; tests
 - [X] T086 [ui] [US-1.3] `frontend/src/pages/Waiting.tsx` (position, polling, "come in" confirmation) and staff/manager capacity widgets
-- [ ] T087 [qa] [US-1.3] Playwright `e2e/tests/us1-3-capacity.spec.ts`: capacity 1, second client queued, promoted after the first checks out, manager raises capacity
+- [X] T087 [qa] [US-1.3] Playwright `e2e/tests/us1-3-capacity.spec.ts`: capacity 1, second client queued, promoted after the first checks out, manager raises capacity
 
 ## Phase 16: User Story 12 – Analytics Dashboard (P2)
 
 - [X] T088 [api] [US12] `backend/app/services/analytics.py` and `GET /analytics`: families served, visits completed, pounds distributed, inventory usage, recommendation adoption rate, waste reduction; aggregates only; tests include a payload scan for names, emails, and IDs
 - [X] T089 [ui] [US12] `frontend/src/pages/Analytics.tsx` dashboard (Manager/Director)
-- [ ] T090 [qa] [US12] Playwright `e2e/tests/us12-analytics.spec.ts`: completing a checkout updates the metrics; no client identifiers shown
+- [X] T090 [qa] [US12] Playwright `e2e/tests/us12-analytics.spec.ts`: completing a checkout updates the metrics; no client identifiers shown
 
 ## Phase 17: User Story 13 – Donor and Grant Reporting (P2)
 
 - [X] T091 [api] [US13] Link lots to donors/grants (`donor_id`, `grant_id` on `inventory_lots`, migration, seed) and `backend/app/services/reports.py` aggregations (donor metrics, grant attribution, distribution totals, visit metrics); needs a `data-model.md` update first (see Open questions)
 - [X] T092 [api] [US13] `backend/app/services/docx_report.py` and `POST /reports/{donor|grant}`: python-docx report with four sections from a built-in template; test opens the DOCX and checks the sections and the absence of client identifiers (dependency approval)
 - [X] T093 [ui] [US13] `frontend/src/pages/Reports.tsx`: choose type and period, download DOCX
-- [ ] T094 [qa] [US13] Playwright `e2e/tests/us13-reports.spec.ts`: generate and download, file is a valid DOCX with all four sections
+- [X] T094 [qa] [US13] Playwright `e2e/tests/us13-reports.spec.ts`: generate and download, file is a valid DOCX with all four sections
 
 **Checkpoint (MVP-B, scenario complete)**: the full MVP Success Scenario passes live, including manager analytics and the report.
 
