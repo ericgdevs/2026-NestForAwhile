@@ -129,7 +129,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [ ] T058 [qa] [US6] AI evaluation runner `backend/tests/ai_eval/run_eval.py`: reports valid-JSON rate, restricted-ingredient leaks (must be 0 after rules), in-stock ingredient rate, fallback rate, and latency for a chosen provider; writes a report file
 - [ ] T059 [ai] [US6] Ollama local-development setup: `scripts/dev/ollama_setup.sh` (pull the chosen model), README snippet, and `/health` reporting provider availability
 - [ ] T060 [ai] [US6] Run the evaluation on Ollama candidates and on the Groq open-weight model, record the choice in `docs/ai-eval-results.md`, and set the default model names in `.env.example`
-- [ ] T061 [ui] [US6] `frontend/src/pages/Recipes.tsx`: recipes with in-cart/in-stock ingredients, missing ingredients with aisle/shelf/bin, friendly notice when the fallback was used
+- [X] T061 [ui] [US6] `frontend/src/pages/Recipes.tsx`: recipes with in-cart/in-stock ingredients, missing ingredients with aisle/shelf/bin, friendly notice when the fallback was used
 - [ ] T062 [qa] [US6] Playwright `e2e/tests/us6-recipes.spec.ts`: recipes appear, missing-ingredient locations shown, no Restricted ingredient, fallback path with the AI provider unreachable
 
 ## Phase 9: User Story 7 – Clinical Checkout Guardrail (P1)

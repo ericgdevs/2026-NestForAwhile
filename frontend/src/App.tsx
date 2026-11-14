@@ -4,6 +4,7 @@ import Profile from "./pages/Profile";
 import Home from "./pages/Home";
 import Scan from "./pages/Scan";
 import Cart from "./pages/Cart";
+import Recipes from "./pages/Recipes";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
@@ -50,6 +51,13 @@ function Router() {
     return (
       <ProtectedRoute>
         <Cart />
+      </ProtectedRoute>
+    );
+  }
+  if (window.location.pathname === "/recipes") {
+    return (
+      <ProtectedRoute>
+        <Recipes />
       </ProtectedRoute>
     );
   }

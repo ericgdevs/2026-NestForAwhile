@@ -72,3 +72,4 @@
 | Implement T053 | Copilot (GPT-5.6 Terra) | Added inventory location lookup and recipe guardrails for stock availability and restricted ingredients | None | Caden |
 | Implement T054-T055 | Copilot (GPT-5.6 Terra) | Added recipe prompt construction and deterministic in-stock fallback recipe generation | None | Caden |
 | Implement T056 | Copilot (GPT-5.6 Terra) | Added recipe generation route with provider validation, clinical guardrails, deterministic fallback, and AI request telemetry | None | Caden |
+| Implement T061 | Copilot (GPT-5.6 Terra) | Added the recipes page with ingredient/step display and a friendly fallback notice | None | Caden |

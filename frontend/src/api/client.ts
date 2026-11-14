@@ -103,3 +103,13 @@ export function saveCartItem(product_id: number, quantity: number) {
 export function deleteCartItem(product_id: number) {
   return apiRequest(`/cart/items/${product_id}`, { method: "DELETE" });
 }
+
+export type Recipe = {
+  title: string;
+  ingredients: { name: string; product_id: number | null }[];
+  steps: string[];
+};
+
+export function getRecipes(): Promise<{ recipes: Recipe[]; used_fallback: boolean }> {
+  return apiRequest("/recipes", { method: "POST" });
+}
