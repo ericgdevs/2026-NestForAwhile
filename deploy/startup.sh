@@ -8,4 +8,4 @@ if [ "${SEED_DEMO_DATA:-false}" = "true" ]; then
   python -m seed.load
 fi
 
-exec uvicorn app.main:app --host 0.0.0.0 --port "${PORT:-8000}"
+exec uvicorn vercel_app:app --host 0.0.0.0 --port "${PORT:-8000}"

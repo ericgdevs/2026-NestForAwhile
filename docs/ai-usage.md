@@ -135,6 +135,20 @@
 | Docs | Gemini 3.8 Flash | Deduplicated ai-usage rows after the AI merge | Eric reviewed | Eric |
 | Prove queue promotion is atomic with checkout | Copilot (Sonnet 5.5) | Found promotion already runs inside the checkout transaction (no code change needed); added tests for rollback on promotion failure and for slot release plus promoting the next waiting client | Eric approved a tests-only fix | Eric |
 | Redesign UI (Nutrition Facts label direction) | Copilot (Sonnet 5.5) | Wrote PRODUCT.md, ran the Impeccable direction roll, rebuilt the design system, shell, and all 13 screens; added role-filtered nav, staff Overview with expiring-lots warning, sign-out, cuisine-grouped recipe sheet, Vitest and Playwright UI tests; Ponytail and Impeccable reviews with fixes | Caden chose the direction, cuisine steer, IDs-not-names rule, and fix scope | Caden |
+| Cart nutrition API (branch api/cart-nutrition) | Copilot (Sonnet 5.5) | Added nutrition and status to cart responses, extracted shared safety_label/profile_for helpers, updated CartItem in openapi.yaml, added a pytest test, logged the change for Aditya | Caden approved backend changes on a separate logged branch | Caden |
+| Client flow backend (B1–B12, branch api/client-flow) | Copilot (Sonnet 5.5) | Household members and labels, sign-up/approval, swaps, per-scan recipes with cuisines, saved recipes, shopping list with photo reading, smarter recommendations, volunteer checkout with allergy acknowledgement, checkout QR session; tests, contract, spec amendments, change log | Caden approved the design and plan and allowed backend changes on a logged branch | Caden |
+| Review follow-ups on api/client-flow | Copilot (Sonnet 5.5) | Pending without session, encrypted ICD-10 Client_Medical_Profile, six-recipe union guard test, vision model defaults, spec revert, change log | Caden decided items 1 and 2; Eric supplied model names | Caden |
+| Chore | Gemini Flash | Added union merge attributes for ai-usage and decisions docs | None | Eric |
+| CI (qa) | Gemini Flash | Configured 15m timeout, browser caching, and demo env in e2e workflow; aligned Playwright config project, retries, and local webServer | None | Eric |
+| Test (qa) | Gemini Flash | Fixed auth fixture to use page.request for session cookie attachment and added demo seed fallbacks | None | Eric |
+| Deploy | Gemini | Added Vercel deployment config | None | Eric |
+| Deploy | Gemini | Added Vercel entrypoint wrapper | None | Eric |
+| Deploy | Gemini | Updated engine for Supabase postgresql+psycopg | None | Eric |
+| Deploy | Gemini | Pinned psycopg[binary] dependency | None | Eric |
+| Deploy | Gemini | Set API_BASE_URL to /api in production | None | Eric |
+| Deploy | Gemini | Added Deploy (Vercel + Supabase) section | None | Eric |
+| Deploy | Gemini | Logged Vercel + Supabase deployment decision | None | Eric |
+| Deploy | Claude Code (Sonnet 5.5) | psycopg prepare_threshold=None for Supabase pooler; serve vercel_app locally/CI | Eric reviewed | Eric |
 | Apply login page feedback | Copilot (Sonnet 5.5) / Agentation | Removed the brand and label-legend section from the sign-in page and its CSS; wordmark top bar now shows at every width | Caden supplied the page feedback | Caden |
 | Cart layout + dev proxy fix | Copilot (Sonnet 5.5) / Agentation | Restyled Cart as Home-style label cards; fixed the Vite dev proxy so page loads of /cart, /checkout, /recipes, /analytics, /reports serve the app instead of API JSON | Caden supplied the page feedback and chose the reading | Caden |
 | Cart nutrition panel | Copilot (Sonnet 5.5) / Agentation | Built cart cards with status, SKU, nutrition facts and quantity (shared NutritionFacts component with Scan); wrote the backend request for Aditya; added 2 Vitest tests | Caden supplied the page feedback and the no-backend constraint | Caden |

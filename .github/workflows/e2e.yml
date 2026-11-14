@@ -53,7 +53,7 @@ jobs:
           export FIELD_ENCRYPTION_KEY="$(python -c 'from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())')"
           alembic upgrade head
           python -m seed.load
-          uvicorn app.main:app --host 127.0.0.1 --port 8000 &
+          uvicorn vercel_app:app --host 127.0.0.1 --port 8000 &
           curl --retry 30 --retry-delay 1 --retry-connrefused --fail http://127.0.0.1:8000/health
       - name: Run Playwright
         working-directory: e2e
