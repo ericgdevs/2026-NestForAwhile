@@ -27,6 +27,7 @@ components:
       properties:
         role: { $ref: '#/components/schemas/Role' }
         Shopping_Session_Token: { type: string, nullable: true }
+        Client_Enrollment_Status: { type: string, enum: [Active, Inactive, Pending] }
         queue: { $ref: '#/components/schemas/QueueState' }
     QueueState:
       type: object
@@ -50,10 +51,46 @@ components:
         allergies: { type: array, items: { type: string } }
         preferences: { type: array, items: { type: string } }
         Dietary_Tier_ID: { type: integer, readOnly: true }
+    HouseholdMember:
+      type: object
+      description: One person in the household, by nickname. Medical conditions are never stored or returned.
+      required: [nickname, restrictions, allergies]
+      properties:
+        nickname: { type: string, maxLength: 40 }
+        age: { type: integer, nullable: true, minimum: 0, maximum: 120 }
+        restrictions: { type: array, items: { type: string } }
+        allergies: { type: array, items: { type: string } }
+    HouseholdMemberInput:
+      type: object
+      properties:
+        nickname: { type: string, maxLength: 40, description: 'Defaults to "Person N"' }
+        age: { type: integer, nullable: true, minimum: 0, maximum: 120 }
+        restrictions: { type: array, items: { type: string } }
+        allergies: { type: array, items: { type: string } }
+        conditions:
+          type: array
+          items: { type: string, enum: [Diabetes, High blood pressure, Heart disease, Kidney disease, Celiac disease] }
+          description: Optional. Turned into restrictions during the request, then discarded.
+    SignupRequest:
+      type: object
+      required: [email, password, name, members]
+      properties:
+        email: { type: string }
+        password: { type: string, minLength: 8 }
+        name: { type: string, description: Real name, shown only on the manager approval screen }
+        members: { type: array, minItems: 1, maxItems: 20, items: { $ref: '#/components/schemas/HouseholdMemberInput' } }
+    PendingClient:
+      type: object
+      properties:
+        client_id: { type: integer }
+        name: { type: string }
+        Household_Size: { type: integer }
+        created_at: { type: string, format: date-time }
     Client:
       type: object
       properties:
-        name: { type: string }
+        client_id: { type: integer }
+        members: { type: array, items: { $ref: '#/components/schemas/HouseholdMember' } }
         Household_Size: { type: integer, minimum: 1 }
         Client_Enrollment_Status: { type: string, enum: [Active, Inactive, Pending] }
         profile: { $ref: '#/components/schemas/DietaryProfile' }
@@ -67,6 +104,29 @@ components:
         sat_fat_g: { type: number, nullable: true }
         fiber_g: { type: number, nullable: true }
         protein_g: { type: number, nullable: true }
+    NotFor:
+      type: object
+      description: A household member a product is restricted for, by nickname (never a real name).
+      required: [nickname, reason]
+      properties:
+        nickname: { type: string }
+        reason: { type: string }
+    Swap:
+      type: object
+      description: A safer in-stock product in the same category, chosen by rules (never AI)
+      properties:
+        product_id: { type: integer }
+        name: { type: string }
+        status: { $ref: '#/components/schemas/SafetyStatus' }
+        not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
+        aisle: { type: string }
+        shelf: { type: string }
+        bin: { type: string }
+    SavedRecipe:
+      allOf:
+        - $ref: '#/components/schemas/Recipe'
+        - type: object
+          properties: { id: { type: integer } }
     ProductResult:
       type: object
       required: [name, status, explanation]
@@ -77,6 +137,9 @@ components:
         nutrition: { $ref: '#/components/schemas/Nutrition' }
         status: { $ref: '#/components/schemas/SafetyStatus' }
         explanation: { type: string }
+        not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
+        allergy_match: { type: boolean }
+        swaps: { type: array, maxItems: 2, items: { $ref: '#/components/schemas/Swap' }, description: Only when status is Restricted }
         in_stock: { type: boolean }
     Recommendation:
       type: object
@@ -87,6 +150,8 @@ components:
         suggested_qty: { type: integer, minimum: 1 }
         rationale: { type: string }
         status: { $ref: '#/components/schemas/SafetyStatus' }
+        not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
+        allergy_match: { type: boolean }
     CartItem:
       type: object
       required: [product_id, quantity]
@@ -97,6 +162,8 @@ components:
         from_recommendation: { type: boolean }
         status: { $ref: '#/components/schemas/SafetyStatus' }
         explanation: { type: string }
+        not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
+        allergy_match: { type: boolean }
         sku: { type: string }
         sodium_mg: { type: number, nullable: true }
         sugar_g: { type: number, nullable: true }
@@ -110,6 +177,7 @@ components:
       type: object
       required: [title, steps, ingredients]
       properties:
+        cuisine: { type: string, nullable: true, maxLength: 30 }
         title: { type: string }
         steps: { type: array, items: { type: string } }
         ingredients:
@@ -142,6 +210,49 @@ components:
         status: { type: string, enum: [completed, blocked] }
         blocked_items: { type: array, items: { $ref: '#/components/schemas/CartItem' } }
         receipt_id: { type: integer, nullable: true }
+    CheckoutReview:
+      type: object
+      description: What the volunteer sees; complete is refused while blocking or needs_ack is non-empty
+      properties:
+        Shopping_Session_Token: { type: string }
+        client_id: { type: integer }
+        Client_Enrollment_Status: { type: string, enum: [Active, Inactive, Pending] }
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id: { type: integer }
+              name: { type: string }
+              quantity: { type: integer }
+              status: { $ref: '#/components/schemas/SafetyStatus' }
+              not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
+              allergy_match: { type: boolean }
+              acknowledged: { type: boolean }
+              overridden: { type: boolean }
+        blocking: { type: array, items: { type: string }, description: 'Red items, Pending account, stock' }
+        needs_ack:
+          type: array
+          items:
+            type: object
+            properties:
+              product_id: { type: integer }
+              name: { type: string }
+              not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
+    ShoppingListLine:
+      type: object
+      properties:
+        id: { type: integer }
+        text: { type: string }
+        product_id: { type: integer, nullable: true }
+        name: { type: string }
+        source: { type: string, enum: [you, recipe] }
+        recipe: { allOf: [{ $ref: '#/components/schemas/Recipe' }], nullable: true }
+        ticked: { type: boolean }
+        in_stock: { type: boolean }
+        location: { type: object, nullable: true, properties: { aisle: { type: string }, shelf: { type: string }, bin: { type: string } } }
+        status: { $ref: '#/components/schemas/SafetyStatus' }
+        not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
     AuditSubmit:
       type: object
       required: [product_id, counted_qty]
@@ -180,7 +291,7 @@ components:
 paths:
   /auth/login:
     post:
-      summary: Log in; starts a shopping session for Active clients if the floor has room, otherwise joins the queue
+      summary: Log in; starts a shopping session for Active or Pending clients if the floor has room, otherwise joins the queue
       security: []
       requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } } }
       responses:
@@ -189,6 +300,28 @@ paths:
         '403': { description: Enrollment not Active, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
   /auth/logout:
     post: { summary: Log out and end the session, responses: { '204': { description: Done } } }
+  /auth/signup:
+    post:
+      summary: Self sign-up; creates a Pending client household and starts a shopping session (checkout waits for approval)
+      security: []
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SignupRequest' } } } }
+      responses:
+        '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/LoginResult' } } } }
+        '409': { description: Email already registered }
+        '422': { description: Unknown dietary choice or condition }
+  /me/household:
+    get: { summary: My household members (Client), responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { members: { type: array, items: { $ref: '#/components/schemas/HouseholdMember' } } } } } } } } }
+    put:
+      summary: Replace my household members (Client); keeps Household_Size and Dietary_Tier_ID in step
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [members], properties: { members: { type: array, minItems: 1, maxItems: 20, items: { $ref: '#/components/schemas/HouseholdMemberInput' } } } } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { members: { type: array, items: { $ref: '#/components/schemas/HouseholdMember' } } } } } } } }
+  /clients/pending:
+    get: { summary: Pending clients waiting for approval, with real name (Warehouse Manager), responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/PendingClient' } } } } } } }
+  /clients/{client_id}/approve:
+    post:
+      summary: Approve a pending client (Warehouse Manager); records who approved and when
+      parameters: [{ name: client_id, in: path, required: true, schema: { type: integer } }]
+      responses: { '200': { description: Approved }, '404': { description: No pending client } }
   /me:
     get: { summary: Current user, role, and client profile, responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Client' } } } } } }
   /me/profile:
@@ -231,11 +364,75 @@ paths:
   /recipes:
     post:
       summary: Inventory-aware recipes from the scanned item, Active_Cart_Manifest, and current inventory (Client)
-      requestBody: { content: { application/json: { schema: { type: object, properties: { scanned_product_id: { type: integer, nullable: true } } } } } }
+      requestBody: { content: { application/json: { schema: { type: object, properties: { scanned_product_id: { type: integer, nullable: true, description: 'Every recipe uses this item; none are returned if it is restricted for any household member' }, cuisine: { type: string, nullable: true, maxLength: 30 } } } } } }
       responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/RecipeResponse' } } } } }
+  /me/recipes:
+    get: { summary: My saved recipes, newest first (Client), responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/SavedRecipe' } } } } } } }
+    post:
+      summary: Save a recipe as shown (Client)
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/Recipe' } } } }
+      responses: { '201': { description: Saved, content: { application/json: { schema: { $ref: '#/components/schemas/SavedRecipe' } } } } }
+  /me/recipes/{recipe_id}:
+    delete:
+      summary: Delete one of my saved recipes (Client)
+      parameters: [{ name: recipe_id, in: path, required: true, schema: { type: integer } }]
+      responses: { '204': { description: Deleted }, '404': { description: Not found } }
+  /checkout/lookup:
+    get:
+      summary: Load a client's cart from their QR token or client ID (Volunteer, Warehouse Manager)
+      parameters:
+        - { name: token, in: query, schema: { type: string } }
+        - { name: client_id, in: query, schema: { type: integer } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutReview' } } } }, '404': { description: No active visit }, '422': { description: Neither given } }
+  /checkout/{session_token}/items:
+    post:
+      summary: Volunteer scans in an item the client forgot to add (logged as volunteer_added)
+      parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [code], properties: { code: { type: string, description: SKU or barcode }, quantity: { type: integer, minimum: 1, default: 1 } } } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutReview' } } } } }
+  /checkout/{session_token}/items/{product_id}:
+    delete:
+      summary: Volunteer removes an item (logged as removed_item)
+      parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }, { name: product_id, in: path, required: true, schema: { type: integer } }]
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutReview' } } } } }
+  /checkout/{session_token}/acknowledge:
+    post:
+      summary: Volunteer confirms an allergy item with the client (logged as allergy_ack)
+      parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [product_id], properties: { product_id: { type: integer }, note: { type: string } } } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutReview' } } } }, '409': { description: No allergy check needed } }
+  /checkout/{session_token}/override:
+    post:
+      summary: Warehouse Manager lets a Red item through with a required reason (logged as manager_override)
+      parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [product_id, note], properties: { product_id: { type: integer }, note: { type: string } } } } } }
+      responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutReview' } } } } }
+  /me/session:
+    get: { summary: My active session token and client ID for the checkout QR (Client), responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { Shopping_Session_Token: { type: string }, client_id: { type: integer } } } } } }, '404': { description: No active visit } } }
+  /shopping-list:
+    get: { summary: My shopping list sorted by aisle (Client), responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/ShoppingListLine' } } } } } } } } }
+    post:
+      summary: Add my own items or a recipe's ingredients; unmatched text is matched to stock when possible (Client)
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [items], properties: { items: { type: array, items: { type: object, required: [text], properties: { text: { type: string }, product_id: { type: integer, nullable: true } } } }, recipe: { $ref: '#/components/schemas/Recipe' } } } } } }
+      responses: { '201': { description: Added } }
+  /shopping-list/{item_id}:
+    patch:
+      summary: Tick or untick a line; ticking an in-stock product adds one to the cart (Client)
+      parameters: [{ name: item_id, in: path, required: true, schema: { type: integer } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [ticked], properties: { ticked: { type: boolean } } } } } }
+      responses: { '200': { description: OK } }
+    delete:
+      summary: Remove a line (Client)
+      parameters: [{ name: item_id, in: path, required: true, schema: { type: integer } }]
+      responses: { '204': { description: Deleted } }
+  /shopping-list/parse:
+    post:
+      summary: Turn typed text or a list photo into suggested lines matched to stock; nothing is saved, the photo is dropped (Client)
+      requestBody: { required: true, content: { application/json: { schema: { type: object, properties: { text: { type: string }, image_base64: { type: string }, media_type: { type: string, enum: [image/jpeg, image/png, image/webp, image/heic] } } } } } }
+      responses: { '200': { description: OK }, '503': { description: Photo reading unavailable; type the list instead } }
   /checkout/{session_token}/validate:
     post:
-      summary: Validate and complete checkout; hard stop on Restricted items (Volunteer, Warehouse Manager)
+      summary: Review checkout; hard stops for Red items and Pending accounts, allergy acknowledgements (Volunteer, Warehouse Manager)
       parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }]
       responses: { '200': { description: Completed or blocked, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutResult' } } } } }
   /checkout/{session_token}/interventions:

@@ -27,6 +27,8 @@ def run_ai_task(
     cart_quantities: dict[int, int] | None = None,
     household_size: int | None = None,
     provider: AIProvider | None = None,
+    focus_product_id: int | None = None,
+    cuisine: str | None = None,
 ) -> AIResult:
     """manifest (statuses from classify()) -> provider -> validation.
 
@@ -37,7 +39,7 @@ def run_ai_task(
     )  # a bad AI_PROVIDER is a startup error, not an orchestration failure
     try:
         manifest, index_map = build_manifest(
-            products, restrictions, cart_quantities, household_size
+            products, restrictions, cart_quantities, household_size, focus_product_id, cuisine
         )
         raw = provider.generate_json(task, manifest)
         output = validate_ai_output(task.value, raw, manifest)

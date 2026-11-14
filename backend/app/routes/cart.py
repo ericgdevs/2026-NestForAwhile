@@ -7,7 +7,7 @@ from app.auth import Role, require_roles
 from app.db import get_db
 from app.models import CartItem, Client, Product, User
 from app.services.cart import active_session, build_manifest, get_or_create_cart
-from app.services.nutrition import local_label, profile_for
+from app.services.nutrition import local_label, members_for
 
 router = APIRouter()
 
@@ -26,10 +26,10 @@ def cart_response(database: Session, cart, user: User) -> dict[str, list[dict[st
             select(Product).where(Product.id.in_([item["product_id"] for item in items]))
         )
     }
-    profile = profile_for(database.get(Client, user.id))
+    members = members_for(database.get(Client, user.id))
     return {
         "items": [
-            {**item, **local_label(products[item["product_id"]], profile)} for item in items
+            {**item, **local_label(products[item["product_id"]], members)} for item in items
         ]
     }
 

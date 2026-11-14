@@ -31,31 +31,71 @@
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish"]
+      "exclusions": [
+        "contains_meat",
+        "contains_poultry",
+        "contains_fish",
+        "contains_shellfish"
+      ]
     },
     "Vegan": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish", "contains_egg", "contains_dairy"]
+      "exclusions": [
+        "contains_meat",
+        "contains_poultry",
+        "contains_fish",
+        "contains_shellfish",
+        "contains_egg",
+        "contains_dairy"
+      ]
     },
     "Gluten Free": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_gluten"]
+      "exclusions": [
+        "contains_gluten"
+      ]
     },
     "Nut Allergy": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_peanut", "contains_tree_nut"]
+      "exclusions": [
+        "contains_peanut",
+        "contains_tree_nut"
+      ]
     },
     "Dairy Free": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_dairy"]
+      "exclusions": [
+        "contains_dairy"
+      ]
     }
+  },
+  "conditions": {
+    "_note": "Placeholder mapping from optional, never-stored medical conditions to dietary choices; pending Epic Cure guidance.",
+    "Diabetes": [
+      "Low Sugar"
+    ],
+    "High blood pressure": [
+      "Low Sodium",
+      "Heart Healthy"
+    ],
+    "Heart disease": [
+      "Heart Healthy",
+      "Low Sodium"
+    ],
+    "Kidney disease": [
+      "Kidney Friendly",
+      "Low Sodium"
+    ],
+    "Celiac disease": [
+      "Gluten Free"
+    ]
   }
 }

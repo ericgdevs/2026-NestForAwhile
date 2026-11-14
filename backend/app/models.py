@@ -34,7 +34,9 @@ class User(Base):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
 
-    client: Mapped[Client | None] = relationship(back_populates="user", uselist=False)
+    client: Mapped[Client | None] = relationship(
+        back_populates="user", uselist=False, foreign_keys="Client.user_id"
+    )
 
 
 class Client(Base):
@@ -46,12 +48,19 @@ class Client(Base):
     Client_Enrollment_Status: Mapped[str] = mapped_column(String(16), nullable=False)
     Dietary_Tier_ID: Mapped[int] = mapped_column(Integer, nullable=False, default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+    approved_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime)
 
-    user: Mapped[User] = relationship(back_populates="client")
+    user: Mapped[User] = relationship(back_populates="client", foreign_keys=[user_id])
     dietary_profile: Mapped[DietaryProfile | None] = relationship(
         back_populates="client", uselist=False, cascade="all, delete-orphan"
     )
     visits: Mapped[list[Visit]] = relationship(back_populates="client")
+    members: Mapped[list[HouseholdMember]] = relationship(
+        back_populates="client",
+        cascade="all, delete-orphan",
+        order_by="HouseholdMember.position",
+    )
 
 
 class DietaryProfile(Base):
@@ -64,6 +73,56 @@ class DietaryProfile(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, onupdate=utc_now)
 
     client: Mapped[Client] = relationship(back_populates="dietary_profile")
+
+
+class HouseholdMember(Base):
+    """One person in a client's household. Medical conditions are never stored here."""
+
+    __tablename__ = "household_members"
+    __table_args__ = (UniqueConstraint("client_id", "position"),)
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    client_id: Mapped[int] = mapped_column(ForeignKey("clients.user_id"), nullable=False)
+    position: Mapped[int] = mapped_column(Integer, nullable=False)
+    nickname: Mapped[str] = mapped_column(String(40), nullable=False)
+    age: Mapped[int | None] = mapped_column(Integer)
+    restrictions: Mapped[str] = mapped_column(EncryptedText(), nullable=False, default="[]")
+    allergies: Mapped[str] = mapped_column(EncryptedText(), nullable=False, default="[]")
+
+    client: Mapped[Client] = relationship(back_populates="members")
+
+
+class SavedRecipe(Base):
+    """A recipe a client chose to keep, stored exactly as it was shown."""
+
+    __tablename__ = "saved_recipes"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    client_id: Mapped[int] = mapped_column(
+        ForeignKey("clients.user_id"), nullable=False, index=True
+    )
+    title: Mapped[str] = mapped_column(String(80), nullable=False)
+    recipe: Mapped[dict] = mapped_column(JSON, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+
+
+class ShoppingListItem(Base):
+    """One line on a client's shopping list: their own item or a recipe ingredient."""
+
+    __tablename__ = "shopping_list_items"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    client_id: Mapped[int] = mapped_column(
+        ForeignKey("clients.user_id"), nullable=False, index=True
+    )
+    product_id: Mapped[int | None] = mapped_column(ForeignKey("products.id"))
+    text: Mapped[str] = mapped_column(String(120), nullable=False)
+    source: Mapped[str] = mapped_column(String(16), nullable=False, default="you")
+    recipe: Mapped[dict | None] = mapped_column(JSON)
+    ticked: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, nullable=False)
+
+    product: Mapped[Product | None] = relationship()
 
 
 class Visit(Base):
