@@ -1,4 +1,5 @@
 from datetime import date
+from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -99,3 +100,22 @@ class ReplenishmentItem(BaseModel):
     shelf: str
     bin: str
     priority: int
+
+
+class CartItemRead(BaseModel):
+    product_id: int
+    name: str | None = None
+    quantity: int = Field(ge=1)
+    status: str | None = None  # Approved | Capped | Restricted
+
+
+class CheckoutResult(BaseModel):
+    status: Literal["completed", "blocked"]
+    blocked_items: list[CartItemRead] = []
+    receipt_id: int | None = None
+
+
+class InterventionCreate(BaseModel):
+    product_id: int
+    action: Literal["removed_item"]
+    note: str = ""
