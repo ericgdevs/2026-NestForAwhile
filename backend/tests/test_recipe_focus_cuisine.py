@@ -102,3 +102,50 @@ def test_recipe_schema_allows_cuisine_and_at_most_six_recipes():
     assert RecipeOutput(recipes=[one] * 6).recipes[0].cuisine == "Italian"
     with pytest.raises(ValueError):
         RecipeOutput(recipes=[one] * 7)
+
+
+class SixRecipeProvider(AIProvider):
+    """Six recipes; one uses a non-stock (pantry) ingredient the guard must drop."""
+
+    name = "fake-six"
+    seen: list = []
+
+    def generate_json(self, task, manifest):
+        SixRecipeProvider.seen.append(manifest)
+        if task is not AITask.RECIPES:
+            return {"items": []}
+        first = manifest.items[0]
+
+        def recipe(n, product_id):
+            ingredient = {
+                "name": first.name if product_id is not None else "Salt",
+                "product_id": product_id,
+            }
+            return {
+                "title": f"Recipe {n}",
+                "cuisine": "Test",
+                "ingredients": [ingredient],
+                "steps": ["Cook."],
+            }
+
+        return {"recipes": [recipe(n, first.index) for n in range(5)] + [recipe(5, None)]}
+
+
+def test_all_six_recipes_are_guarded_with_every_members_restrictions(
+    database, shopping, monkeypatch
+):
+    ids, cookies = shopping
+    SixRecipeProvider.seen = []
+    monkeypatch.setattr("app.ai.orchestrator.get_provider", lambda: SixRecipeProvider())
+    body = _post(database, cookies, {})
+
+    manifest = SixRecipeProvider.seen[0]
+    # Person 1 is Low Sodium and Little one has a Nut Allergy: the AI sees the union of both...
+    assert sorted(manifest.restrictions) == ["Low Sodium", "Nut Allergy"]
+    # ...and never sees a product restricted for either member.
+    assert "Synthetic Nut Crackers" not in {item.name for item in manifest.items}
+    # Every one of the six recipes went through the guard: the pantry-only one was dropped.
+    assert [r["title"] for r in body["recipes"]] == [f"Recipe {n}" for n in range(5)]
+    assert ids["SYN-CRACK-001"] not in {
+        i["product_id"] for r in body["recipes"] for i in r["ingredients"]
+    }

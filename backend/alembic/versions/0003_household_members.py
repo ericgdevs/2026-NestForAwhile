@@ -1,4 +1,4 @@
-"""Household members (copied into "Person 1"), client approval, saved recipes, shopping list."""
+"""Household members, Client_Medical_Profile, client approval, saved recipes, shopping list."""
 
 import sqlalchemy as sa
 
@@ -48,6 +48,18 @@ def upgrade() -> None:
             sa.Column("created_at", sa.DateTime(), nullable=False),
         )
         op.create_index("ix_shopping_list_items_client_id", "shopping_list_items", ["client_id"])
+    if "client_medical_profiles" not in sa.inspect(bind).get_table_names():
+        op.create_table(
+            "client_medical_profiles",
+            sa.Column(
+                "member_id",
+                sa.Integer(),
+                sa.ForeignKey("household_members.id", ondelete="CASCADE"),
+                primary_key=True,
+            ),
+            sa.Column("icd10_codes", sa.Text(), nullable=False),
+            sa.Column("updated_at", sa.DateTime(), nullable=True),
+        )
     client_columns = {column["name"] for column in sa.inspect(bind).get_columns("clients")}
     if "approved_by" not in client_columns:
         with op.batch_alter_table("clients") as batch:
@@ -70,6 +82,7 @@ def downgrade() -> None:
     with op.batch_alter_table("clients") as batch:
         batch.drop_column("approved_at")
         batch.drop_column("approved_by")
+    op.drop_table("client_medical_profiles")
     op.drop_table("shopping_list_items")
     op.drop_table("saved_recipes")
     op.drop_table("household_members")

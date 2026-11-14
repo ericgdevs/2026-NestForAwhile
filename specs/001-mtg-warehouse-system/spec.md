@@ -24,7 +24,7 @@ and the session is counted as an active shopper.
 
 1. **Given** a client with valid credentials and `Client_Enrollment_Status` of Active, **When** they log in, **Then** their profile loads, a `Shopping_Session_Token` is created, and they see a personalized recommendation view.
 2. **Given** a session was just created, **When** a staff member views the active shopper count, **Then** the count includes that session.
-3. **Given** a client whose `Client_Enrollment_Status` is Inactive, **When** they try to start a session, **Then** no session is created and they see a friendly message explaining what to do next. A Pending client (new self sign-up) may start a session and shop, but checkout waits until a Warehouse Manager approves the account. *(Amended 2026-11-14, client flow design; review: Aditya.)*
+3. **Given** a client whose `Client_Enrollment_Status` is not Active, **When** they try to start a session, **Then** no session is created and they see a friendly message explaining what to do next. (A Pending self sign-up sees a "waiting for staff approval" screen until a Warehouse Manager approves the account.)
 4. **Given** invalid credentials, **When** a user tries to log in, **Then** access is denied and no session is created.
 
 ---
@@ -282,7 +282,7 @@ login, and the core journey demonstrable live.
 - **FR-001**: System MUST require login for all screens and authenticate users with valid credentials only.
 - **FR-002**: System MUST support the roles Client, Volunteer, Warehouse Staff, Warehouse Manager, and Director, and MUST enforce permissions on the server, denying unauthorized access.
 - **FR-003**: System MUST show each role only the screens appropriate to it.
-- **FR-004**: System MUST start a shopping session only when `Client_Enrollment_Status` is Active or Pending, create a `Shopping_Session_Token`, load the client profile, and count the session as an active shopper. Pending clients MUST NOT complete checkout until a Warehouse Manager approves them. *(Amended 2026-11-14.)*
+- **FR-004**: System MUST start a shopping session only when `Client_Enrollment_Status` is Active, create a `Shopping_Session_Token`, load the client profile, and count the session as an active shopper.
 
 **Dietary profile and rules**
 - **FR-005**: Clients MUST be able to select, save, and later change dietary restrictions, allergies, and preferences, and the profile MUST persist across sessions.

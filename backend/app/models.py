@@ -76,7 +76,7 @@ class DietaryProfile(Base):
 
 
 class HouseholdMember(Base):
-    """One person in a client's household. Medical conditions are never stored here."""
+    """One person in a client's household; ICD-10 codes live in ClientMedicalProfile."""
 
     __tablename__ = "household_members"
     __table_args__ = (UniqueConstraint("client_id", "position"),)
@@ -90,6 +90,23 @@ class HouseholdMember(Base):
     allergies: Mapped[str] = mapped_column(EncryptedText(), nullable=False, default="[]")
 
     client: Mapped[Client] = relationship(back_populates="members")
+    medical_profile: Mapped[ClientMedicalProfile | None] = relationship(
+        back_populates="member", uselist=False, cascade="all, delete-orphan"
+    )
+
+
+class ClientMedicalProfile(Base):
+    """Client_Medical_Profile (Epic 2): a member's ICD-10 codes, encrypted at rest (PHI)."""
+
+    __tablename__ = "client_medical_profiles"
+
+    member_id: Mapped[int] = mapped_column(
+        ForeignKey("household_members.id", ondelete="CASCADE"), primary_key=True
+    )
+    icd10_codes: Mapped[str] = mapped_column(EncryptedText(), nullable=False, default="[]")
+    updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, onupdate=utc_now)
+
+    member: Mapped[HouseholdMember] = relationship(back_populates="medical_profile")
 
 
 class SavedRecipe(Base):

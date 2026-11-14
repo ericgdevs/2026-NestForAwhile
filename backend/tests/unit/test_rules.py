@@ -115,10 +115,10 @@ def test_restriction_match_is_not_an_allergy_match():
 
 
 def test_conditions_map_to_choices_and_reject_unknown():
-    assert conditions_to_choices(["Diabetes", "Kidney disease"]) == [
+    assert conditions_to_choices(["E11", "N18"]) == [
         "Kidney Friendly",
         "Low Sodium",
         "Low Sugar",
     ]
     with pytest.raises(ValueError):
-        conditions_to_choices(["Free text"])
+        conditions_to_choices(["Diabetes"])  # names are not codes

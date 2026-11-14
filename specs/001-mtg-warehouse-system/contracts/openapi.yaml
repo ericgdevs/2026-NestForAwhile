@@ -53,13 +53,14 @@ components:
         Dietary_Tier_ID: { type: integer, readOnly: true }
     HouseholdMember:
       type: object
-      description: One person in the household, by nickname. Medical conditions are never stored or returned.
+      description: One person in the household, by nickname. `conditions` (ICD-10) is returned only to the client themselves.
       required: [nickname, restrictions, allergies]
       properties:
         nickname: { type: string, maxLength: 40 }
         age: { type: integer, nullable: true, minimum: 0, maximum: 120 }
         restrictions: { type: array, items: { type: string } }
         allergies: { type: array, items: { type: string } }
+        conditions: { type: array, items: { type: string }, description: 'ICD-10 codes from the encrypted Client_Medical_Profile' }
     HouseholdMemberInput:
       type: object
       properties:
@@ -69,8 +70,9 @@ components:
         allergies: { type: array, items: { type: string } }
         conditions:
           type: array
-          items: { type: string, enum: [Diabetes, High blood pressure, Heart disease, Kidney disease, Celiac disease] }
-          description: Optional. Turned into restrictions during the request, then discarded.
+          maxItems: 20
+          items: { type: string, enum: [E11, I10, I25, N18, K90.0] }
+          description: Optional ICD-10 codes. Stored encrypted in Client_Medical_Profile and mapped to dietary choices and Dietary_Tier_ID by the rules matrix.
     SignupRequest:
       type: object
       required: [email, password, name, members]
@@ -291,7 +293,7 @@ components:
 paths:
   /auth/login:
     post:
-      summary: Log in; starts a shopping session for Active or Pending clients if the floor has room, otherwise joins the queue
+      summary: Log in; starts a shopping session for Active clients if the floor has room, otherwise joins the queue. Pending clients sign in with no session (awaiting approval); Inactive is rejected.
       security: []
       requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } } }
       responses:
@@ -302,7 +304,7 @@ paths:
     post: { summary: Log out and end the session, responses: { '204': { description: Done } } }
   /auth/signup:
     post:
-      summary: Self sign-up; creates a Pending client household and starts a shopping session (checkout waits for approval)
+      summary: Self sign-up; creates a Pending client household. No shopping session until a Warehouse Manager approves it (Epic 1).
       security: []
       requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SignupRequest' } } } }
       responses:

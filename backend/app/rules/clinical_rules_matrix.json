@@ -78,24 +78,39 @@
     }
   },
   "conditions": {
-    "_note": "Placeholder mapping from optional, never-stored medical conditions to dietary choices; pending Epic Cure guidance.",
-    "Diabetes": [
-      "Low Sugar"
-    ],
-    "High blood pressure": [
-      "Low Sodium",
-      "Heart Healthy"
-    ],
-    "Heart disease": [
-      "Heart Healthy",
-      "Low Sodium"
-    ],
-    "Kidney disease": [
-      "Kidney Friendly",
-      "Low Sodium"
-    ],
-    "Celiac disease": [
-      "Gluten Free"
-    ]
+    "_note": "ICD-10 code -> dietary choices (Epic 2: parse the ICD-10 array against the dietary matrix). Placeholder mapping pending Epic Cure guidance.",
+    "E11": {
+      "label": "Type 2 diabetes",
+      "choices": [
+        "Low Sugar"
+      ]
+    },
+    "I10": {
+      "label": "High blood pressure",
+      "choices": [
+        "Low Sodium",
+        "Heart Healthy"
+      ]
+    },
+    "I25": {
+      "label": "Heart disease",
+      "choices": [
+        "Heart Healthy",
+        "Low Sodium"
+      ]
+    },
+    "N18": {
+      "label": "Chronic kidney disease",
+      "choices": [
+        "Kidney Friendly",
+        "Low Sodium"
+      ]
+    },
+    "K90.0": {
+      "label": "Celiac disease",
+      "choices": [
+        "Gluten Free"
+      ]
+    }
   }
 }

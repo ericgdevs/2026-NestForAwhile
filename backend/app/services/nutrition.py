@@ -1,12 +1,11 @@
 from __future__ import annotations
 
-import json
-
 from sqlalchemy import or_, select
 from sqlalchemy.orm import Session
 
 from app.models import Client, Product
 from app.rules.classify import household_label
+from app.services.household import effective_choices
 from app.services.off import lookup_open_food_facts
 from app.services.swaps import find_swaps
 from app.services.usda import lookup_usda
@@ -15,14 +14,9 @@ NUTRIENTS = ("sodium_mg", "sugar_g", "sat_fat_g", "potassium_mg")
 
 
 def members_for(client: Client | None) -> list[dict[str, object]]:
-    """The household's members as plain dicts for the rules engine (no medical data exists)."""
+    """Members for the rules engine: nickname, age, effective choices (codes stay server-side)."""
     return [
-        {
-            "nickname": member.nickname,
-            "age": member.age,
-            "restrictions": json.loads(member.restrictions),
-            "allergies": json.loads(member.allergies),
-        }
+        {"nickname": member.nickname, "age": member.age, **effective_choices(member)}
         for member in (client.members if client else [])
     ]
 

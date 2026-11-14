@@ -38,14 +38,14 @@ class SignupRequest(BaseModel):
     members: list[MemberIn] = Field(min_length=1, max_length=20)
 
 
-# Pending clients may shop; checkout waits for a manager's approval (design §4.2).
-SHOPPING_STATUSES = {"Active", "Pending"}
-
-
 def _start_client_visit(database: Session, client: Client, result: dict[str, object]) -> None:
+    """Epic 1: a shopping session starts only when Client_Enrollment_Status is Active."""
+    result["Client_Enrollment_Status"] = client.Client_Enrollment_Status
+    if client.Client_Enrollment_Status != "Active":
+        result["Shopping_Session_Token"] = None  # Pending: signed in to an awaiting-approval screen
+        return
     token = start_session(database, client)
     result["Shopping_Session_Token"] = token
-    result["Client_Enrollment_Status"] = client.Client_Enrollment_Status
     if token is None:
         result["queue"] = queue_state(database, client.user_id)
 
@@ -59,7 +59,8 @@ def login(payload: LoginRequest, response: Response, database: Session = Depends
     result: dict[str, object] = {"role": user.role}
     if user.role == Role.CLIENT.value:
         client = database.get(Client, user.id)
-        if client is None or client.Client_Enrollment_Status not in SHOPPING_STATUSES:
+        # Pending may sign in (no session, awaiting approval); expired/Inactive is rejected.
+        if client is None or client.Client_Enrollment_Status not in {"Active", "Pending"}:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Client enrollment is not Active",
@@ -71,7 +72,7 @@ def login(payload: LoginRequest, response: Response, database: Session = Depends
 
 @router.post("/auth/signup", status_code=status.HTTP_201_CREATED)
 def signup(payload: SignupRequest, response: Response, database: Session = Depends(get_db)):
-    """Self sign-up: the account starts Pending and the client can shop right away."""
+    """Self sign-up: the account starts Pending; shopping starts after a manager approves it."""
     lookup = email_lookup_hash(payload.email)
     if database.scalar(select(User).where(User.email_hash == lookup)) is not None:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")

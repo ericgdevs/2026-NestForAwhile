@@ -9,7 +9,8 @@ MATRIX_PATH = Path(__file__).with_name("clinical_rules_matrix.json")
 with MATRIX_PATH.open(encoding="utf-8") as matrix_file:
     _MATRIX = json.load(matrix_file)
 RULES = _MATRIX["rules"]
-CONDITIONS = {name: classes for name, classes in _MATRIX["conditions"].items() if name != "_note"}
+# ICD-10 code -> {"label", "choices"}; codes are the stored medical data (encrypted at rest).
+CONDITIONS = {code: entry for code, entry in _MATRIX["conditions"].items() if code != "_note"}
 
 APPROVED = "Approved"
 CAPPED = "Capped"
@@ -86,12 +87,12 @@ def classify(product: Any, profile: Any) -> tuple[str, str]:
     return APPROVED, "This item matches the selected dietary profile."
 
 
-def conditions_to_choices(conditions: list[str]) -> list[str]:
-    """Turn optional medical conditions into dietary choices; the conditions are not kept."""
-    unknown = set(conditions).difference(CONDITIONS)
+def conditions_to_choices(icd10_codes: list[str]) -> list[str]:
+    """Map a member's ICD-10 codes to dietary choices through the matrix (rules, never AI)."""
+    unknown = set(icd10_codes).difference(CONDITIONS)
     if unknown:
-        raise ValueError(f"Unknown condition(s): {', '.join(sorted(unknown))}")
-    return sorted({choice for condition in conditions for choice in CONDITIONS[condition]})
+        raise ValueError(f"Unknown ICD-10 code(s): {', '.join(sorted(unknown))}")
+    return sorted({choice for code in icd10_codes for choice in CONDITIONS[code]["choices"]})
 
 
 def household_label(product: Any, members: list[Any]) -> dict[str, Any]:
