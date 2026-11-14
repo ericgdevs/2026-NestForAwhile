@@ -93,7 +93,7 @@ def item_view(
         "product_id": item.product_id,
         "name": item.product.name if item.product else item.text,
         "source": item.source,
-        "recipe": item.recipe,
+        "recipes": recipes_of(item),
         "ticked": item.ticked,
         "in_stock": lot is not None,
         "location": location_of(lot),
@@ -102,6 +102,35 @@ def item_view(
         label = household_label(item.product, members)
         view.update(status=label["status"], not_for=label["not_for"])
     return view
+
+
+def recipes_of(item: ShoppingListItem) -> list[dict]:
+    """The `recipe` column holds a list of recipes; rows saved before 2026-11-14 hold one dict."""
+    if not item.recipe:
+        return []
+    return item.recipe if isinstance(item.recipe, list) else [item.recipe]
+
+
+def find_same_line(
+    items: list[ShoppingListItem], product_id: int | None, text: str
+) -> ShoppingListItem | None:
+    """One line per product (or per free-text item when nothing in stock matched)."""
+    for item in items:
+        if product_id is not None and item.product_id == product_id:
+            return item
+        if product_id is None and item.product_id is None and item.text.lower() == text.lower():
+            return item
+    return None
+
+
+def merge_into_line(item: ShoppingListItem, recipe: dict | None) -> None:
+    """Tag the line with this recipe too, or mark it as the client's own item."""
+    recipes = recipes_of(item)
+    if recipe is None:
+        item.source = "you"
+    elif all(existing.get("title") != recipe.get("title") for existing in recipes):
+        recipes = [*recipes, recipe]
+    item.recipe = recipes  # reassign so SQLAlchemy saves the JSON change
 
 
 def aisle_order(view: dict[str, object]) -> tuple:
