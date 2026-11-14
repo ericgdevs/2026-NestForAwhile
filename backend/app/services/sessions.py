@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlmodel import Session, select
 
 from app.models import QueueStatus, SessionStatus, ShoppingSession, utcnow
-from app.services import queue
+from app.services import queue, recommendations
 
 
 def active_session(session: Session, client_id: int) -> ShoppingSession | None:
@@ -16,6 +16,7 @@ def start_session(session: Session, client_id: int) -> ShoppingSession:
     shopping = ShoppingSession(Shopping_Session_Token=secrets.token_urlsafe(32), client_id=client_id)
     session.add(shopping)
     session.commit()
+    recommendations.generate_for_session(session, client_id, shopping.id)
     return shopping
 
 

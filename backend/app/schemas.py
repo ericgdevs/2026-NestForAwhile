@@ -44,3 +44,18 @@ class CartManifestLine(BaseModel):
 
 class CartResponse(BaseModel):
     Active_Cart_Manifest: list[CartManifestLine]
+
+
+class DietaryProfileRead(BaseModel):
+    restrictions: list[str] = []
+    allergies: list[str] = []
+    preferences: list[str] = []
+    Dietary_Tier_ID: int | None = None
+
+
+class RecommendationRead(BaseModel):
+    product_id: int
+    name: str
+    suggested_qty: int = Field(ge=1)
+    rationale: str
+    status: str  # Approved | Capped, never Restricted
