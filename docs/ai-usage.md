@@ -57,3 +57,4 @@
 | Implement T037 | Copilot (GPT-5.6 Terra) | Added deterministic inventory-aware recommendations with safety filtering, rationale, and household-scaled quantities | None | Caden |
 | Implement T038 | Copilot (GPT-5.6 Terra) | Added the personalized recommendation page with deterministic rationale, quantities, and accessible safety badges | None | Caden |
 | Implement T039 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for safe recommendations, rationale visibility, and household quantities | None | Caden |
+| Implement T040 | Copilot (GPT-5.6 Terra) | Added local barcode/SKU nutrition lookup with deterministic safety classification and friendly missing-product errors | None | Caden |

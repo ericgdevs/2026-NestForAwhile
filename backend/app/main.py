@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from app.config import Settings
 from app.routes.auth import router as auth_router
 from app.routes.capacity import router as capacity_router
+from app.routes.products import router as products_router
 from app.routes.profile import router as profile_router
 from app.routes.recommendations import router as recommendations_router
 
@@ -14,6 +15,7 @@ app.include_router(auth_router)
 app.include_router(capacity_router)
 app.include_router(profile_router)
 app.include_router(recommendations_router)
+app.include_router(products_router)
 
 
 @app.get("/health")
