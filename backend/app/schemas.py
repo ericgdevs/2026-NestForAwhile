@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 
-from app.models import EnrollmentStatus, Role
+from app.models import EnrollmentStatus, QueueStatus, Role
 
 
 class LoginRequest(BaseModel):
@@ -22,6 +22,12 @@ class MeResponse(BaseModel):
 
 class LoginResponse(BaseModel):
     Shopping_Session_Token: str
+
+
+class QueueState(BaseModel):
+    status: QueueStatus
+    position: int | None = None
+    message: str = ""
 
 
 class CapacityResponse(BaseModel):

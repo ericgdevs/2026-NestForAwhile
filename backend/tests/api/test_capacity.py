@@ -7,10 +7,11 @@ def test_capacity_counts_active_sessions_and_ready_entries(login_as, seeded):
     seeded.add(QueueEntry(client_id=3, status=QueueStatus.READY))
     seeded.add(QueueEntry(client_id=4, status=QueueStatus.WAITING))
     seeded.commit()
+    login_as(Role.MANAGER).put("/capacity", json={"Max_Floor_Capacity": 2})
     body = login_as(Role.VOLUNTEER).get("/capacity").json()
     assert body["Active_Floor_Shoppers"] == 2
     assert body["Queue_Waiting"] == 1
-    assert body["Max_Floor_Capacity"] >= 1
+    assert body["Max_Floor_Capacity"] == 2
 
 
 def test_capacity_hidden_from_clients_and_director(login_as):
