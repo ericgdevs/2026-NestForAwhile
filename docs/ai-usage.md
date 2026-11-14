@@ -26,3 +26,4 @@
 | Implement (T068) | Copilot (Sonnet 5.5) | Added role-aware navigation and protected route access using the contract’s five roles | Caden reviewed the role-to-screen mapping | Caden |
 | Implement (T076) | Copilot (Sonnet 5.5) | Added the warehouse audit flow with scanner reuse, variance calculation, and confirmation state | Caden reviewed the mock inventory count | Caden |
 | Implement (T082) | Copilot (Sonnet 5.5) | Added synthetic inventory lots with expiration status and an expiring-soon dashboard warning | Caden reviewed the warehouse warning copy | Caden |
+| Implement (T093) | Copilot (Sonnet 5.5) | Added aggregate report type/period selection and mock DOCX download for manager and director roles | Caden reviewed the report scope and privacy copy | Caden |
