@@ -1,11 +1,12 @@
 import { AuthProvider, ProtectedRoute } from "./lib/auth";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
+import Home from "./pages/Home";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
 
-function Home() {
+function StaffHome() {
   const { user } = useAuth();
   const [capacity, setCapacity] = useState<{ Active_Floor_Shoppers: number } | null>(null);
 
@@ -40,7 +41,7 @@ function Router() {
     <Login />
   ) : (
     <ProtectedRoute>
-      <Home />
+      {window.location.pathname === "/" ? <Home /> : <StaffHome />}
     </ProtectedRoute>
   );
 }

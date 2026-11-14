@@ -48,3 +48,18 @@ export function getMe(): Promise<components["schemas"]["Client"]> {
 export function getCapacity(): Promise<components["schemas"]["Capacity"]> {
   return apiRequest("/capacity");
 }
+
+export type Recommendation = {
+  product_id: number;
+  name: string;
+  quantity: number;
+  status: components["schemas"]["SafetyStatus"];
+  rationale: string;
+  aisle: string;
+  shelf: string;
+  bin: string;
+};
+
+export function getRecommendations(): Promise<Recommendation[]> {
+  return apiRequest("/recommendations");
+}
