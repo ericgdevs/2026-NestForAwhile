@@ -18,13 +18,14 @@ export const ALLERGY_CHOICES = [
   { value: "Gluten Free", label: "Gluten allergy" },
 ] as const;
 
-// Optional; turned into diet choices on the server and never stored (clinical_rules_matrix.json).
+// Optional ICD-10 codes (Epic 2): stored encrypted in Client_Medical_Profile and mapped to diet
+// choices by the rules matrix (backend clinical_rules_matrix.json).
 export const CONDITIONS = [
-  "Diabetes",
-  "High blood pressure",
-  "Heart disease",
-  "Kidney disease",
-  "Celiac disease",
+  { value: "E11", label: "Type 2 diabetes" },
+  { value: "I10", label: "High blood pressure" },
+  { value: "I25", label: "Heart disease" },
+  { value: "N18", label: "Chronic kidney disease" },
+  { value: "K90.0", label: "Celiac disease" },
 ] as const;
 
 export type MemberDraft = {
@@ -48,7 +49,7 @@ export const fromMember = (member: Member): MemberDraft => ({
   age: member.age === null ? "" : String(member.age),
   restrictions: member.restrictions,
   allergies: member.allergies,
-  conditions: [],
+  conditions: member.conditions ?? [],
 });
 
 export function toMemberInput(draft: MemberDraft): MemberInput {

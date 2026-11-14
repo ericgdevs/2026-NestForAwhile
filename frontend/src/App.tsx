@@ -6,6 +6,7 @@ import { AuthProvider, ProtectedRoute, useAuth } from "./lib/auth";
 import { canVisit } from "./lib/roles";
 import Analytics from "./pages/Analytics";
 import Approvals from "./pages/Approvals";
+import AwaitingApproval from "./pages/AwaitingApproval";
 import Audit from "./pages/Audit";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
@@ -57,6 +58,9 @@ function Router() {
         </a>
       </div>
     );
+  }
+  if (user.role === "Client" && user.Client_Enrollment_Status === "Pending" && path !== "/profile") {
+    return <AwaitingApproval />;
   }
   const screen = screens[path];
   if (screen) return <ProtectedRoute>{screen()}</ProtectedRoute>;

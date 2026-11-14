@@ -23,7 +23,6 @@ All features below are equal priority (Caden, 2026-11-14). The demo must show th
 - Volunteers can check a client out from their own phone in under a minute.
 
 **Non-goals**
-- Storing medical conditions. They are used once to pick dietary classes, then discarded.
 - Showing anyone's real name in the client or staff UI.
 - Multi-language, facial recognition, camera cart tracking (already out of scope in `spec.md`).
 - A native app. This is the existing mobile web app.
@@ -38,7 +37,7 @@ All features below are equal priority (Caden, 2026-11-14). The demo must show th
 
 - Synthetic data only (`@example.test`), in seed data, tests, screenshots, and demos.
 - Organizer variable names stay exactly as specified: `Client_Enrollment_Status`, `Household_Size`, `Dietary_Tier_ID`, `Shopping_Session_Token`, `Active_Cart_Manifest`, `Active_Floor_Shoppers`.
-- Stack is fixed: React + Vite + TypeScript frontend; FastAPI + SQLAlchemy + Alembic backend; AI via `AI_PROVIDER` (Ollama locally, Groq on Azure) with the deterministic fallback always available.
+- Stack is fixed: React + Vite + TypeScript frontend; FastAPI + SQLAlchemy + Alembic backend; AI via `AI_PROVIDER` (Ollama locally, Groq when deployed) with the deterministic fallback always available. Deployed on Vercel + Supabase (moved from Azure, 2026-11-14).
 - WCAG 2.2 AA; status is never shown by color alone; 44px touch targets.
 - Ownership: Caden owns `frontend/`. Backend changes are made on separate `api/*` branches, logged in `docs/proposals/backend-changes-log.md`, and reviewed by Aditya (API/data) or Eric (AI). `openapi.yaml` changes go with them.
 - Visual language is the existing Nutrition Facts label system in `DESIGN.md`.
@@ -58,8 +57,8 @@ All features below are equal priority (Caden, 2026-11-14). The demo must show th
   - **Household members**: how many, and each person's **age**.
   - Each person's **nickname**. The default is "Person 1", "Person 2", and the client can rename them ("Mom", "Little one").
   - **Dietary restrictions and allergies**, either for the whole household or per person.
-  - **Medical conditions**, optional and per person. They are used only to pick that person's dietary classes, then discarded and **never stored**.
-- The new account is **pending**. The client can shop right away, but **cannot complete checkout until staff approve the account**.
+  - **Medical conditions**, optional and per person, as ICD-10 codes (shown in plain words). *Updated 2026-11-14 after Eric's review (Epic 2 / US-2.1):* stored **encrypted** in `Client_Medical_Profile` and mapped by the rules matrix to diet choices and `Dietary_Tier_ID`. Returned only to the client themselves.
+- The new account is **pending**. *Updated 2026-11-14 after Eric's review (Epic 1):* a Pending client signs in to an **awaiting-approval screen with no shopping session**; shopping starts after a Warehouse Manager approves and the client signs in again.
 
 ### 4.3 Household safety label (rules engine)
 - Each product gets one label for the household, computed from every member's rules:

@@ -63,7 +63,7 @@ export default function Profile() {
         )
       ) : (
         <div className="stack" style={{ maxWidth: "860px" }}>
-          <HouseholdEditor members={members} onChange={change} />
+          <HouseholdEditor members={members} onChange={change} showConditions />
           {saved && (
             <p className="alert alert-ok" role="status">
               <Icon name="check" />

@@ -16,7 +16,7 @@ async function signIn(page: Page, email: string) {
 test.describe("client on a phone", () => {
   test.use({ viewport: { width: 390, height: 844 } });
 
-  test("signs up a household and shops as Pending", async ({ page }) => {
+  test("signs up a household and waits for approval with no shopping session", async ({ page }) => {
     await needsClientFlow(page);
     await page.goto("/login");
     await page.getByRole("link", { name: "Create Account" }).click();
@@ -28,7 +28,9 @@ test.describe("client on a phone", () => {
     await page.getByRole("checkbox", { name: "High blood pressure" }).click();
     await page.getByRole("button", { name: "Next" }).click();
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page.getByText(/waiting for staff approval/i)).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Almost ready" })).toBeVisible();
+    await page.goto("/scan");
+    await expect(page.getByRole("heading", { name: "Scan a product" })).toHaveCount(0);
   });
 
   test("scan shows who an item is not for, recipes go to the list, cart shows a QR", async ({ page }) => {

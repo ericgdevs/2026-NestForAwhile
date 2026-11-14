@@ -22,11 +22,11 @@ test("walks account → household → finish and sends the household", async () 
   fireEvent.change(screen.getByLabelText("Password"), { target: { value: "long-enough-1" } });
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
   fireEvent.change(await screen.findByLabelText("Nickname"), { target: { value: "Mom" } });
-  fireEvent.click(screen.getByRole("checkbox", { name: "Diabetes" }));
+  fireEvent.click(screen.getByRole("checkbox", { name: "Type 2 diabetes" }));
   fireEvent.click(screen.getByRole("button", { name: /add a person/i }));
   fireEvent.click(screen.getAllByRole("checkbox", { name: "Nut allergy" })[1]);
   fireEvent.click(screen.getByRole("button", { name: "Next" }));
-  expect(await screen.findByText(/approve your account before you check out/i)).toBeInTheDocument();
+  expect(await screen.findByText(/sign in again to start shopping/i)).toBeInTheDocument();
   fireEvent.click(screen.getByRole("button", { name: "Create account" }));
 
   await waitFor(() => expect(refresh).toHaveBeenCalled());
@@ -35,7 +35,7 @@ test("walks account → household → finish and sends the household", async () 
     password: "long-enough-1",
     name: "Synthetic Parent",
     members: [
-      { nickname: "Mom", age: null, restrictions: [], allergies: [], conditions: ["Diabetes"] },
+      { nickname: "Mom", age: null, restrictions: [], allergies: [], conditions: ["E11"] },
       { nickname: undefined, age: null, restrictions: [], allergies: ["Nut Allergy"], conditions: [] },
     ],
   });

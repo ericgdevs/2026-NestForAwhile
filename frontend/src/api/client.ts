@@ -48,7 +48,13 @@ export type NotFor = { nickname: string; reason: string };
 /** Household label fields the rules engine adds to products. */
 export type HouseholdLabel = { status: SafetyStatus; not_for?: NotFor[]; allergy_match?: boolean };
 
-export type Member = { nickname: string; age: number | null; restrictions: string[]; allergies: string[] };
+export type Member = {
+  nickname: string;
+  age: number | null;
+  restrictions: string[];
+  allergies: string[];
+  conditions?: string[]; // ICD-10 codes, only ever returned to the client themselves
+};
 export type MemberInput = Partial<Omit<Member, "nickname">> & { nickname?: string; conditions?: string[] };
 
 export type Me = {
