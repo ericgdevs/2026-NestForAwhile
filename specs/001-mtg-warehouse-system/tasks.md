@@ -111,7 +111,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 - [X] T046 [api] [US5] `backend/app/services/cart.py` and `routes/cart.py`: `GET /cart`, `POST /cart/items`, `PATCH` and `DELETE /cart/items/{product_id}`, `build_manifest()` for `Active_Cart_Manifest`; the server marks items that were recommended; tests include persistence within the session
 - [X] T047 [ui] [US5] `frontend/src/pages/Cart.tsx` live cart (add, remove, change quantity) plus add-to-cart buttons on `Home.tsx` and `Scan.tsx`
-- [ ] T048 [qa] [US5] Playwright `e2e/tests/us5-cart.spec.ts`: add, change quantity, remove, reload keeps the cart
+- [X] T048 [qa] [US5] Playwright `e2e/tests/us5-cart.spec.ts`: add, change quantity, remove, reload keeps the cart
 
 ## Phase 8: User Story 6 – Inventory-Aware Recipes (P1)
 
