@@ -45,7 +45,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T004 [P] [docs] Create `.env.example` with `DATABASE_URL`, `JWT_SECRET`, `FIELD_ENCRYPTION_KEY`, `AI_PROVIDER`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `GROQ_API_KEY`, `GROQ_MODEL`, `USDA_API_KEY`, `ALLOWED_ORIGINS`, `COOKIE_SECURE`, `SEED_DEMO_DATA` (placeholders only)
 - [X] T005 [P] [qa] CI backend workflow `.github/workflows/backend.yml`: ruff + pytest on every PR
 - [X] T006 [P] [qa] CI frontend workflow `.github/workflows/frontend.yml`: lint + typecheck + Vitest + build on every PR
-- [ ] T007 [P] [qa] CI hygiene workflow `.github/workflows/hygiene.yml` + `scripts/check_hygiene.sh`: fail if `.env` is tracked, if the phrase "HIPAA compliant" appears anywhere
+- [X] T007 [P] [qa] CI hygiene workflow `.github/workflows/hygiene.yml` + `scripts/check_hygiene.sh`: fail if `.env` is tracked, if the phrase "HIPAA compliant" appears anywhere
 - [ ] T008 [qa] Playwright scaffold: `e2e/package.json`, `e2e/playwright.config.ts` (`BASE_URL` env, local + deployed projects), `e2e/fixtures/auth.ts` (login helper per role) (dependency approval)
 - [ ] T009 [qa] CI e2e workflow `.github/workflows/e2e.yml`: start backend (SQLite + seed) and frontend build, run Playwright on every PR
 - [ ] T010 [docs] Add `.github/CODEOWNERS` matching the ownership table above and `.github/pull_request_template.md` (task ID, stream, merge-commit-only reminder, ai-usage row checkbox, tests run). Needs the team's GitHub handles from Eric.
