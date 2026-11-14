@@ -136,3 +136,4 @@
 | Prove queue promotion is atomic with checkout | Copilot (Sonnet 5.5) | Found promotion already runs inside the checkout transaction (no code change needed); added tests for rollback on promotion failure and for slot release plus promoting the next waiting client | Eric approved a tests-only fix | Eric |
 | Chore | Gemini Flash | Added union merge attributes for ai-usage and decisions docs | None | Eric |
 | CI (qa) | Gemini Flash | Configured 15m timeout, browser caching, and demo env in e2e workflow; aligned Playwright config project, retries, and local webServer | None | Eric |
+| Test (qa) | Gemini Flash | Fixed auth fixture to use page.request for session cookie attachment and added demo seed fallbacks | None | Eric |
