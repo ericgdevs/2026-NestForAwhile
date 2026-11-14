@@ -1,5 +1,6 @@
 # Team Sandwich rules (read first; these outrank everything below)
 
+- No AI attribution or co-author lines in commits or PRs. In `docs/ai-usage.md`, log models as the tool you used, e.g. `Copilot (Sonnet 5.5)`.
 - **Only do what the current request asks.** Before doing anything extra (new files, new dependencies, refactors, changes outside the named files), stop and ask first.
 - **Propose a plan before editing and wait for approval.** Don't start implementing until told to go ahead.
 - **Commit after every finished step:** each Spec Kit command's output (constitution, spec, plan, tasks, analyze fixes) and each completed task, as its own small commit with a clear message (`<type>(<stream>): <what>`, types feat/fix/test/docs/chore/spec). Push to your own branch. **Never open or merge a PR, merge or rebase `main`, or force-push**; the person does that. Never delete files without asking.
