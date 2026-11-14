@@ -94,7 +94,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 5: User Story 3 – Recommendations and Matching (P1)
 
-- [ ] T037 [api] [US3] `backend/app/services/recommendations.py` and `routes/recommendations.py`: `GET /recommendations`; in-stock, non-expired, never Restricted, quantity scaled by `Household_Size`, deterministic rationale; generated when the session starts; tests for each rule
+- [X] T037 [api] [US3] `backend/app/services/recommendations.py` and `routes/recommendations.py`: `GET /recommendations`; in-stock, non-expired, never Restricted, quantity scaled by `Household_Size`, deterministic rationale; generated when the session starts; tests for each rule
 - [ ] T038 [ui] [US3] `frontend/src/pages/Home.tsx`: personalized recommendation view with rationale and `StatusBadge`
 - [ ] T039 [qa] [US3] Playwright `e2e/tests/us3-recommendations.spec.ts`: quantities differ by household size, no Restricted item, rationale visible
 

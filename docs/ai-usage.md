@@ -54,3 +54,4 @@
 | Implement T034 | Copilot (GPT-5.6 Terra) | Added encrypted dietary profile updates, deterministic tier recomputation, validation, and route tests | None | Caden |
 | Implement T035 | Copilot (GPT-5.6 Terra) | Added the editable nine-choice dietary profile page with save feedback and focused UI coverage | None | Caden |
 | Implement T036 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for selecting, saving, and reloading dietary choices | None | Caden |
+| Implement T037 | Copilot (GPT-5.6 Terra) | Added deterministic inventory-aware recommendations with safety filtering, rationale, and household-scaled quantities | None | Caden |
