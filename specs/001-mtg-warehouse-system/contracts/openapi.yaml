@@ -94,7 +94,14 @@ components:
         product_id: { type: integer }
         name: { type: string }
         quantity: { type: integer, minimum: 1 }
+        from_recommendation: { type: boolean }
         status: { $ref: '#/components/schemas/SafetyStatus' }
+        explanation: { type: string }
+        sku: { type: string }
+        sodium_mg: { type: number, nullable: true }
+        sugar_g: { type: number, nullable: true }
+        sat_fat_g: { type: number, nullable: true }
+        potassium_mg: { type: number, nullable: true }
     Cart:
       type: object
       properties:

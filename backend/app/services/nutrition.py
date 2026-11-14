@@ -10,16 +10,48 @@ from app.rules.classify import classify
 from app.services.off import lookup_open_food_facts
 from app.services.usda import lookup_usda
 
+NUTRIENTS = ("sodium_mg", "sugar_g", "sat_fat_g", "potassium_mg")
+
+
+def profile_for(client: Client | None) -> dict[str, list[str]]:
+    profile = client.dietary_profile if client else None
+    return {
+        "restrictions": json.loads(profile.restrictions) if profile else [],
+        "allergies": json.loads(profile.allergies) if profile else [],
+    }
+
+
+def safety_label(
+    product_data: dict[str, object], profile_data: dict[str, list[str]]
+) -> tuple[str, str]:
+    """Rules-engine status; missing nutrition is never shown as Approved."""
+    status, explanation = classify(product_data, profile_data)
+    if any(product_data.get(field) is None for field in NUTRIENTS):
+        status = "Capped"
+        explanation = "We couldn't confirm all nutrition details for this item."
+    return status, explanation
+
+
+def local_label(product: Product, profile_data: dict[str, list[str]]) -> dict[str, object]:
+    """Stored nutrition and rules status for a warehouse product; no outside lookups."""
+    product_data = {
+        field: getattr(product, field)
+        for field in ("sku", "allergens", "diet_flags", *NUTRIENTS)
+    }
+    status, explanation = safety_label(product_data, profile_data)
+    return {
+        "sku": product.sku,
+        **{field: product_data[field] for field in NUTRIENTS},
+        "status": status,
+        "explanation": explanation,
+    }
+
 
 def scan_local(database: Session, code: str, client: Client) -> dict[str, object] | None:
     product = database.scalar(
         select(Product).where(or_(Product.barcode == code, Product.sku == code))
     )
-    profile = client.dietary_profile
-    profile_data = {
-        "restrictions": json.loads(profile.restrictions) if profile else [],
-        "allergies": json.loads(profile.allergies) if profile else [],
-    }
+    profile_data = profile_for(client)
     enrichment = None
     if product is None:
         enrichment = lookup_open_food_facts(code) or lookup_usda(code)
@@ -65,13 +97,7 @@ def scan_local(database: Session, code: str, client: Client) -> dict[str, object
                 )
         classification_product = product_data
 
-    status, explanation = classify(classification_product, profile_data)
-    if any(
-        product_data.get(field) is None
-        for field in ("sodium_mg", "sugar_g", "sat_fat_g", "potassium_mg")
-    ):
-        status = "Capped"
-        explanation = "We couldn't confirm all nutrition details for this item."
+    status, explanation = safety_label(classification_product, profile_data)
     return {
         "product_id": product.id if product else None,
         "sku": product_data["sku"],
