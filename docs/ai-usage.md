@@ -30,3 +30,4 @@
 | Spec (constitution) | Copilot (Sonnet 5.5) | Drafted constitution v1.0.0 from Eric's principles; filled plan-template Constitution Check | Eric supplied all principles and rules; reviewed draft | Eric |
 | Implement | Copilot (Sonnet 5.5) | Added DietaryProfileWrite schema (matrix-validated options) and Dietary_Tier_ID assignment service (strictest wins) | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | Added create/update client and profile save services with automatic tier recalculation; PUT /me/profile route | Eric approved plan and decisions | Eric |
+| Implement | Copilot (Sonnet 5.5) | Added profile tests: persistence, encryption at rest, invalid option, strictest tier, recalculation, Household_Size | Eric approved plan and decisions | Eric |
