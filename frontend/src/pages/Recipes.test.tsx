@@ -1,18 +1,23 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { CartProvider, useCart } from '../lib/cart'
-import { Recipes } from './Recipes'
+import { render, screen, waitFor } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
 
-function SeededRecipes() {
-  const { addItem } = useCart()
-  return <><button onClick={() => addItem({ productId: 1, name: 'Brown rice' })}>Seed recipe</button><Recipes /></>
-}
+import Recipes from "./Recipes";
 
-test('shows fallback recipes with ingredient locations', async () => {
-  const user = userEvent.setup()
-  render(<CartProvider><SeededRecipes /></CartProvider>)
-  await user.click(screen.getByRole('button', { name: 'Seed recipe' }))
-  expect(screen.getByRole('heading', { name: 'Comforting black bean bowls' })).toBeInTheDocument()
-  expect(screen.getByText(/fallback recipe/i)).toBeInTheDocument()
-  expect(screen.getByText(/Aisle 2/)).toBeInTheDocument()
-})
+vi.mock("../api/client", () => ({
+  getRecipes: vi.fn().mockResolvedValue({
+    used_fallback: true,
+    recipes: [
+      {
+        title: "Simple pantry bowl",
+        ingredients: [{ name: "Synthetic oats", product_id: 1 }],
+        steps: ["Combine the available ingredients."],
+      },
+    ],
+  }),
+}));
+
+test("renders recipes and fallback notice", async () => {
+  render(<Recipes />);
+  await waitFor(() => expect(screen.getByRole("heading", { name: "Simple pantry bowl" })).toBeInTheDocument());
+  expect(screen.getByText(/rules-only recipe fallback/i)).toBeInTheDocument();
+});

@@ -1,27 +1,23 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { useState } from 'react'
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { AuthProvider, ProtectedRoute, useAuth } from './auth'
+import { render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, expect, test, vi } from "vitest";
 
-function TestApp() {
-  return <MemoryRouter initialEntries={['/private']}><AuthProvider><Routes><Route element={<ProtectedRoute />}><Route path="/private" element={<p>Private</p>} /></Route><Route path="/login" element={<p>Login</p>} /></Routes></AuthProvider></MemoryRouter>
-}
+import App from "../App";
+import { getMe } from "../api/client";
 
-test('redirects signed-out visitors to login', () => {
-  render(<TestApp />)
-  expect(screen.getByText('Login')).toBeInTheDocument()
-})
+vi.mock("../api/client", () => ({
+  getMe: vi.fn(),
+  login: vi.fn(),
+  apiRequest: vi.fn(),
+}));
 
-test('accepts the demo credentials', async () => {
-  const user = userEvent.setup()
-  render(<MemoryRouter><AuthProvider><TestCredentials /></AuthProvider></MemoryRouter>)
-  await user.click(screen.getByRole('button', { name: 'Sign in' }))
-  expect(screen.getByText('Signed in')).toBeInTheDocument()
-})
+beforeEach(() => {
+  window.history.replaceState({}, "", "/");
+  vi.mocked(getMe).mockRejectedValue(new Error("not signed in"));
+});
 
-function TestCredentials() {
-  const { signIn } = useAuth()
-  const [signedIn, setSignedIn] = useState(false)
-  return <button onClick={() => setSignedIn(signIn('demo@example.test', 'welcome').ok)}>{signedIn ? 'Signed in' : 'Sign in'}</button>
-}
+test("protected routes do not show private content when signed out", async () => {
+  render(<App />);
+
+  await waitFor(() => expect(screen.getByText(/please sign in/i)).toBeInTheDocument());
+  expect(screen.queryByText(/welcome to the grocery/i)).not.toBeInTheDocument();
+});

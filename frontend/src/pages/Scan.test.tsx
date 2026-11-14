@@ -1,21 +1,34 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { Scan } from './Scan'
-import { CartProvider } from '../lib/cart'
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
 
-test('shows a friendly safety result for a manual code', async () => {
-  const user = userEvent.setup()
-  render(<CartProvider><Scan /></CartProvider>)
-  await user.type(screen.getByLabelText('Product code'), '012345')
-  await user.click(screen.getByRole('button', { name: 'Check code' }))
-  expect(screen.getByRole('heading', { name: 'Brown rice' })).toBeInTheDocument()
-  expect(screen.getByText('Good to go')).toBeInTheDocument()
-})
+import Scan from "./Scan";
 
-test('explains when a product code is unknown', async () => {
-  const user = userEvent.setup()
-  render(<CartProvider><Scan /></CartProvider>)
-  await user.type(screen.getByLabelText('Product code'), '000000')
-  await user.click(screen.getByRole('button', { name: 'Check code' }))
-  expect(screen.getByRole('alert')).toHaveTextContent('couldn’t find')
-})
+vi.mock("../components/BarcodeScanner", () => ({
+  default: () => <div>Camera scanner</div>,
+}));
+vi.mock("../api/client", () => ({
+  scanProduct: vi.fn().mockResolvedValue({
+    product_id: 1,
+    sku: "SYN-OATS-001",
+    barcode: "000000000001",
+    name: "Synthetic Oats",
+    image_url: null,
+    sodium_mg: 0,
+    sugar_g: 1,
+    sat_fat_g: 0.5,
+    potassium_mg: 120,
+    status: "Approved",
+    explanation: "This item matches the selected dietary profile.",
+  }),
+  saveCartItem: vi.fn(),
+}));
+
+test("supports manual SKU lookup and renders the result card", async () => {
+  render(<Scan />);
+  fireEvent.change(screen.getByLabelText("SKU or barcode"), {
+    target: { value: "SYN-OATS-001" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "Check" }));
+  await waitFor(() => expect(screen.getByRole("heading", { name: "Synthetic Oats" })).toBeInTheDocument());
+  expect(screen.getByText(/matches the selected dietary profile/i)).toBeInTheDocument();
+});

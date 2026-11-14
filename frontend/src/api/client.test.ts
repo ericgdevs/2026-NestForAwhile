@@ -1,21 +1,30 @@
-import { beforeEach, afterEach, expect, test, vi } from 'vitest'
-import { api } from './client'
+import { beforeEach, expect, test, vi } from "vitest";
+
+import { getCapacity } from "./client";
 
 beforeEach(() => {
-  vi.stubGlobal('fetch', vi.fn())
-})
+  vi.restoreAllMocks();
+});
 
-afterEach(() => {
-  vi.unstubAllGlobals()
-})
+test("API requests include cookies and return typed JSON", async () => {
+  vi.spyOn(globalThis, "fetch").mockResolvedValue(
+    new Response(
+      JSON.stringify({
+        Active_Floor_Shoppers: 1,
+        Max_Floor_Capacity: 4,
+        Queue_Waiting: 0,
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } },
+    ),
+  );
 
-test('includes cookies and returns typed login data', async () => {
-  vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ role: 'Client' }), { status: 200 }))
-  await expect(api.login({ email: 'demo@example.test', password: 'welcome' })).resolves.toEqual({ role: 'Client' })
-  expect(fetch).toHaveBeenCalledWith('/api/auth/login', expect.objectContaining({ credentials: 'include', method: 'POST' }))
-})
-
-test('surfaces API error details', async () => {
-  vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify({ detail: 'Not active' }), { status: 403 }))
-  await expect(api.me()).rejects.toThrow('Not active')
-})
+  await expect(getCapacity()).resolves.toEqual({
+    Active_Floor_Shoppers: 1,
+    Max_Floor_Capacity: 4,
+    Queue_Waiting: 0,
+  });
+  expect(fetch).toHaveBeenCalledWith(
+    "/capacity",
+    expect.objectContaining({ credentials: "include" }),
+  );
+});

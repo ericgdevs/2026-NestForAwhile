@@ -1,9 +1,43 @@
-import { ChefHat, MapPin } from 'lucide-react'
-import { EmptyState } from '../components/States'
-import { useCart } from '../lib/cart'
+import { useEffect, useState } from "react";
 
-export function Recipes() {
-  const { items } = useCart()
-  if (items.length === 0) return <div className="mx-auto max-w-3xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-sage-600">Make something good</p><h1 className="mt-2 text-3xl font-bold text-sage-950">Recipes</h1><div className="mt-8"><EmptyState title="Add something to your cart first" message="We’ll use your cart and available inventory to suggest a simple recipe." /></div></div>
-  return <div className="mx-auto max-w-3xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-sage-600">Make something good</p><h1 className="mt-2 text-3xl font-bold text-sage-950">Recipes for your cart</h1><p className="mt-3 text-sage-700">A simple idea using what you already have available.</p><section className="mt-8 rounded-3xl border border-sage-200 bg-white p-6 shadow-sm sm:p-8"><div className="flex items-start gap-3"><ChefHat className="mt-1 text-sage-700" /><div><h2 className="text-2xl font-bold text-sage-950">Comforting black bean bowls</h2><p className="mt-2 text-sage-700">A flexible, filling meal with ingredients from your cart.</p></div></div><div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"><strong>Using our dependable fallback recipe.</strong> The recipe helper is unavailable, so we’re keeping this suggestion grounded in your available items.</div><h3 className="mt-8 font-bold text-sage-950">Ingredients</h3><ul className="mt-3 space-y-3">{items.map((item) => <li key={item.productId} className="flex items-center justify-between rounded-xl bg-sage-50 p-3 text-sm"><span className="font-semibold text-sage-900">{item.name} × {item.quantity}</span><span className="inline-flex items-center gap-1 text-sage-700"><MapPin size={15} />Aisle 2 · Shelf B · Bin 4</span></li>)}</ul><h3 className="mt-8 font-bold text-sage-950">Steps</h3><ol className="mt-3 list-decimal space-y-2 pl-5 text-sm text-sage-800"><li>Rinse and warm the beans.</li><li>Cook the rice or tortillas according to the package directions.</li><li>Build your bowl and add any fresh toppings you have.</li></ol></section></div>
+import { getRecipes, type Recipe } from "../api/client";
+
+export default function Recipes() {
+  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [fallback, setFallback] = useState(false);
+
+  useEffect(() => {
+    getRecipes()
+      .then((result) => {
+        setRecipes(result.recipes);
+        setFallback(result.used_fallback);
+      })
+      .catch(() => setRecipes([]));
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
+      <div className="mx-auto max-w-3xl space-y-5">
+        <h1 className="text-2xl font-semibold">Recipes</h1>
+        {fallback && (
+          <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+            We used our rules-only recipe fallback while the recipe assistant was unavailable.
+          </p>
+        )}
+        {recipes.map((recipe) => (
+          <article key={recipe.title} className="rounded-xl bg-white p-5 shadow-sm">
+            <h2 className="text-xl font-semibold">{recipe.title}</h2>
+            <h3 className="mt-4 font-medium">Ingredients</h3>
+            <ul className="list-disc pl-5">
+              {recipe.ingredients.map((ingredient) => <li key={ingredient.name}>{ingredient.name}</li>)}
+            </ul>
+            <h3 className="mt-4 font-medium">Steps</h3>
+            <ol className="list-decimal pl-5">
+              {recipe.steps.map((step) => <li key={step}>{step}</li>)}
+            </ol>
+          </article>
+        ))}
+      </div>
+    </main>
+  );
 }

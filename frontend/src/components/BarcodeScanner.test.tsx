@@ -1,12 +1,16 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { BarcodeScanner } from './BarcodeScanner'
+import { fireEvent, render, screen } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
 
-test('always supports manual SKU entry', async () => {
-  const user = userEvent.setup()
-  const onDetected = vi.fn()
-  render(<BarcodeScanner onDetected={onDetected} />)
-  await user.type(screen.getByLabelText('Product code'), '  012345  ')
-  await user.click(screen.getByRole('button', { name: 'Check code' }))
-  expect(onDetected).toHaveBeenCalledWith('012345')
-})
+import BarcodeScanner from "./BarcodeScanner";
+
+vi.mock("@zxing/browser", () => ({
+  BrowserMultiFormatReader: class {
+    decodeFromConstraints = vi.fn().mockRejectedValue(new Error("No camera"));
+  },
+}));
+
+test("offers camera scanning and a friendly fallback", async () => {
+  render(<BarcodeScanner onDetected={vi.fn()} />);
+  fireEvent.click(screen.getByRole("button", { name: /scan with camera/i }));
+  expect(await screen.findByText(/camera access is unavailable/i)).toBeInTheDocument();
+});

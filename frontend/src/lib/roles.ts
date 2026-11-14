@@ -1,13 +1,21 @@
-import type { MockUser } from './auth'
+import type { components } from "../api/generated";
 
-export const rolePaths: Record<MockUser['role'], string[]> = {
-  Client: ['/', '/home', '/profile', '/scan', '/cart', '/recipes'],
-  Volunteer: ['/checkout'],
-  'Warehouse Staff': ['/inventory', '/audit', '/lots'],
-  'Warehouse Manager': ['/inventory', '/audit', '/lots', '/checkout', '/reports'],
-  Director: ['/inventory', '/lots', '/reports'],
-}
+export type AppRole = components["schemas"]["Role"];
 
-export function canAccessPath(role: MockUser['role'], path: string) {
-  return rolePaths[role].some((allowedPath) => path === allowedPath || (allowedPath !== '/' && path.startsWith(`${allowedPath}/`)))
+export const clientPaths = ["/profile", "/scan", "/cart", "/recipes"] as const;
+export const checkoutRoles: AppRole[] = ["Volunteer", "Warehouse Manager"];
+export const warehousePaths = ["/audit", "/replenishment", "/lots"] as const;
+export const managementPaths = ["/analytics", "/reports"] as const;
+
+export function canVisit(role: AppRole, path: string): boolean {
+  if (clientPaths.includes(path as (typeof clientPaths)[number])) return role === "Client";
+  if (path === "/checkout") return checkoutRoles.includes(role);
+  if (warehousePaths.includes(path as (typeof warehousePaths)[number])) {
+    return role === "Warehouse Staff" || role === "Warehouse Manager";
+  }
+  if (managementPaths.includes(path as (typeof managementPaths)[number])) {
+    return role === "Warehouse Manager" || role === "Director";
+  }
+  if (path === "/waiting") return role === "Client";
+  return true;
 }

@@ -1,33 +1,49 @@
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel, Field
-from sqlmodel import Session
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
-from app.auth import require_roles
-from app.db import get_session
-from app.models import Role, User
-from app.schemas import CapacityResponse
-from app.services import capacity, queue
+from app.auth import Role, require_roles
+from app.db import get_db
+from app.models import CapacitySetting, QueueEntry, User
+from app.services.queue import active_count, promote_waiting
 
-router = APIRouter(tags=["capacity"])
-STAFF_ROLES = (Role.VOLUNTEER, Role.STAFF, Role.MANAGER)
+router = APIRouter()
 
 
 class CapacityUpdate(BaseModel):
     Max_Floor_Capacity: int = Field(ge=1)
 
 
-@router.get("/capacity", response_model=CapacityResponse, dependencies=[Depends(require_roles(*STAFF_ROLES))])
-def get_capacity(session: Session = Depends(get_session)):
-    queue.refresh_queue(session)
-    return capacity.get_capacity(session)
-
-
-@router.put("/capacity", response_model=CapacityResponse)
-def put_capacity(
-    body: CapacityUpdate,
-    user: User = Depends(require_roles(Role.MANAGER)),
-    session: Session = Depends(get_session),
+@router.get("/capacity")
+def capacity(
+    database: Session = Depends(get_db),
+    _: User = Depends(require_roles(Role.VOLUNTEER, Role.WAREHOUSE_STAFF, Role.WAREHOUSE_MANAGER)),
 ):
-    capacity.set_max_capacity(session, body.Max_Floor_Capacity, user.id)
-    queue.refresh_queue(session)
-    return capacity.get_capacity(session)
+    setting = database.scalar(select(CapacitySetting).order_by(CapacitySetting.id))
+    active = active_count(database)
+    waiting = database.scalar(
+        select(func.count(QueueEntry.id)).where(QueueEntry.status == "waiting")
+    ) or 0
+    return {
+        "Active_Floor_Shoppers": active,
+        "Max_Floor_Capacity": setting.Max_Floor_Capacity if setting else 10,
+        "Queue_Waiting": waiting,
+    }
+
+
+@router.put("/capacity")
+def update_capacity(
+    payload: CapacityUpdate,
+    current_user: User = Depends(require_roles(Role.WAREHOUSE_MANAGER)),
+    database: Session = Depends(get_db),
+):
+    setting = database.scalar(select(CapacitySetting).order_by(CapacitySetting.id))
+    if setting is None:
+        setting = CapacitySetting(id=1)
+        database.add(setting)
+    setting.Max_Floor_Capacity = payload.Max_Floor_Capacity
+    setting.updated_by = current_user.id
+    promote_waiting(database)
+    database.commit()
+    return capacity(database, current_user)

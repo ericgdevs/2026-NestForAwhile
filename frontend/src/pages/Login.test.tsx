@@ -1,27 +1,36 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
-import { AuthProvider } from '../lib/auth'
-import { Login } from './Login'
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, expect, test, vi } from "vitest";
 
-function renderLogin() {
-  return render(<MemoryRouter><AuthProvider><Login /></AuthProvider></MemoryRouter>)
-}
+import Login from "./Login";
 
-test('shows a friendly message for invalid credentials', async () => {
-  const user = userEvent.setup()
-  renderLogin()
-  await user.type(screen.getByLabelText('Email'), 'wrong@example.test')
-  await user.type(screen.getByLabelText('Password'), 'nope')
-  await user.click(screen.getByRole('button', { name: 'Sign in' }))
-  expect(screen.getByRole('alert')).toHaveTextContent('did not match')
-})
+const signIn = vi.fn();
 
-test('explains when enrollment is not active', async () => {
-  const user = userEvent.setup()
-  renderLogin()
-  await user.type(screen.getByLabelText('Email'), 'pending@example.test')
-  await user.type(screen.getByLabelText('Password'), 'welcome')
-  await user.click(screen.getByRole('button', { name: 'Sign in' }))
-  expect(screen.getByRole('alert')).toHaveTextContent('enrollment is not active')
-})
+vi.mock("../lib/auth", () => ({
+  useAuth: () => ({ signIn }),
+}));
+
+beforeEach(() => {
+  signIn.mockReset();
+});
+
+test("submits credentials and navigates after signing in", async () => {
+  render(<Login />);
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "client@example.test" } });
+  fireEvent.change(screen.getByLabelText("Password"), { target: { value: "secret" } });
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+
+  await waitFor(() => expect(signIn).toHaveBeenCalledWith("client@example.test", "secret"));
+});
+
+test("shows friendly messages for invalid and inactive accounts", async () => {
+  signIn.mockRejectedValueOnce(new Error("Invalid credentials"));
+  render(<Login />);
+  fireEvent.change(screen.getByLabelText("Email"), { target: { value: "x@example.test" } });
+  fireEvent.change(screen.getByLabelText("Password"), { target: { value: "bad" } });
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+  expect(await screen.findByText(/couldn't sign you in/i)).toBeInTheDocument();
+
+  signIn.mockRejectedValueOnce(new Error("Client enrollment is not Active"));
+  fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
+  expect(await screen.findByText(/not active yet/i)).toBeInTheDocument();
+});

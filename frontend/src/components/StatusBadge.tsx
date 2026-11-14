@@ -1,21 +1,38 @@
-import { CheckCircle2, CircleAlert, CircleX } from 'lucide-react'
-import { cn } from '../lib/utils'
+import type { components } from "../api/generated";
 
-type Status = 'green' | 'yellow' | 'red'
+type SafetyStatus = components["schemas"]["SafetyStatus"];
 
-const statusDetails = {
-  green: { label: 'Good to go', icon: CheckCircle2, styles: 'bg-emerald-50 text-emerald-800 ring-emerald-200' },
-  yellow: { label: 'Review needed', icon: CircleAlert, styles: 'bg-amber-50 text-amber-800 ring-amber-200' },
-  red: { label: 'Not available', icon: CircleX, styles: 'bg-rose-50 text-rose-800 ring-rose-200' },
-} satisfies Record<Status, { label: string; icon: typeof CheckCircle2; styles: string }>
+const statusDetails: Record<
+  SafetyStatus,
+  { label: string; icon: string; classes: string }
+> = {
+  Approved: {
+    label: "Good match",
+    icon: "✓",
+    classes: "bg-emerald-100 text-emerald-900",
+  },
+  Capped: {
+    label: "Please check",
+    icon: "!",
+    classes: "bg-amber-100 text-amber-950",
+  },
+  Restricted: {
+    label: "Not recommended",
+    icon: "×",
+    classes: "bg-red-100 text-red-900",
+  },
+};
 
-export function StatusBadge({ status, label }: { status: Status; label?: string }) {
-  const details = statusDetails[status]
-  const Icon = details.icon
+export function StatusBadge({ status }: { status: SafetyStatus }) {
+  const detail = statusDetails[status];
   return (
-    <span className={cn('inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-semibold ring-1', details.styles)}>
-      <Icon aria-hidden="true" size={16} />
-      {label ?? details.label}
+    <span
+      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${detail.classes}`}
+      role="status"
+      aria-label={`${detail.label}: ${status}`}
+    >
+      <span aria-hidden="true">{detail.icon}</span>
+      <span>{detail.label}</span>
     </span>
-  )
+  );
 }

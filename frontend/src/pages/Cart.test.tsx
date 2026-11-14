@@ -1,21 +1,23 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { MemoryRouter } from 'react-router-dom'
-import { CartProvider, useCart } from '../lib/cart'
-import { Cart } from './Cart'
+import { render, screen, waitFor } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
 
-function SeededCart() {
-  const { addItem } = useCart()
-  return <><button onClick={() => addItem({ productId: 1, name: 'Brown rice' })}>Seed item</button><Cart /></>
-}
+import Cart from "./Cart";
 
-test('changes quantity and removes a cart item', async () => {
-  const user = userEvent.setup()
-  render(<MemoryRouter><CartProvider><SeededCart /></CartProvider></MemoryRouter>)
-  await user.click(screen.getByRole('button', { name: 'Seed item' }))
-  expect(screen.getByText('Brown rice')).toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Increase Brown rice' }))
-  expect(screen.getByText('2')).toBeInTheDocument()
-  await user.click(screen.getByRole('button', { name: 'Remove Brown rice' }))
-  expect(screen.getByText('Your cart is waiting')).toBeInTheDocument()
-})
+const { getCart } = vi.hoisted(() => ({
+  getCart: vi.fn().mockResolvedValue({
+    items: [{ product_id: 1, name: "Synthetic Oats", quantity: 2, from_recommendation: true }],
+  }),
+}));
+
+vi.mock("../api/client", () => ({
+  getCart,
+  saveCartItem: vi.fn(),
+  deleteCartItem: vi.fn(),
+}));
+
+test("renders cart items and recommendation marker", async () => {
+  render(<Cart />);
+  await waitFor(() => expect(screen.getByRole("heading", { name: "Your cart" })).toBeInTheDocument());
+  expect(screen.getByText("Synthetic Oats")).toBeInTheDocument();
+  expect(screen.getByText(/recommended for you/i)).toBeInTheDocument();
+});

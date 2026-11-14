@@ -1,18 +1,18 @@
-import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
-import { CartProvider, useCart } from '../lib/cart'
-import { Checkout } from './Checkout'
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { expect, test, vi } from "vitest";
 
-function SeededCheckout() {
-  const { addItem } = useCart()
-  return <><button onClick={() => addItem({ productId: 1, name: 'Brown rice' })}>Seed checkout</button><Checkout /></>
-}
+import Checkout from "./Checkout";
 
-test('completes a clean cart with a session token', async () => {
-  const user = userEvent.setup()
-  render(<CartProvider><SeededCheckout /></CartProvider>)
-  await user.click(screen.getByRole('button', { name: 'Seed checkout' }))
-  await user.type(screen.getByLabelText('Shopping_Session_Token'), 'session-demo')
-  await user.click(screen.getByRole('button', { name: 'Complete checkout' }))
-  expect(screen.getByRole('heading', { name: 'Checkout complete' })).toBeInTheDocument()
-})
+const { validateCheckout, completeCheckout } = vi.hoisted(() => ({
+  validateCheckout: vi.fn().mockResolvedValue({ valid: false, errors: ["Product is restricted."] }),
+  completeCheckout: vi.fn(),
+}));
+
+vi.mock("../api/client", () => ({ validateCheckout, completeCheckout }));
+
+test("shows hard-stop checkout validation errors", async () => {
+  render(<Checkout />);
+  fireEvent.change(screen.getByLabelText("Shopping session token"), { target: { value: "token" } });
+  fireEvent.click(screen.getByRole("button", { name: "Review cart" }));
+  await waitFor(() => expect(screen.getByText(/checkout needs attention/i)).toBeInTheDocument());
+});

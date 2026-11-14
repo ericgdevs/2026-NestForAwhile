@@ -1,66 +1,73 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
-import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { canAccessPath } from './roles'
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type MockUser = {
-  name: string
-  role: 'Client' | 'Volunteer' | 'Warehouse Staff' | 'Warehouse Manager' | 'Director'
-  enrollmentStatus: 'Active' | 'Pending'
-}
+import type { components } from "../api/generated";
+import { apiRequest, getMe, login } from "../api/client";
+
+type UserSession = components["schemas"]["Client"] & {
+  role: components["schemas"]["Role"];
+};
 
 type AuthContextValue = {
-  user: MockUser | null
-  signIn: (email: string, password: string) => { ok: boolean; reason?: 'invalid' | 'inactive' }
-  signOut: () => void
-}
+  user: UserSession | null;
+  loading: boolean;
+  signIn: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+};
 
-const demoUser: MockUser = {
-  name: 'Jordan Lee',
-  role: 'Client',
-  enrollmentStatus: 'Active',
-}
-
-const AuthContext = createContext<AuthContextValue | null>(null)
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<MockUser | null>(() =>
-    window.sessionStorage.getItem('nest-demo-user') ? demoUser : null,
-  )
+  const [user, setUser] = useState<UserSession | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    getMe()
+      .then((profile) =>
+        setUser({
+          ...profile,
+          role: (profile as components["schemas"]["Client"] & { role?: UserSession["role"] }).role ?? "Client",
+        }),
+      )
+      .catch(() => setUser(null))
+      .finally(() => setLoading(false));
+  }, []);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
-      signIn: (email, password) => {
-        if (email === 'demo@example.test' && password === 'welcome') {
-          window.sessionStorage.setItem('nest-demo-user', 'true')
-          setUser(demoUser)
-          return { ok: true }
-        }
-        if (email === 'pending@example.test' && password === 'welcome') {
-          return { ok: false, reason: 'inactive' }
-        }
-        return { ok: false, reason: 'invalid' }
+      loading,
+      async signIn(email, password) {
+        const session = await login({ email, password });
+        const profile = await getMe();
+        setUser({ ...profile, role: session.role });
       },
-      signOut: () => {
-        window.sessionStorage.removeItem('nest-demo-user')
-        setUser(null)
+      async signOut() {
+        await apiRequest("/auth/logout", { method: "POST" });
+        setUser(null);
       },
     }),
-    [user],
-  )
+    [loading, user],
+  );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext)
-  if (!context) throw new Error('useAuth must be used within AuthProvider')
-  return context
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used inside AuthProvider");
+  }
+  return context;
 }
 
-export function ProtectedRoute() {
-  const { user } = useAuth()
-  const location = useLocation()
-  if (!user) return <Navigate to="/login" replace state={{ from: location }} />
-  return canAccessPath(user.role, location.pathname) || location.pathname === '/unauthorized' ? <Outlet /> : <Navigate to="/unauthorized" replace />
+export function ProtectedRoute({ children }: { children: ReactNode }) {
+  const { loading, user } = useAuth();
+  if (loading) {
+    return <p className="p-6 text-slate-600">Checking your sign-in…</p>;
+  }
+  if (!user) {
+    window.history.replaceState({}, "", "/login");
+    return <p className="p-6 text-slate-600">Please sign in to continue.</p>;
+  }
+  return children;
 }

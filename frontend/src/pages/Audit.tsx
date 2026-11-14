@@ -1,11 +1,20 @@
-import { useState } from 'react'
-import { BarcodeScanner } from '../components/BarcodeScanner'
+import { useState } from "react";
+import { apiRequest } from "../api/client";
 
-export function Audit() {
-  const [code, setCode] = useState('')
-  const [actual, setActual] = useState('')
-  const [confirmed, setConfirmed] = useState(false)
-  const expected = 8
-  const variance = actual === '' ? null : Number(actual) - expected
-  return <div className="mx-auto max-w-3xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-sage-600">Warehouse tools</p><h1 className="mt-2 text-3xl font-bold text-sage-950">Inventory audit</h1><p className="mt-3 text-sage-700">Scan an item, compare the shelf count, and record the variance.</p><div className="mt-8"><BarcodeScanner onDetected={(value) => { setCode(value); setConfirmed(false) }} /></div>{code && <section className="mt-6 rounded-3xl border border-sage-200 bg-white p-6"><p className="text-sm text-sage-600">Item code {code}</p><h2 className="mt-1 text-xl font-bold text-sage-950">Brown rice</h2><p className="mt-4 text-sm text-sage-700">Current system count: <strong>{expected}</strong></p><label className="mt-5 block text-sm font-semibold text-sage-950">Actual count<input className="mt-2 w-full rounded-xl border border-sage-300 px-3 py-3" type="number" min="0" value={actual} onChange={(event) => { setActual(event.target.value); setConfirmed(false) }} /></label>{variance !== null && <p className={`mt-4 rounded-xl p-3 text-sm font-semibold ${variance === 0 ? 'bg-emerald-50 text-emerald-800' : 'bg-amber-50 text-amber-900'}`}>Variance: {variance > 0 ? '+' : ''}{variance}</p>}{variance !== null && <button className="mt-5 rounded-xl bg-sage-700 px-4 py-3 font-semibold text-white" onClick={() => setConfirmed(true)}>Confirm count</button>}{confirmed && <p role="status" className="mt-4 text-sm font-semibold text-sage-700">Audit saved. Inventory has been updated.</p>}</section>}</div>
+export default function Audit() {
+  const [code, setCode] = useState("");
+  const [current, setCurrent] = useState<{ product_id: number; name: string; current_qty: number } | null>(null);
+  const [count, setCount] = useState("");
+  const [message, setMessage] = useState("");
+  async function lookup() {
+    const result = await apiRequest<typeof current>(`/inventory/audit/${encodeURIComponent(code)}`);
+    setCurrent(result);
+    setMessage("");
+  }
+  async function submit() {
+    if (!current) return;
+    const result = await apiRequest<{ variance: number }>("/inventory/audit", { method: "POST", body: { product_id: current.product_id, counted_qty: Number(count) } });
+    setMessage(`Variance: ${result.variance}`);
+  }
+  return <main className="space-y-4 p-6"><h1 className="text-2xl font-semibold">Inventory audit</h1><input className="rounded border p-2" value={code} onChange={(event) => setCode(event.target.value)} placeholder="SKU or barcode" /><button className="ml-2 rounded bg-slate-900 px-3 py-2 text-white" onClick={lookup}>Scan item</button>{current && <section className="rounded bg-white p-4 shadow"><p>{current.name}</p><p>Current count: {current.current_qty}</p><input className="rounded border p-2" type="number" min="0" value={count} onChange={(event) => setCount(event.target.value)} placeholder="Actual count" /><button className="ml-2 rounded bg-emerald-700 px-3 py-2 text-white" onClick={submit}>Confirm</button></section>}{message && <p role="status">{message}</p>}</main>;
 }

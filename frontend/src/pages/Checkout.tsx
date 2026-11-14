@@ -1,13 +1,51 @@
-import { useState } from 'react'
-import { CheckCircle2, ShieldAlert } from 'lucide-react'
-import { EmptyState } from '../components/States'
-import { useCart } from '../lib/cart'
+import { useState } from "react";
 
-export function Checkout() {
-  const { items, removeItem } = useCart()
-  const [token, setToken] = useState('')
-  const [receipt, setReceipt] = useState(false)
-  const blocked = items.find((item) => item.name === 'Peanut snack mix')
-  if (receipt) return <div className="mx-auto max-w-xl text-center"><CheckCircle2 className="mx-auto size-14 text-sage-700" /><h1 className="mt-5 text-3xl font-bold text-sage-950">Checkout complete</h1><p className="mt-3 text-sage-700">Receipt <strong>NW-1042</strong> is ready. Thank you for taking care of yourself today.</p></div>
-  return <div className="mx-auto max-w-3xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-sage-600">Volunteer checkout</p><h1 className="mt-2 text-3xl font-bold text-sage-950">Review and complete</h1><p className="mt-3 text-sage-700">Confirm the shopper’s session before completing the visit.</p>{items.length === 0 ? <div className="mt-8"><EmptyState title="There’s nothing to check out" message="Add items to the cart before completing this visit." /></div> : <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_18rem]"><section className="rounded-3xl border border-sage-200 bg-white p-6"><label className="block text-sm font-semibold text-sage-950">Shopping_Session_Token<input className="mt-2 w-full rounded-xl border border-sage-300 px-3 py-3" value={token} onChange={(event) => setToken(event.target.value)} placeholder="Enter session token" /></label><h2 className="mt-8 font-bold text-sage-950">Cart items</h2><ul className="mt-3 space-y-2">{items.map((item) => <li key={item.productId} className="flex justify-between rounded-xl bg-sage-50 p-3 text-sm"><span>{item.name} × {item.quantity}</span><span className="text-sage-600">Ready</span></li>)}</ul>{blocked && <div role="alert" className="mt-5 rounded-2xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-900"><div className="flex gap-2 font-bold"><ShieldAlert size={18} />Safety check needs attention</div><p className="mt-2">Remove {blocked.name} before completing this checkout.</p><button className="mt-3 rounded-lg bg-rose-700 px-3 py-2 font-semibold text-white" onClick={() => removeItem(blocked.productId)}>Remove item</button></div>}</section><aside className="h-fit rounded-3xl bg-sage-700 p-6 text-white"><h2 className="font-bold">Ready to finish?</h2><p className="mt-2 text-sm text-sage-100">The cart will be validated and inventory updated together.</p><button disabled={!token.trim() || Boolean(blocked)} onClick={() => setReceipt(true)} className="mt-6 w-full rounded-xl bg-white px-4 py-3 font-semibold text-sage-800 disabled:cursor-not-allowed disabled:opacity-50">Complete checkout</button></aside></div>}</div>
+import { completeCheckout, validateCheckout } from "../api/client";
+
+export default function Checkout() {
+  const [token, setToken] = useState("");
+  const [errors, setErrors] = useState<string[]>([]);
+  const [receipt, setReceipt] = useState<{ checkout_id: number; total_lb: number } | null>(null);
+
+  async function review() {
+    const result = await validateCheckout(token);
+    setErrors(result.errors);
+    if (result.valid) setReceipt(null);
+  }
+
+  async function complete() {
+    setReceipt(await completeCheckout(token));
+    setErrors([]);
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
+      <div className="mx-auto max-w-xl space-y-5">
+        <h1 className="text-2xl font-semibold">Checkout</h1>
+        <label className="block text-sm font-medium">
+          Shopping session token
+          <input
+            className="mt-1 w-full rounded-lg border px-3 py-2"
+            value={token}
+            onChange={(event) => setToken(event.target.value)}
+          />
+        </label>
+        <div className="flex gap-2">
+          <button className="rounded-lg border px-4 py-2" onClick={() => void review()}>Review cart</button>
+          <button className="rounded-lg bg-slate-900 px-4 py-2 text-white" onClick={() => void complete()}>Complete checkout</button>
+        </div>
+        {errors.length > 0 && (
+          <div className="rounded-lg bg-red-50 p-4 text-red-900">
+            <strong>Checkout needs attention</strong>
+            <ul className="list-disc pl-5">{errors.map((error) => <li key={error}>{error}</li>)}</ul>
+          </div>
+        )}
+        {receipt && (
+          <div className="rounded-lg bg-emerald-50 p-4 text-emerald-900">
+            Receipt #{receipt.checkout_id} · {receipt.total_lb} lb distributed
+          </div>
+        )}
+      </div>
+    </main>
+  );
 }

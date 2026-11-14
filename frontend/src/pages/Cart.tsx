@@ -1,9 +1,47 @@
-import { Link } from 'react-router-dom'
-import { Minus, Plus, Trash2 } from 'lucide-react'
-import { EmptyState } from '../components/States'
-import { useCart } from '../lib/cart'
+import { useEffect, useState } from "react";
 
-export function Cart() {
-  const { items, updateQuantity, removeItem } = useCart()
-  return <div className="mx-auto max-w-3xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-sage-600">Your visit</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-sage-950">My cart</h1><p className="mt-3 text-sage-700">Keep the items you’re considering in one place.</p>{items.length === 0 ? <div className="mt-8"><EmptyState title="Your cart is waiting" message="Add an item from recommendations or the scanner and it will appear here." /></div> : <><div className="mt-8 space-y-3">{items.map((item) => <article key={item.productId} className="flex items-center justify-between gap-4 rounded-2xl border border-sage-200 bg-white p-4"><div><h2 className="font-bold text-sage-950">{item.name}</h2><p className="mt-1 text-sm text-sage-600">Recommended for your household</p></div><div className="flex items-center gap-2"><button aria-label={`Decrease ${item.name}`} className="rounded-lg border border-sage-200 p-2" onClick={() => updateQuantity(item.productId, item.quantity - 1)}><Minus size={15} /></button><span className="w-6 text-center font-semibold">{item.quantity}</span><button aria-label={`Increase ${item.name}`} className="rounded-lg border border-sage-200 p-2" onClick={() => updateQuantity(item.productId, item.quantity + 1)}><Plus size={15} /></button><button aria-label={`Remove ${item.name}`} className="ml-2 rounded-lg p-2 text-rose-700" onClick={() => removeItem(item.productId)}><Trash2 size={17} /></button></div></article>)}</div><Link to="/checkout" className="mt-6 inline-block rounded-xl bg-sage-700 px-4 py-3 font-semibold text-white">Continue to checkout</Link></>}</div>
+import { deleteCartItem, getCart, saveCartItem, type CartItem } from "../api/client";
+
+export default function Cart() {
+  const [items, setItems] = useState<CartItem[]>([]);
+
+  async function refresh() {
+    const cart = await getCart();
+    setItems(cart.items);
+  }
+
+  useEffect(() => {
+    void refresh();
+  }, []);
+
+  async function update(item: CartItem, quantity: number) {
+    if (quantity < 1) {
+      await deleteCartItem(item.product_id);
+    } else {
+      await saveCartItem(item.product_id, quantity);
+    }
+    await refresh();
+  }
+
+  return (
+    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
+      <div className="mx-auto max-w-2xl space-y-4">
+        <h1 className="text-2xl font-semibold">Your cart</h1>
+        {items.length === 0 && <p className="rounded-lg bg-white p-4">Your cart is empty.</p>}
+        {items.map((item) => (
+          <article key={item.product_id} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+            <div>
+              <h2 className="font-semibold">{item.name}</h2>
+              {item.from_recommendation && <p className="text-sm text-emerald-800">Recommended for you</p>}
+            </div>
+            <div className="flex items-center gap-2">
+              <button aria-label={`Decrease ${item.name}`} onClick={() => void update(item, item.quantity - 1)}>-</button>
+              <span>{item.quantity}</span>
+              <button aria-label={`Increase ${item.name}`} onClick={() => void update(item, item.quantity + 1)}>+</button>
+            </div>
+          </article>
+        ))}
+      </div>
+    </main>
+  );
 }
