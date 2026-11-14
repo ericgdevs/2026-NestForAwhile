@@ -8,6 +8,7 @@
 | Review | Ponytail review / Copilot code review | | | |
 | Testing & debugging | Copilot | | | |
 | In the product | Local open-source model (Ollama) | | | |
+| Implement | Copilot (Sonnet 5.5) | T022: tiers.py (placeholder tiers, strictest wins) and classify.py with table-driven tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T021: clinical_rules_matrix.json (synthetic placeholders, condition mapping) + validating loader and tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T018: Argon2/JWT auth skeleton, Role guard, route skeletons (501) and tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T017: Alembic init + migration 0001 for all tables, upgrade-head test | Fixed generated migration import by hand | Eric |
