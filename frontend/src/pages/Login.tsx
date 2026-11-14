@@ -6,6 +6,7 @@ export default function Login() {
   const { signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -50,14 +51,30 @@ export default function Login() {
         </label>
         <label className="block text-sm font-medium">
           Password
-          <input
-            className="soft-input mt-2 w-full px-4 py-3"
-            type="password"
-            autoComplete="current-password"
-            required
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-          />
+          <span className="relative mt-2 block">
+            <input
+              className="soft-input w-full px-4 py-3 pr-12"
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+            <button
+              aria-label={showPassword ? "Hide password" : "Show password"}
+              className="absolute inset-y-0 right-0 flex items-center px-4 text-stone-500 transition hover:text-stone-800"
+              type="button"
+              onClick={() => setShowPassword((visible) => !visible)}
+            >
+              <svg aria-hidden="true" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {showPassword ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M3 3l18 18M10.6 10.6a2 2 0 002.8 2.8M9.9 5.2A10.7 10.7 0 0112 5c5.2 0 8.7 4.5 9.8 7a11.8 11.8 0 01-3.1 4.2M6.2 6.2C3.9 7.8 2.7 10.1 2.2 12c.5 1.4 1.9 4.2 5.4 6.1A10.7 10.7 0 0012 19c1.1 0 2.1-.2 3-.5" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M2.2 12C3.3 9.5 6.8 5 12 5s8.7 4.5 9.8 7c-1.1 2.5-4.6 7-9.8 7s-8.7-4.5-9.8-7zM12 15a3 3 0 100-6 3 3 0 000 6z" />
+                )}
+              </svg>
+            </button>
+          </span>
         </label>
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
         <button
