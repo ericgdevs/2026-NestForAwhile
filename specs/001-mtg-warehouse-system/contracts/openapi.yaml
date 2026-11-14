@@ -249,12 +249,28 @@ components:
         product_id: { type: integer, nullable: true }
         name: { type: string }
         source: { type: string, enum: [you, recipe] }
-        recipe: { allOf: [{ $ref: '#/components/schemas/Recipe' }], nullable: true }
+        recipes: { type: array, items: { $ref: '#/components/schemas/Recipe' }, description: 'Every recipe this line is for; one line per product (or free-text item)' }
         ticked: { type: boolean }
         in_stock: { type: boolean }
         location: { type: object, nullable: true, properties: { aisle: { type: string }, shelf: { type: string }, bin: { type: string } } }
         status: { $ref: '#/components/schemas/SafetyStatus' }
         not_for: { type: array, items: { $ref: '#/components/schemas/NotFor' } }
+    VisitState:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [awaiting_approval, inactive, shopping, queued, complete, none] }
+        Shopping_Session_Token: { type: string, description: 'When shopping' }
+        queue_status: { type: string, enum: [waiting, ready], description: 'When queued' }
+        position: { type: integer, nullable: true }
+        message: { type: string }
+        receipt:
+          type: object
+          description: 'When complete (checkout in the last 12 hours)'
+          properties:
+            checkout_id: { type: integer }
+            total_lb: { type: number }
+            completed_at: { type: string, format: date-time }
     AuditSubmit:
       type: object
       required: [product_id, counted_qty]
@@ -409,12 +425,16 @@ paths:
       parameters: [{ name: session_token, in: path, required: true, schema: { type: string } }]
       requestBody: { required: true, content: { application/json: { schema: { type: object, required: [product_id, note], properties: { product_id: { type: integer }, note: { type: string } } } } } }
       responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/CheckoutReview' } } } } }
+  /me/visit:
+    get: { summary: 'Where I am in my visit: awaiting approval, queued, shopping, complete, or none (Client)', responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/VisitState' } } } } } }
+  /me/check-in:
+    post: { summary: 'Start (or resume) my visit without signing in again; joins the queue if the floor is full (Client)', responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/VisitState' } } } } } }
   /me/session:
     get: { summary: My active session token and client ID for the checkout QR (Client), responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { Shopping_Session_Token: { type: string }, client_id: { type: integer } } } } } }, '404': { description: No active visit } } }
   /shopping-list:
     get: { summary: My shopping list sorted by aisle (Client), responses: { '200': { description: OK, content: { application/json: { schema: { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/ShoppingListLine' } } } } } } } } }
     post:
-      summary: Add my own items or a recipe's ingredients; unmatched text is matched to stock when possible (Client)
+      summary: Add my own items or a recipe's ingredients; an item already on the list is updated (tagged with the recipe) instead of duplicated (Client)
       requestBody: { required: true, content: { application/json: { schema: { type: object, required: [items], properties: { items: { type: array, items: { type: object, required: [text], properties: { text: { type: string }, product_id: { type: integer, nullable: true } } } }, recipe: { $ref: '#/components/schemas/Recipe' } } } } } }
       responses: { '201': { description: Added } }
   /shopping-list/{item_id}:

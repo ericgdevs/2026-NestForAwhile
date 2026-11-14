@@ -10,7 +10,16 @@ from app.services.queue import active_count, enqueue
 
 
 def start_session(database: Session, client: Client) -> str | None:
+    """Start (or resume) a visit: one active session per client, or a queue place if full."""
     from app.models import CapacitySetting
+
+    current = database.scalar(
+        select(ShoppingSession).where(
+            ShoppingSession.client_id == client.user_id, ShoppingSession.status == "active"
+        )
+    )
+    if current is not None:  # signing in again must not count the client twice on the floor
+        return current.Shopping_Session_Token
 
     capacity = database.scalar(select(CapacitySetting).order_by(CapacitySetting.id))
     max_capacity = capacity.Max_Floor_Capacity if capacity else 10

@@ -39,3 +39,11 @@ Caden can't change the backend directly, so these were made on branch `api/cart-
 | 2026-11-14 | 3. Recipe safety | New test: the AI sees the union of every member's restrictions, never sees an item restricted for anyone, and all six returned recipes go through both guards. | `tests/test_recipe_focus_cuisine.py` | Eric's request. No code change needed. |
 | 2026-11-14 | 4. Vision models | `.env.example`: `GROQ_VISION_MODEL=qwen/qwen3.8-27b`, `OLLAMA_VISION_MODEL=qwen2.5vl` (optional; empty means clients type their list). `GROQ_MODEL` is unchanged. | `.env.example` | Eric's model choice. |
 | 2026-11-14 | 5. Deploy | No code change. Migration 0003 is Postgres-safe (create-if-missing, `batch_alter_table`, `INSERT … SELECT`) for Supabase. | — | Deploy moved to Vercel + Supabase. |
+
+## Branch `api/visit-flow` (client visit states and list merging)
+
+| Date | Change | Files | Owner to review | Why |
+|---|---|---|---|---|
+| 2026-11-14 | **Bug fix:** `start_session` reuses a client's active session. Signing in again used to create a second session and count the client twice toward `Active_Floor_Shoppers`. | `services/sessions.py`, `tests/test_visit_flow.py` | Aditya | Capacity counts must match people on the floor (US-1.3). |
+| 2026-11-14 | `GET /me/visit` returns `awaiting_approval`, `inactive`, `shopping` (token), `queued` (position), `complete` (receipt, last 12 h), or `none`. `POST /me/check-in` starts or resumes a visit for an approved client without a password, or joins the queue when the floor is full. | `services/visit.py`, `routes/visit.py`, `main.py`, `openapi.yaml` (`VisitState`), `tests/test_visit_flow.py` | Aditya | The phone routes to the right screen. Approved clients start shopping with "Check again". The phone shows "Visit complete" after checkout. |
+| 2026-11-14 | Shopping list: one line per product (or per free-text item). Adding it again tags the line with every recipe it's for (`recipes` list replaces `recipe`; older rows are read as a list of one, no migration). | `routes/shopping_list.py`, `services/shopping_list.py`, `openapi.yaml`, `tests/test_shopping_list.py` | Aditya | Design §4.6: no duplicate lines. |
