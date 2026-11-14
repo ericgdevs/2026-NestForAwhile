@@ -177,8 +177,8 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 **Goal**: honor `Max_Floor_Capacity`; extra clients wait in a FIFO queue (`Queue_Waiting`) and are promoted as shoppers finish. See `research.md` R7.
 
-- [ ] T084 [api] [US-1.3] `backend/app/services/queue.py`: compute `Active_Floor_Shoppers`, `Queue_Waiting`; login joins the queue when full (extends T031); promotion `waiting → ready` in one transaction when a session ends (checkout, logout, lazy expiry); `ready` claim window expires; tests for FIFO order, last-slot race, expiry
-- [ ] T085 [api] [US-1.3] `GET`/`POST /queue/me` (confirm when ready) and `PUT /capacity` (Manager; raising it promotes waiting clients); extend `GET /capacity` with all three counts; tests
+- [X] T084 [api] [US-1.3] `backend/app/services/queue.py`: compute `Active_Floor_Shoppers`, `Queue_Waiting`; login joins the queue when full (extends T031); promotion `waiting → ready` in one transaction when a session ends (checkout, logout, lazy expiry); `ready` claim window expires; tests for FIFO order, last-slot race, expiry
+- [X] T085 [api] [US-1.3] `GET`/`POST /queue/me` (confirm when ready) and `PUT /capacity` (Manager; raising it promotes waiting clients); extend `GET /capacity` with all three counts; tests
 - [ ] T086 [ui] [US-1.3] `frontend/src/pages/Waiting.tsx` (position, polling, "come in" confirmation) and staff/manager capacity widgets
 - [ ] T087 [qa] [US-1.3] Playwright `e2e/tests/us1-3-capacity.spec.ts`: capacity 1, second client queued, promoted after the first checks out, manager raises capacity
 

@@ -15,6 +15,7 @@ from app.auth import (
 )
 from app.db import get_db
 from app.models import Client, User
+from app.services.queue import end_client_session, queue_state
 from app.services.sessions import start_session
 
 router = APIRouter()
@@ -39,13 +40,22 @@ def login(payload: LoginRequest, response: Response, database: Session = Depends
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Client enrollment is not Active",
             )
-        result["Shopping_Session_Token"] = start_session(database, client)
+        token = start_session(database, client)
+        result["Shopping_Session_Token"] = token
+        if token is None:
+            result["queue"] = queue_state(database, client.user_id)
     set_auth_cookie(response, create_access_token(user.id, Role(user.role)))
     return result
 
 
 @router.post("/auth/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(response: Response, current_user: User = Depends(get_current_user)):
+def logout(
+    response: Response,
+    current_user: User = Depends(get_current_user),
+    database: Session = Depends(get_db),
+):
+    if current_user.role == Role.CLIENT.value:
+        end_client_session(database, current_user.id)
     response.delete_cookie("session")
 
 

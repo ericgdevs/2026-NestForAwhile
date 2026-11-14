@@ -9,6 +9,7 @@ from app.routes.capacity import router as capacity_router
 from app.routes.cart import router as cart_router
 from app.routes.checkout import router as checkout_router
 from app.routes.inventory import router as inventory_router
+from app.routes.queue import router as queue_router
 from app.routes.products import router as products_router
 from app.routes.profile import router as profile_router
 from app.routes.recipes import router as recipes_router
@@ -20,6 +21,7 @@ app.include_router(capacity_router)
 app.include_router(cart_router)
 app.include_router(checkout_router)
 app.include_router(inventory_router)
+app.include_router(queue_router)
 app.include_router(profile_router)
 app.include_router(recommendations_router)
 app.include_router(recipes_router)
