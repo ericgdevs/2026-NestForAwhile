@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { canAccessPath } from './roles'
 
 export type MockUser = {
   name: string
@@ -60,5 +61,6 @@ export function useAuth() {
 export function ProtectedRoute() {
   const { user } = useAuth()
   const location = useLocation()
-  return user ? <Outlet /> : <Navigate to="/login" replace state={{ from: location }} />
+  if (!user) return <Navigate to="/login" replace state={{ from: location }} />
+  return canAccessPath(user.role, location.pathname) || location.pathname === '/unauthorized' ? <Outlet /> : <Navigate to="/unauthorized" replace />
 }
