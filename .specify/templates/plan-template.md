@@ -31,7 +31,12 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- Fits MVP scope (or is explicitly post-MVP) and uses the approved stack?
+- Required variable names from official user stories unchanged?
+- Clinical decisions made by deterministic rules, with AI output schema-validated and a fallback?
+- Uses real inventory data; checkout atomic; audit trail kept?
+- No secrets in code; PHI encrypted; analytics anonymized?
+- Automated tests planned (Playwright for MUST stories, AI evaluation scenarios)?
 
 ## Project Structure
 

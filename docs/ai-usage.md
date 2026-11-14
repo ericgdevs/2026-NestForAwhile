@@ -8,3 +8,4 @@
 | Review | Ponytail review / Copilot code review | | | |
 | Testing & debugging | Copilot | | | |
 | In the product | Local open-source model (Ollama) | | | |
+| Spec (constitution) | Copilot (Sonnet 5.5) | Drafted constitution v1.0.0 from Eric's principles; filled plan-template Constitution Check | Eric supplied all principles and rules; reviewed draft | Eric |
