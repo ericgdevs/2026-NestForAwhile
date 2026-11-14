@@ -147,11 +147,11 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 11: User Story 14 – Public Deployment (P1)
 
-- [ ] T070 [deploy] [US14] `scripts/smoke_public.sh` (health, login, scan) and a post-deploy step in `deploy.yml`
+- [X] T070 [deploy] [US14] `scripts/smoke_public.sh` (health, login, scan) and a post-deploy step in `deploy.yml`
 - [ ] T071 [qa] [US14] Playwright `e2e/tests/mvp-success.spec.ts`: the full MVP Success Scenario (login → scan → status → cart → recipes → checkout → manager analytics → report), runnable locally and against `BASE_URL`
 - [ ] T072 [deploy] [US14] Verify Groq on Azure: `AI_PROVIDER=groq` returns valid recipes; with the key removed or rate-limited the fallback still answers; record the result in `deploy/azure-setup.md`
-- [ ] T073 [deploy] [US14] `deploy/reset_demo.sh`: reset synthetic demo data and accounts before judging
-- [ ] T074 [docs] [US14] `docs/demo-runbook.md`: judging steps, demo accounts per role (synthetic), fallback plan if Groq is down
+- [X] T073 [deploy] [US14] `deploy/reset_demo.sh`: reset synthetic demo data and accounts before judging
+- [X] T074 [docs] [US14] `docs/demo-runbook.md`: judging steps, demo accounts per role (synthetic), fallback plan if Groq is down
 
 **Checkpoint (MVP-A)**: client journey, checkout, roles, and deployment work live on Azure.
 

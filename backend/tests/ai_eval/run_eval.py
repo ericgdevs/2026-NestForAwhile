@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import json
+import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).parents[2]))
 from app.ai.fallback import build_fallback_recipes
 
 
@@ -14,11 +16,15 @@ def run(scenario_path: Path) -> dict[str, object]:
     valid_count = 0
     in_stock_count = 0
     for scenario in scenarios:
+        cart = [
+            {"product_id": item["product_id"], "name": item.get("name", "Synthetic item")}
+            for item in scenario["cart"]
+        ]
         inventory = [
             {"product_id": value, "name": "Synthetic"}
             for value in scenario["inventory"]
         ]
-        recipes = build_fallback_recipes(scenario["cart"], inventory)
+        recipes = build_fallback_recipes(cart, inventory)
         fallback_count += 1
         valid_count += 1
         in_stock_count += sum(
