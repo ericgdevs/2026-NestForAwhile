@@ -43,8 +43,11 @@ function StaffHome() {
 
 function Router() {
   const { user, loading } = useAuth();
-  if (loading || !user) {
-    return window.location.pathname === "/login" ? <Login /> : <ProtectedRoute><Home /></ProtectedRoute>;
+  if (loading) {
+    return <p className="p-6 text-slate-600">Checking your sign-in…</p>;
+  }
+  if (!user) {
+    return <Login />;
   }
   if (!canVisit(user.role, window.location.pathname)) {
     return <main className="p-6"><h1 className="text-2xl font-semibold">Unauthorized</h1><p className="mt-2">This screen is not available for your role.</p></main>;
