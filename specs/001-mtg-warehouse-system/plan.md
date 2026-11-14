@@ -1,17 +1,17 @@
 # Implementation Plan: NestForAwhile 2026 – MTG Warehouse System
 
 **Branch**: `001-mtg-warehouse-system` | **Date**: 2026-11-14 | **Spec**: [spec.md](./spec.md)
-**Input**: Feature specification plus the post-specification plan addendums (open-weight Ollama only, US-1.3 Capacity Enforcement, lightweight client data model).
+**Input**: Feature specification plus the post-specification plan addendums (Ollama locally, Groq free-tier open-weight inference in Azure, US-1.3 Capacity Enforcement, lightweight client data model).
 
 ## Summary
 
 A System of Record (React/Vite/TypeScript UI, FastAPI/Pydantic API, PostgreSQL in Azure, SQLite locally) runs
 check-in, cart, checkout, inventory, audit, replenishment, FIFO, analytics, DOCX reports, and floor
-capacity with a waiting queue. A System of Intelligence (open-weight Qwen model on Ollama) writes
+capacity with a waiting queue. A System of Intelligence uses an open-weight model through Ollama in
+development and Groq's free-tier endpoint in deployment to write
 recipes, explanations, and substitutions. Safety is deterministic: a rules engine alone assigns
 Approved / Capped / Restricted and re-validates every AI output before display. If the AI is
-unreachable or returns invalid output, a deterministic fallback is shown. **No Groq and no paid model API
-anywhere in the design.**
+unreachable or returns invalid output, a deterministic rules-only fallback is shown.
 
 ## Technical Context
 
@@ -22,7 +22,7 @@ anywhere in the design.**
 **Target Platform**: Azure App Service (one container: API + built frontend); smartphone browsers for clients
 **Project Type**: web application (frontend + backend)
 **Performance Goals**: scan-to-status under 3 s (SC-002); login-to-recommendations under 1 min (SC-001); recipe response within 30 s or fallback shown
-**Constraints**: rules-first safety; synthetic data only; designed with HIPAA safeguards; AI reached only through a configurable `OLLAMA_BASE_URL`; the deployed AI path may be down, so the fallback is required, not optional
+**Constraints**: rules-first safety; synthetic data only; designed with HIPAA safeguards; `AI_PROVIDER=ollama` locally and `AI_PROVIDER=groq` in Azure; provider credentials come only from environment configuration; the AI path may be down, so the deterministic rules-only fallback is required, not optional
 **Scale/Scope**: one warehouse, demo scale (tens of concurrent users, hundreds of products), 5 roles, about 14 screens
 
 ## Constitution Check
@@ -48,21 +48,19 @@ FastAPI (Azure App Service)
  ├─ auth + role checks (server-side)
  ├─ rules/    Clinical Rules Matrix, Dietary_Tier_ID mapping, classify(product, tier)
  ├─ services/ sessions + capacity queue, cart, checkout, inventory, audit, replenishment, FIFO, analytics, reports, recipes, nutrition
- ├─ ai/       Ollama client, prompts, Pydantic output schemas, fallback
+ ├─ ai/       provider client, prompts, Pydantic output schemas, rules-only fallback
  └─ db        PostgreSQL (Azure) | SQLite (local)
-        │ HTTP (OLLAMA_BASE_URL)
+        │ AI_PROVIDER selects provider
         ▼
-Ollama: local (dev) or UNF HPC GPU node behind an SSH tunnel (demo)
+Ollama (development) | Groq free-tier endpoint (Azure deployment)
 ```
 
-**System of Intelligence on UNF HPC** (pattern from `docs/unf-hpc-guide.md`): Ollama runs inside a Slurm job on a
-GPU node (`--partition=gpu`, `--gres=gpu:<type>:1`, always `--time`), listening only on the node's localhost.
-An SSH tunnel through the head node (UNF VPN on) forwards a port to it, and the app reads that URL from
-`OLLAMA_BASE_URL`. The guide documents the cluster pattern only; its model list belongs to another project.
-Our model is a Qwen-family model chosen by our own evaluation (research R1). Credentials never go in the
-repo, `.env`, or on the cluster.
+**System of Intelligence configuration**: local development sets `AI_PROVIDER=ollama` and
+`OLLAMA_BASE_URL`; Azure deployment sets `AI_PROVIDER=groq`, `GROQ_API_KEY`, and the selected
+open-weight model identifier. The backend selects the provider through one interface. Credentials never
+go in the repository; local values are in `.env`, and Azure values are deployment secrets.
 
-**Recipe flow**: build `Active_Cart_Manifest` + scanned item + in-stock inventory → Ollama with a JSON schema →
+**Recipe flow**: build `Active_Cart_Manifest` + scanned item + in-stock inventory → selected AI provider with a JSON schema →
 Pydantic validation → rules engine drops any recipe with a Restricted ingredient, or with a missing
 ingredient that has no stock and no location → display. Any failure → deterministic fallback recipes filtered by the same rules.
 
@@ -132,4 +130,4 @@ deploy/                    # Dockerfile, Azure notes, hpc/ollama_serve.sbatch (n
 | Item | Why Needed | Simpler Alternative Rejected Because |
 |---|---|---|
 | New dependencies listed above | Required by the approved stack and security rules (Argon2, field encryption, DOCX) | Hand-rolling hashing or encryption is unsafe; none are installed until the team approves |
-| Fallback recipe path | Constitution requires a deterministic fallback; the HPC tunnel may be down during judging | Failing visibly would break the live demo |
+| Rules-only fallback recipe path | Constitution requires a deterministic fallback; the selected AI provider may be unavailable or return invalid output | Failing visibly would break the live demo |

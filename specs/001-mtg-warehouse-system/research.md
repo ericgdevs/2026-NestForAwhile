@@ -1,17 +1,16 @@
 # Research: MTG Warehouse System
 
-Each entry: Decision, Rationale, Alternatives considered. All earlier unknowns are resolved here; R2 and R8 are open risks with a safe default.
+Each entry: Decision, Rationale, Alternatives considered. All earlier unknowns are resolved here; R8 is an open risk with a safe default.
 
 ## R1. AI model and hosting
-- **Decision**: Open-weight Qwen-family model served by Ollama. Local Ollama in development; UNF HPC GPU node (Slurm job + SSH tunnel) for demo inference. The final model size is picked by a small evaluation (the AI evaluation scenarios in `backend/tests/ai_eval`): valid-JSON rate, restricted-ingredient leaks (must be 0 after rules), in-stock ingredient rate, latency.
-- **Rationale**: Team decision: no paid API and no Groq. The HPC guide gives a working pattern and timing numbers (a 14b model on an A30 is roughly 34 tokens/s, so a recipe takes about 10–30 s).
-- **Alternatives**: Groq or any hosted paid API (rejected by the team); Azure-hosted model (cost, not chosen).
+- **Decision**: Development uses Ollama with `AI_PROVIDER=ollama`. Azure deployment uses Groq's free-tier endpoint with `AI_PROVIDER=groq` and an open-weight model. The final model is picked by a small evaluation (the AI evaluation scenarios in `backend/tests/ai_eval`): valid-JSON rate, restricted-ingredient leaks (must be 0 after rules), in-stock ingredient rate, and latency.
+- **Rationale**: This is the finalized deployment decision. It keeps local development simple while providing a managed deployment endpoint without HPC infrastructure.
+- **Alternatives**: UNF HPC inference, Slurm jobs, and Azure-to-HPC tunneling (removed from MVP scope); Azure-hosted model (not chosen).
 
-## R2. Reaching HPC from the deployed app (open risk)
-- **Problem**: The tunnel is opened by a person from a machine on the UNF VPN. Azure cannot reach a GPU node directly, and Slurm jobs have `--time` limits.
-- **Decision**: The backend only knows `OLLAMA_BASE_URL`. For the demo an operator keeps the job and tunnel running and exposes the tunnel endpoint to the backend. The exact relay (for example a reverse SSH tunnel from the operator's machine to the App Service host or a small relay VM) is chosen at deployment time and recorded in `deploy/`. Treat the AI path as optional at runtime: health check on startup and per request, 30 s timeout, then fallback.
-- **Rationale**: Core journey must never depend on the tunnel. Judges see a working app even if HPC is down.
-- **Alternatives**: Run Ollama on CPU in Azure (too slow); expose the HPC node publicly (not allowed and unsafe).
+## R2. AI provider availability and fallback
+- **Decision**: One backend provider interface selects Ollama or Groq from `AI_PROVIDER`. Azure stores `GROQ_API_KEY` as a deployment secret. Requests use a 30-second timeout, validate structured output, then run final deterministic rules validation. On provider unavailability, timeout, malformed output, or rules failure, return deterministic rules-only fallback recipes.
+- **Rationale**: The core journey remains safe and usable if either provider is unavailable, without treating AI output as authoritative.
+- **Alternatives**: Let the request fail visibly (breaks the live demo); bypass rules validation (violates the constitution).
 
 ## R3. Rules engine and Dietary_Tier_ID
 - **Decision**: A versioned JSON file `clinical_rules_matrix.json` lists, per restriction (Low Sugar, Low Sodium, Heart Healthy, Kidney Friendly, Vegetarian, Vegan, Gluten Free, Nut Allergy, Dairy Free), the nutrient limits (Capped above X, Restricted above Y, per serving) and ingredient/allergen exclusions. `Dietary_Tier_ID` is a small integer assigned by a fixed lookup from the selected restrictions (the strictest matching tier). `classify(product, profile)` returns Approved / Capped / Restricted plus a plain-language reason. Allergens and exclusions always produce Restricted.
