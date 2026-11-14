@@ -31,3 +31,4 @@
 | Implement T008 | Copilot (GPT-5.6 Terra) | Added Playwright local/deployed projects and role-based synthetic credential login fixture | None | Caden |
 | Implement T010 | Copilot (GPT-5.6 Terra) | Added CODEOWNERS using the supplied team handles and a pull request template with task, stream, review, and validation fields | None | Caden |
 | Implement T011 | Copilot (GPT-5.6 Terra) | Added environment-backed settings, SQLAlchemy engine/session setup, and SQLite connectivity tests | None | Caden |
+| Implement T012 | Copilot (GPT-5.6 Terra) | Added Fernet encryption helpers, encrypted SQLAlchemy text storage, and ciphertext-at-rest tests | None | Caden |
