@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@dietrichgebert/ponytail": "^5.3.3",
     "agentation": "^3.1.2"
   }
 }
