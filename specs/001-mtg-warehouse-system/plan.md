@@ -119,7 +119,7 @@ frontend/
 ├── src/                   # pages, components, api/generated, lib
 └── tests/
 e2e/                       # Playwright, one spec per MUST story
-deploy/                    # Dockerfile, Azure notes, hpc/ollama_serve.sbatch (no credentials)
+deploy/                    # Dockerfile and Azure deployment notes (no credentials)
 .env.example
 ```
 
