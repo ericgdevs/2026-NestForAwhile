@@ -6,6 +6,12 @@ import Scan from "./pages/Scan";
 import Cart from "./pages/Cart";
 import Recipes from "./pages/Recipes";
 import Checkout from "./pages/Checkout";
+import Audit from "./pages/Audit";
+import Replenishment from "./pages/Replenishment";
+import Lots from "./pages/Lots";
+import Waiting from "./pages/Waiting";
+import Analytics from "./pages/Analytics";
+import Reports from "./pages/Reports";
 import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
@@ -76,6 +82,17 @@ function Router() {
         <Checkout />
       </ProtectedRoute>
     );
+  }
+  const screens: Record<string, JSX.Element> = {
+    "/audit": <Audit />,
+    "/replenishment": <Replenishment />,
+    "/lots": <Lots />,
+    "/waiting": <Waiting />,
+    "/analytics": <Analytics />,
+    "/reports": <Reports />,
+  };
+  if (screens[window.location.pathname]) {
+    return <ProtectedRoute>{screens[window.location.pathname]}</ProtectedRoute>;
   }
   return window.location.pathname === "/login" ? (
     <Login />

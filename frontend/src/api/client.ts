@@ -121,3 +121,23 @@ export function validateCheckout(token: string): Promise<{ valid: boolean; error
 export function completeCheckout(token: string): Promise<{ checkout_id: number; total_lb: number }> {
   return apiRequest(`/checkout/${encodeURIComponent(token)}/complete`, { method: "POST" });
 }
+
+export function getInventoryLots() {
+  return apiRequest<Array<{ lot_id: number; product_id: number; quantity: number; expiration_date: string; expiring_soon: boolean }>>("/inventory/lots");
+}
+
+export function getReplenishment(sort = "priority") {
+  return apiRequest<Array<{ product_id: number; name: string; quantity: number; reorder_threshold: number; aisle: string; shelf: string; bin: string; priority: number }>>(`/inventory/replenishment?sort=${sort}`);
+}
+
+export function getAnalytics() {
+  return apiRequest<{ families_served: number; visits_completed: number; pounds_distributed: number; inventory_usage: number; recommendation_adoption_rate: number; waste_reduction: { expiring_soon_lots: number; pounds_saved: number } }>("/analytics");
+}
+
+export function getQueue() {
+  return apiRequest<{ status: string; position: number | null; message: string }>("/queue/me");
+}
+
+export function claimQueue() {
+  return apiRequest<{ Shopping_Session_Token: string }>("/queue/me", { method: "POST" });
+}
