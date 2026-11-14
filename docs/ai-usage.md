@@ -8,6 +8,7 @@
 | Review | Ponytail review / Copilot code review | | | |
 | Testing & debugging | Copilot | | | |
 | In the product | Local open-source model (Ollama) | | | |
+| Implement | Copilot (Sonnet 5.5) | T017: Alembic init + migration 0001 for all tables, upgrade-head test | Fixed generated migration import by hand | Eric |
 | Implement | Copilot (Sonnet 5.5) | T013-T016: SQLModel tables (incl. DietaryTier, ClinicalRule, InventoryLocation, DonationSource, GrantFundingStream) with official field names, Pydantic schemas, model test | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T011/T012: config, db engine (SQLite/PostgreSQL), Fernet EncryptedText, deps, .env.example | None | Eric |
 | Plan | Copilot (GPT-5.6 Terra) | Updated finalized AI deployment architecture: local Ollama, Groq free-tier open-weight inference in Azure, and deterministic rules-only fallback | Eric supplied and approved the architecture decision | Eric |
