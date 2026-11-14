@@ -48,3 +48,9 @@ def test_provider_interface_cannot_be_instantiated_directly():
 
 def test_tasks_are_limited_to_the_four_allowed_roles():
     assert {t.value for t in AITask} == {"explain", "recipes", "missing_ingredients", "substitutions"}
+
+
+def test_provider_error_is_a_runtime_error():
+    from app.ai.provider import ProviderError
+
+    assert issubclass(ProviderError, RuntimeError)

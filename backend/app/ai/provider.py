@@ -13,6 +13,10 @@ class AITask(str, Enum):
     SUBSTITUTIONS = "substitutions"
 
 
+class ProviderError(RuntimeError):
+    """Runtime failure of a configured provider (timeout, rate limit, 5xx); real clients raise this."""
+
+
 class AIProvider(ABC):
     name: str
 
