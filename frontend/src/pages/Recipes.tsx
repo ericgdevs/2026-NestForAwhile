@@ -16,16 +16,18 @@ export default function Recipes() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <div className="mx-auto max-w-3xl space-y-5">
-        <h1 className="text-2xl font-semibold">Recipes</h1>
+    <main className="space-y-6">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">From your basket</p>
+        <h1 className="display-title mt-3">Easy<br />recipes.</h1>
+      </div>
         {fallback && (
-          <p className="rounded-lg bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="rounded-2xl bg-[#fff0df] p-3 text-sm text-[#8d4a2d]">
             We used our rules-only recipe fallback while the recipe assistant was unavailable.
           </p>
         )}
         {recipes.map((recipe) => (
-          <article key={recipe.title} className="rounded-xl bg-white p-5 shadow-sm">
+          <article key={recipe.title} className="soft-card p-5">
             <h2 className="text-xl font-semibold">{recipe.title}</h2>
             <h3 className="mt-4 font-medium">Ingredients</h3>
             <ul className="list-disc pl-5">
@@ -37,7 +39,6 @@ export default function Recipes() {
             </ol>
           </article>
         ))}
-      </div>
     </main>
   );
 }

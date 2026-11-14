@@ -30,16 +30,18 @@ export default function Login() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-50 p-6 text-slate-900">
-      <form className="w-full max-w-md space-y-5 rounded-2xl bg-white p-6 shadow-sm" onSubmit={handleSubmit}>
-        <div>
-          <h1 className="text-2xl font-semibold">Sign in</h1>
-          <p className="mt-2 text-slate-600">Access your grocery support workspace.</p>
+    <main className="flex min-h-screen items-center justify-center p-6">
+      <form className="soft-card w-full max-w-md space-y-6 p-7 sm:p-9" onSubmit={handleSubmit}>
+        <div className="space-y-4">
+          <span className="brand-mark" aria-hidden="true">N</span>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">A gentler grocery visit</p>
+          <h1 aria-label="Sign in" className="display-title">Sign in<br />to continue.</h1>
+          <p className="text-stone-500">Sign in to find food that fits your household.</p>
         </div>
         <label className="block text-sm font-medium">
           Email
           <input
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            className="soft-input mt-2 w-full px-4 py-3"
             type="email"
             autoComplete="email"
             required
@@ -50,7 +52,7 @@ export default function Login() {
         <label className="block text-sm font-medium">
           Password
           <input
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
+            className="soft-input mt-2 w-full px-4 py-3"
             type="password"
             autoComplete="current-password"
             required
@@ -60,7 +62,7 @@ export default function Login() {
         </label>
         {error && <p className="rounded-lg bg-red-50 p-3 text-sm text-red-800">{error}</p>}
         <button
-          className="w-full rounded-lg bg-slate-900 px-4 py-2 font-medium text-white disabled:opacity-50"
+          className="accent-button w-full px-4 py-3 disabled:opacity-50"
           type="submit"
           disabled={submitting}
         >

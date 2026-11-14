@@ -24,15 +24,17 @@ export default function Cart() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <div className="mx-auto max-w-2xl space-y-4">
-        <h1 className="text-2xl font-semibold">Your cart</h1>
-        {items.length === 0 && <p className="rounded-lg bg-white p-4">Your cart is empty.</p>}
+    <main className="space-y-6">
+      <div>
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">Ready when you are</p>
+        <h1 aria-label="Your cart" className="display-title mt-3">Your cart,<br />beautifully simple.</h1>
+      </div>
+        {items.length === 0 && <p className="soft-card p-5 text-stone-500">Your cart is empty.</p>}
         {items.map((item) => (
-          <article key={item.product_id} className="flex items-center justify-between rounded-xl bg-white p-4 shadow-sm">
+          <article key={item.product_id} className="soft-card flex items-center justify-between p-4">
             <div>
               <h2 className="font-semibold">{item.name}</h2>
-              {item.from_recommendation && <p className="text-sm text-emerald-800">Recommended for you</p>}
+              {item.from_recommendation && <p className="text-sm text-[#d66d43]">Recommended for you</p>}
             </div>
             <div className="flex items-center gap-2">
               <button aria-label={`Decrease ${item.name}`} onClick={() => void update(item, item.quantity - 1)}>-</button>
@@ -41,7 +43,6 @@ export default function Cart() {
             </div>
           </article>
         ))}
-      </div>
     </main>
   );
 }

@@ -17,6 +17,7 @@ import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
 import { canVisit } from "./lib/roles";
 import { Agentation } from "agentation";
+import AppShell from "./components/AppShell";
 
 function StaffHome() {
   const { user } = useAuth();
@@ -110,7 +111,9 @@ function Router() {
 export default function App() {
   return (
     <AuthProvider>
-      <Router />
+      <AppShell>
+        <Router />
+      </AppShell>
       {import.meta.env.DEV && import.meta.env.MODE !== "test" && <Agentation />}
     </AuthProvider>
   );

@@ -11,37 +11,48 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <div className="mx-auto max-w-3xl">
-        <h1 className="text-2xl font-semibold">NestForAwhile MTG Warehouse</h1>
-        <p className="mt-2 text-slate-600">Grocery matches for your household.</p>
-        <section className="mt-6 space-y-3" aria-labelledby="recommendations-heading">
-          <h2 id="recommendations-heading" className="text-lg font-semibold">
-            Recommended for you
-          </h2>
+    <main className="space-y-8">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">Good to see you</p>
+          <h1 className="display-title mt-3">MTG Warehouse<br />shop smarter.</h1>
+        </div>
+        <span className="pill text-xs font-bold text-stone-600">AI matched</span>
+      </div>
+      <section className="soft-card overflow-hidden bg-[#2a2928] p-6 text-stone-50" aria-labelledby="recommendations-heading">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#ffb28a]">Your next best picks</p>
+            <h2 id="recommendations-heading" className="mt-3 text-2xl font-semibold tracking-tight">
+              Food that fits your needs.
+            </h2>
+          </div>
+          <span className="text-3xl" aria-hidden="true">✦</span>
+        </div>
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
           {recommendations.length === 0 && (
-            <p className="rounded-lg bg-white p-4 text-slate-600">No recommendations yet.</p>
+            <p className="rounded-2xl bg-white/10 p-4 text-stone-300">No recommendations yet.</p>
           )}
           {recommendations.map((item) => (
-            <article key={item.product_id} className="rounded-xl bg-white p-4 shadow-sm">
+            <article key={item.product_id} className="rounded-2xl bg-[#f7f1e9] p-4 text-stone-900">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h3 className="font-semibold">{item.name}</h3>
                 <StatusBadge status={item.status} />
               </div>
-              <p className="mt-2 text-sm text-slate-600">{item.rationale}</p>
-              <p className="mt-2 text-sm">
+              <p className="mt-3 text-sm text-stone-500">{item.rationale}</p>
+              <p className="mt-4 text-sm">
                 Suggested quantity: <strong>{item.quantity}</strong>
               </p>
               <button
-                className="mt-3 rounded-lg border px-3 py-2 text-sm"
+                className="accent-button mt-4 px-4 py-2 text-sm"
                 onClick={() => void saveCartItem(item.product_id, item.quantity)}
               >
                 Add to cart
               </button>
             </article>
           ))}
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }

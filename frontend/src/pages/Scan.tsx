@@ -21,18 +21,22 @@ export default function Scan() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <div className="mx-auto max-w-2xl space-y-6">
+    <main className="space-y-6">
+      <div className="space-y-3">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-stone-500">Instant scan</p>
         <div>
-          <h1 className="text-2xl font-semibold">Scan a product</h1>
-          <p className="mt-2 text-slate-600">Scan a barcode or enter a SKU to check its match.</p>
+          <h1 className="display-title">Decode<br />your food.</h1>
+          <p className="mt-3 max-w-md text-stone-500">Scan a barcode to get a clear, calm read on nutrition and dietary fit.</p>
         </div>
+      </div>
+      <div className="soft-card overflow-hidden p-4">
         <BarcodeScanner
           onDetected={(value) => {
             setCode(value);
             void scan(value);
           }}
         />
+      </div>
         <form
           className="flex gap-2"
           onSubmit={(event) => {
@@ -45,18 +49,18 @@ export default function Scan() {
           </label>
           <input
             id="sku"
-            className="min-w-0 flex-1 rounded-lg border border-slate-300 px-3 py-2"
+            className="soft-input min-w-0 flex-1 px-4 py-3"
             placeholder="Enter SKU or barcode"
             value={code}
             onChange={(event) => setCode(event.target.value)}
           />
-          <button className="rounded-lg bg-slate-900 px-4 py-2 text-white" type="submit">
+          <button className="accent-button px-5 py-3" type="submit">
             Check
           </button>
         </form>
         {error && <p className="text-sm text-red-800">{error}</p>}
         {result && (
-          <article className="space-y-4 rounded-xl bg-white p-5 shadow-sm">
+          <article className="soft-card space-y-4 p-5">
             <div className="flex items-start justify-between gap-3">
               <div>
                 <h2 className="text-xl font-semibold">{result.name}</h2>
@@ -82,7 +86,6 @@ export default function Scan() {
             )}
           </article>
         )}
-      </div>
     </main>
   );
 }
