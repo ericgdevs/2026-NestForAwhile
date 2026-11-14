@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import (
     JSON,
@@ -20,7 +20,7 @@ from app.db import Base
 
 
 def utc_now() -> datetime:
-    return datetime.utcnow()
+    return datetime.now(UTC)
 
 
 class User(Base):
