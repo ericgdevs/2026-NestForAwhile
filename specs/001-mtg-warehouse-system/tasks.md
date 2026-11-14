@@ -137,7 +137,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T063 [api] [US7] `backend/app/services/checkout.py` and `routes/checkout.py`: `POST /checkout/{session_token}/validate` (Volunteer/Manager) re-classifies every cart line; any Restricted line, unknown product, or stock shortfall returns a hard stop; tests
 - [X] T064 [api] Atomic completion in `services/checkout.py`: one transaction decrements lots in FIFO order, writes movements, receipt (`checkouts`, `checkout_items`), visit with pounds, ends the session; `POST /checkout/{session_token}/interventions` records `removed_item`; tests for rollback on failure and two checkouts racing for the last unit
 - [X] T065 [ui] [US7] `frontend/src/pages/Checkout.tsx` (volunteer): enter session token, review cart, hard-stop dialog with intervention action, receipt view
-- [ ] T066 [qa] [US7] Playwright `e2e/tests/us7-checkout.spec.ts`: clean cart completes with a receipt and inventory drops; Restricted item hard-stops, then completes after intervention
+- [X] T066 [qa] [US7] Playwright `e2e/tests/us7-checkout.spec.ts`: clean cart completes with a receipt and inventory drops; Restricted item hard-stops, then completes after intervention
 
 ## Phase 10: User Story 11 – Role-Based Access (P1)
 

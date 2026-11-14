@@ -76,3 +76,4 @@
 | Implement T062 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for recipe visibility and fallback messaging | None | Caden |
 | Implement T063-T064 | Copilot (GPT-5.6 Terra) | Added checkout validation, FIFO inventory decrement, receipt/visit recording, and session completion APIs | None | Caden |
 | Implement T065 | Copilot (GPT-5.6 Terra) | Added volunteer checkout review, hard-stop error display, completion action, and receipt view | None | Caden |
+| Implement T066 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for volunteer checkout session review | None | Caden |
