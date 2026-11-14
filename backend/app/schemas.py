@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel, Field, field_validator
 
 from app.models import EnrollmentStatus, QueueStatus, Role
@@ -78,3 +80,11 @@ class ClientRead(BaseModel):
     Household_Size: int | None = Field(default=None, ge=1)
     Client_Enrollment_Status: EnrollmentStatus | None = None
     profile: DietaryProfileRead | None = None
+
+
+class LotRead(BaseModel):
+    lot_id: int
+    product_id: int
+    quantity: int
+    expiration_date: date | None = None
+    expiring_soon: bool
