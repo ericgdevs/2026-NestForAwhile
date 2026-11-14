@@ -3,12 +3,16 @@ import { beforeEach, expect, test, vi } from "vitest";
 
 import Profile from "./Profile";
 
-const { apiRequest } = vi.hoisted(() => ({ apiRequest: vi.fn() }));
+const { apiRequest, getMe } = vi.hoisted(() => ({
+  apiRequest: vi.fn(),
+  getMe: vi.fn(),
+}));
 
-vi.mock("../api/client", () => ({ apiRequest }));
+vi.mock("../api/client", () => ({ apiRequest, getMe }));
 
 beforeEach(() => {
   apiRequest.mockResolvedValue({});
+  getMe.mockResolvedValue({ profile: { restrictions: [] } });
 });
 
 test("offers all nine choices and saves selected restrictions", async () => {

@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-import { apiRequest } from "../api/client";
+import { apiRequest, getMe } from "../api/client";
 
 const choices = [
   "Low Sugar",
@@ -18,6 +18,12 @@ export default function Profile() {
   const [selected, setSelected] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    getMe()
+      .then((profile) => setSelected(profile.profile?.restrictions ?? []))
+      .catch(() => undefined);
+  }, []);
 
   function toggle(choice: string) {
     setSelected((current) =>
