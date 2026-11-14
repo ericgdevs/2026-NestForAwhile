@@ -8,6 +8,7 @@
 | Review | Ponytail review / Copilot code review | | | |
 | Testing & debugging | Copilot | | | |
 | In the product | Local open-source model (Ollama) | | | |
+| Implement | Copilot (Sonnet 5.5) | US1.3: capacity service (computed Active_Floor_Shoppers/Queue_Waiting), GET/PUT /capacity, cookie renamed to `session` per contract | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T023: shared conftest fixtures (seeded DB, login_as per role, mock_ai stub) and fixture tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T020: catalog seed framework (6 sample products, locations, lots, donors/grants) and loader tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T019: idempotent seed loader (tiers, one user per role, five synthetic personas) and tests | None | Eric |

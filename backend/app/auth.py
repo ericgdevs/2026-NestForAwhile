@@ -10,7 +10,7 @@ from app.config import get_settings
 from app.db import get_session
 from app.models import Role, User
 
-COOKIE_NAME = "access_token"
+COOKIE_NAME = "session"
 _hasher = PasswordHash.recommended()  # Argon2
 
 
@@ -46,12 +46,12 @@ def decode_access_token(token: str) -> dict:
 
 
 def get_current_user(
-    access_token: str | None = Cookie(default=None),
+    session_token: str | None = Cookie(default=None, alias=COOKIE_NAME),
     session: Session = Depends(get_session),
 ) -> User:
-    if not access_token:
+    if not session_token:
         raise HTTPException(status_code=401, detail="Please sign in.")
-    user = session.get(User, int(decode_access_token(access_token)["sub"]))
+    user = session.get(User, int(decode_access_token(session_token)["sub"]))
     if user is None or not user.is_active:
         raise HTTPException(status_code=401, detail="Please sign in again.")
     return user
