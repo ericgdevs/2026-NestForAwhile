@@ -139,3 +139,4 @@
 | Test (qa) | Gemini Flash | Fixed auth fixture to use page.request for session cookie attachment and added demo seed fallbacks | None | Eric |
 | Deploy | Gemini | Added Vercel deployment config | None | Eric |
 | Deploy | Gemini | Added Vercel entrypoint wrapper | None | Eric |
+| Deploy | Gemini | Updated engine for Supabase postgresql+psycopg | None | Eric |
