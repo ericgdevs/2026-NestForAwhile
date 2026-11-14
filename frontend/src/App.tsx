@@ -16,6 +16,7 @@ import { useAuth } from "./lib/auth";
 import { getCapacity } from "./api/client";
 import { useEffect, useState } from "react";
 import { canVisit } from "./lib/roles";
+import { Agentation } from "agentation";
 
 function StaffHome() {
   const { user } = useAuth();
@@ -107,6 +108,7 @@ export default function App() {
   return (
     <AuthProvider>
       <Router />
+      {import.meta.env.DEV && import.meta.env.MODE !== "test" && <Agentation />}
     </AuthProvider>
   );
 }

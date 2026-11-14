@@ -96,3 +96,4 @@
 | Implement T077/T080/T083/T087/T090/T094 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for the inventory, queue, analytics, and reports screens with safe credential skips | None | Caden |
 | Complete T091 seed linkage | Copilot (GPT-5.6 Terra) | Linked synthetic seeded lots to synthetic donor and grant records | None | Caden |
 | Resolve PR conflicts | Copilot | Merged main into the implementation branch, kept the approved SQLAlchemy implementation, and removed incompatible main-only scaffold files | Caden approved the conflict-resolution merge | Caden |
+| Integrate Agentation | Copilot | Added the Agentation development toolbar to the frontend for local visual feedback, guarded out of tests and production builds | Caden approved frontend integration | Caden |
