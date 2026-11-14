@@ -1,70 +1,129 @@
-from datetime import datetime, timedelta, timezone
+from __future__ import annotations
 
-from sqlmodel import Session, select
+import secrets
+from datetime import UTC, datetime, timedelta
 
-from app.models import QueueEntry, QueueStatus, utcnow
-from app.schemas import QueueState
-from app.services import capacity
+from sqlalchemy import func, select
+from sqlalchemy.orm import Session
 
-OPEN_STATUSES = (QueueStatus.WAITING, QueueStatus.READY)
-
-
-def _aware(moment: datetime) -> datetime:
-    return moment if moment.tzinfo else moment.replace(tzinfo=timezone.utc)
+from app.models import CapacitySetting, Client, QueueEntry, ShoppingSession
 
 
-def _waiting_fifo(session: Session) -> list[QueueEntry]:
-    return list(session.exec(
-        select(QueueEntry).where(QueueEntry.status == QueueStatus.WAITING).order_by(QueueEntry.joined_at, QueueEntry.id)))
+def _capacity(database: Session) -> CapacitySetting:
+    setting = database.scalar(select(CapacitySetting).order_by(CapacitySetting.id))
+    if setting is None:
+        setting = CapacitySetting(Max_Floor_Capacity=10, claim_window_minutes=5)
+        database.add(setting)
+        database.flush()
+    return setting
 
 
-def refresh_queue(session: Session) -> None:
-    """Expire unclaimed ready spots, then promote the oldest waiting clients while the floor has room."""
-    window = timedelta(minutes=capacity.get_settings(session).claim_window_minutes)
-    now = utcnow()
-    for entry in session.exec(select(QueueEntry).where(QueueEntry.status == QueueStatus.READY)):
-        if entry.ready_at and _aware(entry.ready_at) + window < now:
-            entry.status = QueueStatus.EXPIRED
-            session.add(entry)
-    session.flush()
-    for entry in _waiting_fifo(session):
-        if not capacity.has_room(session):
+def active_count(database: Session) -> int:
+    return (
+        database.scalar(
+            select(func.count(ShoppingSession.id)).where(ShoppingSession.status == "active")
+        )
+        or 0
+    ) + (
+        database.scalar(select(func.count(QueueEntry.id)).where(QueueEntry.status == "ready"))
+        or 0
+    )
+
+
+def promote_waiting(database: Session) -> None:
+    setting = _capacity(database)
+    while active_count(database) < setting.Max_Floor_Capacity:
+        entry = database.scalar(
+            select(QueueEntry)
+            .where(QueueEntry.status == "waiting")
+            .order_by(QueueEntry.joined_at, QueueEntry.id)
+        )
+        if entry is None:
             break
-        entry.status = QueueStatus.READY
-        entry.ready_at = now
-        session.add(entry)
-        session.flush()
-    session.commit()
+        entry.status = "ready"
+        entry.ready_at = datetime.now(UTC)
 
 
-def current_entry(session: Session, client_id: int) -> QueueEntry | None:
-    return session.exec(select(QueueEntry).where(
-        QueueEntry.client_id == client_id, QueueEntry.status.in_(OPEN_STATUSES))).first()
+def queue_state(database: Session, client_id: int) -> dict:
+    now = datetime.now(UTC)
+    for entry in database.scalars(
+        select(QueueEntry).where(QueueEntry.client_id == client_id).order_by(QueueEntry.id.desc())
+    ):
+        if entry.status == "ready" and entry.ready_at:
+            setting = _capacity(database)
+            if now > entry.ready_at + timedelta(minutes=setting.claim_window_minutes):
+                entry.status = "expired"
+                entry.ready_at = None
+                promote_waiting(database)
+                continue
+        if entry.status in {"waiting", "ready"}:
+            position = None
+            if entry.status == "waiting":
+                position = (
+                    database.scalar(
+                        select(func.count(QueueEntry.id)).where(
+                            QueueEntry.status == "waiting",
+                            QueueEntry.joined_at <= entry.joined_at,
+                        )
+                    )
+                    or 1
+                )
+            return {
+                "status": entry.status,
+                "position": position,
+                "message": (
+                    "Your turn is ready." if entry.status == "ready" else "You are in the queue."
+                ),
+            }
+    return {"status": "cancelled", "position": None, "message": "No active queue entry."}
 
 
-def join_queue(session: Session, client_id: int) -> QueueEntry:
-    entry = current_entry(session, client_id)
+def enqueue(database: Session, client: Client) -> None:
+    existing = database.scalar(
+        select(QueueEntry).where(
+            QueueEntry.client_id == client.user_id,
+            QueueEntry.status.in_(("waiting", "ready")),
+        )
+    )
+    if existing is None:
+        database.add(QueueEntry(client_id=client.user_id, status="waiting"))
+    database.commit()
+
+
+def claim_ready(database: Session, client: Client) -> str:
+    state = queue_state(database, client.user_id)
+    if state["status"] != "ready":
+        raise ValueError("Your queue turn is not ready")
+    entry = database.scalar(
+        select(QueueEntry)
+        .where(QueueEntry.client_id == client.user_id, QueueEntry.status == "ready")
+        .order_by(QueueEntry.id.desc())
+    )
     if entry is None:
-        entry = QueueEntry(client_id=client_id)
-        session.add(entry)
-        session.commit()
-    return entry
+        raise ValueError("Your queue turn is not ready")
+    entry.status = "claimed"
+    token = secrets.token_urlsafe(32)
+    session = ShoppingSession(
+        Shopping_Session_Token=token,
+        client_id=client.user_id,
+        status="active",
+    )
+    database.add(session)
+    database.flush()
+    entry.claimed_session_id = session.id
+    database.commit()
+    return token
 
 
-def cancel_entries(session: Session, client_id: int) -> None:
-    entry = current_entry(session, client_id)
-    if entry:
-        entry.status = QueueStatus.CANCELLED
-        session.add(entry)
-        session.commit()
-
-
-def queue_state(session: Session, client_id: int) -> QueueState | None:
-    entry = current_entry(session, client_id)
-    if entry is None:
-        return None
-    if entry.status == QueueStatus.READY:
-        return QueueState(status=entry.status, message="It's your turn. Please confirm you're here.")
-    position = [e.id for e in _waiting_fifo(session)].index(entry.id) + 1
-    return QueueState(status=entry.status, position=position,
-                      message=f"The store is full right now. You are number {position} in line.")
+def end_client_session(database: Session, client_id: int) -> None:
+    session = database.scalar(
+        select(ShoppingSession).where(
+            ShoppingSession.client_id == client_id,
+            ShoppingSession.status == "active",
+        )
+    )
+    if session:
+        session.status = "cancelled"
+        session.ended_at = datetime.now(UTC)
+        promote_waiting(database)
+        database.commit()

@@ -1,64 +1,57 @@
-import os
+from __future__ import annotations
 
-from cryptography.fernet import Fernet
-
-# Set before app modules read settings
-os.environ.setdefault("FIELD_ENCRYPTION_KEY", Fernet.generate_key().decode())
-os.environ.setdefault("JWT_SECRET", "test-secret-0123456789-0123456789")
+from collections.abc import Callable, Generator
+from dataclasses import dataclass
 
 import pytest
-from fastapi.testclient import TestClient
-from sqlmodel import Session, SQLModel
+from cryptography.fernet import Fernet
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session
 
-from app import models  # noqa: F401  (registers tables)
-from app.db import get_session, make_engine
-from app.main import app
-from app.models import Role
-
-
-@pytest.fixture
-def session(tmp_path):
-    engine = make_engine(f"sqlite:///{tmp_path / 'test.db'}")
-    SQLModel.metadata.create_all(engine)
-    with Session(engine) as s:
-        yield s
+from app.auth import Role, create_access_token
+from app.db import Base
+from app.models import User
+from seed.load import seed_catalog, seed_users
 
 
-@pytest.fixture
-def client(session):
-    app.dependency_overrides[get_session] = lambda: session
-    yield TestClient(app)
-    app.dependency_overrides.clear()
+@dataclass(frozen=True)
+class LoggedInClient:
+    user: User
+    token: str
+    cookies: dict[str, str]
 
 
 @pytest.fixture
-def seeded(session):
-    from seed.load import seed_all
-    seed_all(session)
-    return session
+def database(tmp_path, monkeypatch: pytest.MonkeyPatch) -> Generator[Session, None, None]:
+    monkeypatch.setenv("FIELD_ENCRYPTION_KEY", Fernet.generate_key().decode())
+    monkeypatch.setenv("JWT_SECRET", "synthetic-test-secret")
+    engine = create_engine(f"sqlite:///{tmp_path / 'test.db'}")
+    Base.metadata.create_all(engine)
+    with Session(engine) as session:
+        seed_users(session)
+        seed_catalog(session)
+        yield session
 
 
 @pytest.fixture
-def login_as(seeded, client):
-    """Log the shared test client in as the seeded user for a role."""
-    from sqlmodel import select
-
-    from app.auth import COOKIE_NAME, create_access_token, email_digest
-    from app.models import User
-    from seed.personas import CLIENT_ROLE_EMAIL, STAFF_USERS
-
-    emails = {**STAFF_USERS, Role.CLIENT: CLIENT_ROLE_EMAIL}
-
-    def _login(role):
-        user = seeded.exec(select(User).where(User.email_hash == email_digest(emails[role]))).one()
-        client.cookies.set(COOKIE_NAME, create_access_token(user.id, role))
-        return client
-
-    return _login
+def users_by_role(database: Session) -> dict[Role, User]:
+    return {role: database.query(User).filter(User.role == role.value).first() for role in Role}
 
 
 @pytest.fixture
-def mock_ai():
-    """Stand-in AI provider so tests never reach a real model."""
+def logged_in_client(
+    users_by_role: dict[Role, User],
+) -> Callable[[Role], LoggedInClient]:
+    def build(role: Role) -> LoggedInClient:
+        user = users_by_role[role]
+        token = create_access_token(user.id, role)
+        return LoggedInClient(user=user, token=token, cookies={"session": token})
+
+    return build
+
+
+@pytest.fixture
+def mock_ai_provider():
     from unittest.mock import MagicMock
+
     return MagicMock(name="mock_ai_provider")

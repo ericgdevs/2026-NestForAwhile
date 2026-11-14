@@ -10,7 +10,6 @@ NUTRIENTS = (
     "calories", "sodium_mg", "sugar_g", "added_sugar_g", "sat_fat_g", "fiber_g",
     "protein_g", "potassium_mg", "phosphorus_mg", "carbs_g",
 )
-_STATUS_LABEL = {0: "Approved", 1: "Capped", 2: "Restricted"}
 
 
 def _assert_no_product_identifiers(manifest: ContextManifest, products: list) -> None:
@@ -47,7 +46,7 @@ def build_manifest(
             index=index,
             name=product.name,
             category=product.category,
-            status=_STATUS_LABEL[int(classify(product, restrictions).status)],
+            status=classify(product, {"restrictions": restrictions})[0],
             in_cart_quantity=cart_quantities.get(product.id, 0),
             nutrition={n: getattr(product, n) for n in NUTRIENTS if getattr(product, n, None) is not None},
             allergens=list(product.allergens or []),

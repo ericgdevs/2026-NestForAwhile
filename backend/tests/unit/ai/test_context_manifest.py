@@ -15,7 +15,7 @@ def product(pid, name="Beans", **kw):
     return SimpleNamespace(**{**base, **kw})
 
 
-PRODUCTS = [product(501), product(502, "Almond milk", allergens=["tree nuts"], diet_flags=[])]
+PRODUCTS = [product(501), product(502, "Almond milk", allergens=["tree nuts"], diet_flags=["contains_tree_nut"])]
 
 
 def test_strips_identifiers_and_maps_indexes():
@@ -31,7 +31,7 @@ def test_strips_identifiers_and_maps_indexes():
 
 def test_status_comes_from_classify():
     manifest, _ = build_manifest(PRODUCTS, ["Nut Allergy"])
-    assert [i.status for i in manifest.items] == [classify(p, ["Nut Allergy"]).status.name.title() for p in PRODUCTS]
+    assert [i.status for i in manifest.items] == [classify(p, {"restrictions": ["Nut Allergy"]})[0] for p in PRODUCTS]
     assert manifest.items[1].status == "Restricted"
 
 

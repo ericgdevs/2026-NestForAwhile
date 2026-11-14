@@ -1,34 +1,42 @@
+from __future__ import annotations
+
 import os
 from dataclasses import dataclass
-from pathlib import Path
 
 
-def _load_dotenv() -> None:
-    env_file = Path(__file__).resolve().parents[2] / ".env"
-    if not env_file.exists():
-        return
-    for line in env_file.read_text().splitlines():
-        line = line.strip()
-        if line and not line.startswith("#") and "=" in line:
-            key, value = line.split("=", 1)
-            os.environ.setdefault(key.strip(), value.strip())
+def _as_bool(value: str | None, default: bool) -> bool:
+    if value is None:
+        return default
+    return value.lower() in {"1", "true", "yes", "on"}
+
+
+def _as_origins(value: str | None) -> list[str]:
+    return [origin.strip() for origin in (value or "").split(",") if origin.strip()]
 
 
 @dataclass(frozen=True)
 class Settings:
-    database_url: str
-    jwt_secret: str
-    jwt_expire_minutes: int
-    cookie_secure: bool
-    field_encryption_key: str
+    database_url: str = "sqlite:///./warehouse.db"
+    jwt_secret: str = "change-me-in-development"
+    field_encryption_key: str = ""
+    ai_provider: str = "ollama"
+    usda_api_key: str = ""
+    allowed_origins: list[str] | None = None
+    cookie_secure: bool = False
+    seed_demo_data: bool = False
+
+    @classmethod
+    def from_env(cls) -> Settings:
+        return cls(
+            database_url=os.getenv("DATABASE_URL", cls.database_url),
+            jwt_secret=os.getenv("JWT_SECRET", cls.jwt_secret),
+            field_encryption_key=os.getenv("FIELD_ENCRYPTION_KEY", cls.field_encryption_key),
+            ai_provider=os.getenv("AI_PROVIDER", cls.ai_provider),
+            usda_api_key=os.getenv("USDA_API_KEY", cls.usda_api_key),
+            allowed_origins=_as_origins(os.getenv("ALLOWED_ORIGINS")),
+            cookie_secure=_as_bool(os.getenv("COOKIE_SECURE"), cls.cookie_secure),
+            seed_demo_data=_as_bool(os.getenv("SEED_DEMO_DATA"), cls.seed_demo_data),
+        )
 
 
-def get_settings() -> Settings:
-    _load_dotenv()
-    return Settings(
-        database_url=os.getenv("DATABASE_URL", "sqlite:///./nest.db"),
-        jwt_secret=os.getenv("JWT_SECRET", "dev-only-secret-change-me-0123456789"),
-        jwt_expire_minutes=int(os.getenv("JWT_EXPIRE_MINUTES", "60")),
-        cookie_secure=os.getenv("COOKIE_SECURE", "false").lower() == "true",
-        field_encryption_key=os.getenv("FIELD_ENCRYPTION_KEY", ""),
-    )
+settings = Settings.from_env()

@@ -20,7 +20,7 @@ def product(pid, name, **kw):
 
 BEANS = product(501, "Beans")
 RICE = product(503, "Rice")
-ALMOND = product(502, "Almond milk", allergens=["tree nuts"], diet_flags=[])
+ALMOND = product(502, "Almond milk", allergens=["tree nuts"], diet_flags=["contains_tree_nut"])
 PRODUCTS = [BEANS, ALMOND, RICE]  # indexes 0, 1, 2
 IN_STOCK = {501, 502, 503}
 
@@ -74,13 +74,13 @@ def test_unavailable_when_out_of_stock():
 
 
 def test_classification_mismatch_when_inventory_changed_since_manifest():
-    changed = product(503, "Rice", allergens=[], diet_flags=[], ingredients_text=None)  # now has no exclusion data -> Capped, AI saw Approved
+    changed = product(503, "Rice", allergens=None, diet_flags=None, ingredients_text=None)  # now has no exclusion data -> Capped, AI saw Approved
     result = guard(recipes([0], [2]), products=[BEANS, ALMOND, changed])
     assert titles(result) == ["R0"] and result.dropped == [("classification_mismatch", 2)]
 
 
 def test_product_newly_restricted_is_dropped_as_restricted():
-    nutty = product(503, "Rice", allergens=["peanuts"])
+    nutty = product(503, "Rice", allergens=["peanuts"], diet_flags=["contains_peanut"])
     assert guard(recipes([2]), products=[BEANS, ALMOND, nutty]).dropped == [("restricted", 2)]
 
 

@@ -1,43 +1,61 @@
 {
-  "version": 1,
-  "synthetic_placeholder": true,
-  "note": "Synthetic placeholder values until Epic Cure guidance is confirmed. Limits are per serving.",
-  "conditions": {
-    "diabetes": ["Low Sugar"],
-    "hypertension": ["Low Sodium", "Heart Healthy"],
-    "ckd": ["Kidney Friendly", "Low Sodium"]
-  },
-  "restrictions": {
+  "version": "placeholder-2026-11-14",
+  "status": "synthetic placeholders pending Epic Cure guidance",
+  "unit": "per serving",
+  "rules": {
     "Low Sugar": {
-      "tier": 3,
-      "limits": [
-        {"nutrient": "sugar_g", "capped_above": 6, "restricted_above": 12},
-        {"nutrient": "added_sugar_g", "capped_above": 3, "restricted_above": 8}
-      ]
+      "nutrient": "sugar_g",
+      "capped_above": 12,
+      "restricted_above": 24,
+      "exclusions": []
     },
     "Low Sodium": {
-      "tier": 3,
-      "limits": [{"nutrient": "sodium_mg", "capped_above": 140, "restricted_above": 400}]
+      "nutrient": "sodium_mg",
+      "capped_above": 480,
+      "restricted_above": 960,
+      "exclusions": []
     },
     "Heart Healthy": {
-      "tier": 3,
-      "limits": [
-        {"nutrient": "sat_fat_g", "capped_above": 2, "restricted_above": 5},
-        {"nutrient": "sodium_mg", "capped_above": 360, "restricted_above": 600}
-      ]
+      "nutrient": "sat_fat_g",
+      "capped_above": 4,
+      "restricted_above": 8,
+      "exclusions": []
     },
     "Kidney Friendly": {
-      "tier": 4,
-      "limits": [
-        {"nutrient": "sodium_mg", "capped_above": 140, "restricted_above": 400},
-        {"nutrient": "potassium_mg", "capped_above": 200, "restricted_above": 400},
-        {"nutrient": "phosphorus_mg", "capped_above": 100, "restricted_above": 200}
-      ]
+      "nutrient": "potassium_mg",
+      "capped_above": 300,
+      "restricted_above": 600,
+      "exclusions": []
     },
-    "Vegetarian": {"tier": 2, "forbidden_flags": ["contains_meat"]},
-    "Vegan": {"tier": 2, "forbidden_flags": ["contains_meat", "contains_dairy", "contains_egg"]},
-    "Gluten Free": {"tier": 2, "forbidden_flags": ["contains_gluten"], "forbidden_allergens": ["wheat", "gluten"]},
-    "Nut Allergy": {"tier": 2, "forbidden_allergens": ["peanuts", "tree nuts"]},
-    "Dairy Free": {"tier": 2, "forbidden_flags": ["contains_dairy"], "forbidden_allergens": ["milk"]}
+    "Vegetarian": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish"]
+    },
+    "Vegan": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish", "contains_egg", "contains_dairy"]
+    },
+    "Gluten Free": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_gluten"]
+    },
+    "Nut Allergy": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_peanut", "contains_tree_nut"]
+    },
+    "Dairy Free": {
+      "nutrient": null,
+      "capped_above": null,
+      "restricted_above": null,
+      "exclusions": ["contains_dairy"]
+    }
   }
 }

@@ -1,0 +1,29 @@
+# Default review coverage
+* @ericgdevs
+
+# API and data ownership
+/backend/app/models.py @adityaghosh05
+/backend/app/config.py @adityaghosh05
+/backend/app/db.py @adityaghosh05
+/backend/app/schemas.py @adityaghosh05
+/backend/app/auth.py @adityaghosh05
+/backend/app/routes/ @adityaghosh05
+/backend/app/services/ @adityaghosh05
+/backend/alembic/ @adityaghosh05
+/backend/seed/ @adityaghosh05
+/specs/001-mtg-warehouse-system/contracts/openapi.yaml @adityaghosh05
+
+# UI ownership
+/frontend/ @cadenwondell
+/e2e/ @ericgdevs
+
+# AI, QA, deployment, and documentation ownership
+/backend/app/ai/ @ericgdevs
+/backend/tests/ai_eval/ @ericgdevs
+/.github/workflows/ @ericgdevs
+/deploy/ @ericgdevs
+/scripts/ @ericgdevs
+/docs/ @ericgdevs
+/.env.example @ericgdevs
+/Dockerfile @ericgdevs
+/README.md @ericgdevs

@@ -30,7 +30,7 @@ class _Checker:
             return "stale_index"
         if product.id not in self.in_stock_ids:
             return "unavailable"
-        status = classify(product, self.restrictions).status.name.title()
+        status = classify(product, {"restrictions": self.restrictions})[0]
         if status == "Restricted":
             return "restricted"
         if status != self.seen_status.get(index):

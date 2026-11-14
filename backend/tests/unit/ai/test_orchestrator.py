@@ -14,7 +14,7 @@ def product(pid, name, **kw):
     return SimpleNamespace(**{**base, "name": name, **kw})
 
 
-PRODUCTS = [product(501, "Beans"), product(502, "Almond milk", allergens=["tree nuts"], diet_flags=[])]
+PRODUCTS = [product(501, "Beans"), product(502, "Almond milk", allergens=["tree nuts"], diet_flags=["contains_tree_nut"])]
 RESTRICTIONS = ["Nut Allergy"]
 
 
@@ -49,7 +49,7 @@ def test_valid_response_returns_validated_schema():
 def test_provider_receives_rules_statuses_and_no_identifiers():
     provider = FakeProvider(recipe(0))
     run(provider)
-    assert [i.status.lower() for i in provider.seen.items] == [classify(p, RESTRICTIONS).status.name.lower() for p in PRODUCTS]
+    assert [i.status.lower() for i in provider.seen.items] == [classify(p, {"restrictions": RESTRICTIONS})[0].lower() for p in PRODUCTS]
     dumped = str(provider.seen.model_dump())
     assert "SKU501" not in dumped and "0123456789012" not in dumped and "img.test" not in dumped
 
@@ -101,12 +101,12 @@ def test_bad_ai_provider_stays_a_startup_error(monkeypatch, value):
 
 def test_provider_selected_from_env_when_not_injected(monkeypatch):
     monkeypatch.setenv("AI_PROVIDER", "ollama")
-    monkeypatch.delenv("OLLAMA_HOST", raising=False)
+    monkeypatch.delenv("OLLAMA_BASE_URL", raising=False)
     monkeypatch.delenv("OLLAMA_MODEL", raising=False)
     with pytest.raises(AIOrchestrationError) as info:
         run_ai_task(AITask.EXPLAIN, PRODUCTS, RESTRICTIONS)
     assert isinstance(info.value.__cause__, ProviderError)
-    assert "OLLAMA_HOST and OLLAMA_MODEL must be configured" in str(info.value.__cause__)
+    assert "OLLAMA_MODEL must be configured" in str(info.value.__cause__)
 
 
 def test_unsupported_task_is_a_programming_error():

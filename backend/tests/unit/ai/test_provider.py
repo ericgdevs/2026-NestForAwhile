@@ -52,7 +52,7 @@ def test_provider_error_is_a_runtime_error():
 
 @pytest.fixture
 def ollama_env(monkeypatch):
-    monkeypatch.setenv("OLLAMA_HOST", "http://ollama.test:11434/")
+    monkeypatch.setenv("OLLAMA_BASE_URL", "http://ollama.test:11434/")
     monkeypatch.setenv("OLLAMA_MODEL", "qwen-test")
 
 

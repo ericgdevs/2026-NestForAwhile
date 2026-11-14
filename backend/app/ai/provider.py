@@ -1,11 +1,17 @@
 import json
 import os
+import time
 from abc import ABC, abstractmethod
 from enum import Enum
 
 import httpx
 
+from app.ai.recipes import RECIPE_INSTRUCTIONS
 from app.ai.schemas import ContextManifest
+
+GROQ_DEFAULT_MODEL = "openai/gpt-oss-20b"
+GROQ_ATTEMPTS = 3
+OLLAMA_DEFAULT_URL = "http://127.0.0.1:11434"
 
 
 class AITask(str, Enum):
@@ -28,30 +34,38 @@ class AIProvider(ABC):
         """Return raw JSON output for a task; callers must pass it through validate_ai_output()."""
 
 
+def _payload(task: AITask, manifest: ContextManifest) -> str:
+    body = {"task": task.value, "manifest": manifest.model_dump(mode="json")}
+    if task is AITask.RECIPES:
+        body["instructions"] = RECIPE_INSTRUCTIONS
+    return json.dumps(body, separators=(",", ":"))
+
+
 class GroqProvider(AIProvider):
     name = "groq"
 
     def generate_json(self, task: AITask, manifest: ContextManifest) -> dict:
         api_key = (os.getenv("GROQ_API_KEY") or "").strip()
-        model = (os.getenv("GROQ_MODEL") or "").strip()
-        if not api_key or not model:
-            raise ProviderError("GROQ_API_KEY and GROQ_MODEL must be configured")
+        model = (os.getenv("GROQ_MODEL") or "").strip() or GROQ_DEFAULT_MODEL
+        if not api_key:
+            raise ProviderError("GROQ_API_KEY must be configured")
 
-        payload = json.dumps(
-            {"task": task.value, "manifest": manifest.model_dump(mode="json")},
-            separators=(",", ":"),
-        )
+        payload = _payload(task, manifest)
         try:
-            response = httpx.post(
-                "https://api.groq.com/openai/v1/chat/completions",
-                headers={"Authorization": f"Bearer {api_key}"},
-                json={
-                    "model": model,
-                    "messages": [{"role": "user", "content": payload}],
-                    "response_format": {"type": "json_object"},
-                },
-                timeout=30,
-            )
+            for attempt in range(GROQ_ATTEMPTS):
+                response = httpx.post(
+                    "https://api.groq.com/openai/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {api_key}"},
+                    json={
+                        "model": model,
+                        "messages": [{"role": "user", "content": payload}],
+                        "response_format": {"type": "json_object"},
+                    },
+                    timeout=30,
+                )
+                if response.status_code != 429 or attempt == GROQ_ATTEMPTS - 1:
+                    break
+                time.sleep(0.1 * 2**attempt)  # exponential backoff on rate limits
         except (httpx.TimeoutException, httpx.RequestError) as exc:
             raise ProviderError(f"Groq request failed: {exc}") from exc
 
@@ -91,15 +105,12 @@ class OllamaProvider(AIProvider):
     name = "ollama"
 
     def generate_json(self, task: AITask, manifest: ContextManifest) -> dict:
-        host = (os.getenv("OLLAMA_HOST") or "").strip().rstrip("/")
+        host = (os.getenv("OLLAMA_BASE_URL") or OLLAMA_DEFAULT_URL).strip().rstrip("/")
         model = (os.getenv("OLLAMA_MODEL") or "").strip()
-        if not host or not model:
-            raise ProviderError("OLLAMA_HOST and OLLAMA_MODEL must be configured")
+        if not model:
+            raise ProviderError("OLLAMA_MODEL must be configured")
 
-        payload = json.dumps(
-            {"task": task.value, "manifest": manifest.model_dump(mode="json")},
-            separators=(",", ":"),
-        )
+        payload = _payload(task, manifest)
         try:
             response = httpx.post(
                 f"{host}/api/generate",
