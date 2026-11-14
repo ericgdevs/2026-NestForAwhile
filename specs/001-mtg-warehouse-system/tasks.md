@@ -60,7 +60,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T014 [api] Models for catalog and inventory in `backend/app/models.py`: `products`, `inventory_lots` (expiry, threshold, aisle/shelf/bin), `inventory_movements`, `audit_events`
 - [X] T015 [api] Models for sessions and transactions in `backend/app/models.py`: `shopping_sessions` (`Shopping_Session_Token`), `capacity_settings` (`Max_Floor_Capacity`), `queue_entries`, `carts`, `cart_items`, `recommendations`, `checkouts`, `checkout_items`, `interventions`
 - [X] T016 [api] Models for reporting and AI in `backend/app/models.py`: `donors`, `grants`, `reports`, `ai_requests`
-- [ ] T017 [api] Alembic init and migration `0001` for all tables in `backend/alembic/`; test `upgrade head` on SQLite
+- [X] T017 [api] Alembic init and migration `0001` for all tables in `backend/alembic/`; test `upgrade head` on SQLite
 - [ ] T018 [api] `backend/app/auth.py`: Argon2 hashing, JWT in HttpOnly cookie (`COOKIE_SECURE` from config), `get_current_user`, `Role` enum, `require_roles(...)`; tests for wrong password, expired token, wrong role (403)
 - [ ] T019 [api] Seed users in `backend/seed/load.py`: one synthetic user per role plus synthetic clients (Active and non-Active, various `Household_Size`) and dietary profiles (emails use `@example.test`)
 - [ ] T020 [api] Seed catalog in `backend/seed/load.py`: synthetic products (barcodes, nutrition, images, allergens), lots across aisles/shelves/bins with mixed expiry dates and thresholds, synthetic donors/grants
