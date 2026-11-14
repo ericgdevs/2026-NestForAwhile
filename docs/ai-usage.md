@@ -89,3 +89,4 @@
 | Implement T066 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for volunteer checkout session review | None | Caden |
 | Implement T075/T078/T081 | Copilot (GPT-5.6 Terra) | Added inventory audit, replenishment, and FIFO lot APIs with focused route tests | None | Caden |
 | Implement T084/T085 | Copilot (GPT-5.6 Terra) | Added queue promotion, claim expiry, queue endpoints, and manager capacity updates with tests | None | Caden |
+| Implement T088 | Copilot (GPT-5.6 Terra) | Added anonymized analytics aggregation and excluded expired lots from checkout with route coverage | None | Caden |

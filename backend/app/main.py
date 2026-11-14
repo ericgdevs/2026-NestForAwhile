@@ -5,6 +5,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import Settings
 from app.routes.auth import router as auth_router
+from app.routes.analytics import router as analytics_router
 from app.routes.capacity import router as capacity_router
 from app.routes.cart import router as cart_router
 from app.routes.checkout import router as checkout_router
@@ -17,6 +18,7 @@ from app.routes.recommendations import router as recommendations_router
 
 app = FastAPI(title="NestForAwhile MTG Warehouse API", version="0.1.0")
 app.include_router(auth_router)
+app.include_router(analytics_router)
 app.include_router(capacity_router)
 app.include_router(cart_router)
 app.include_router(checkout_router)

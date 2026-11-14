@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -47,7 +47,11 @@ def validate_checkout(database: Session, session: ShoppingSession) -> list[str]:
     for item in database.scalars(select(CartItem).where(CartItem.cart_id == cart.id)):
         lots = database.scalars(
             select(InventoryLot)
-            .where(InventoryLot.product_id == item.product_id, InventoryLot.quantity > 0)
+            .where(
+                InventoryLot.product_id == item.product_id,
+                InventoryLot.quantity > 0,
+                InventoryLot.expiration_date >= date.today(),
+            )
             .order_by(InventoryLot.expiration_date)
         ).all()
         available = sum(lot.quantity for lot in lots)
@@ -71,7 +75,11 @@ def complete_checkout(database: Session, session: ShoppingSession, volunteer: Us
     for item in database.scalars(select(CartItem).where(CartItem.cart_id == cart.id)):
         lots = database.scalars(
             select(InventoryLot)
-            .where(InventoryLot.product_id == item.product_id, InventoryLot.quantity > 0)
+            .where(
+                InventoryLot.product_id == item.product_id,
+                InventoryLot.quantity > 0,
+                InventoryLot.expiration_date >= date.today(),
+            )
             .order_by(InventoryLot.expiration_date)
         ).all()
         remaining = item.quantity

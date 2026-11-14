@@ -184,7 +184,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 16: User Story 12 – Analytics Dashboard (P2)
 
-- [ ] T088 [api] [US12] `backend/app/services/analytics.py` and `GET /analytics`: families served, visits completed, pounds distributed, inventory usage, recommendation adoption rate, waste reduction; aggregates only; tests include a payload scan for names, emails, and IDs
+- [X] T088 [api] [US12] `backend/app/services/analytics.py` and `GET /analytics`: families served, visits completed, pounds distributed, inventory usage, recommendation adoption rate, waste reduction; aggregates only; tests include a payload scan for names, emails, and IDs
 - [ ] T089 [ui] [US12] `frontend/src/pages/Analytics.tsx` dashboard (Manager/Director)
 - [ ] T090 [qa] [US12] Playwright `e2e/tests/us12-analytics.spec.ts`: completing a checkout updates the metrics; no client identifiers shown
 
