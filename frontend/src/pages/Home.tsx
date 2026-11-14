@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 
 import { getRecommendations, saveCartItem, type Recommendation } from "../api/client";
+import Icon from "../components/Icon";
+import RecipeSheet from "../components/RecipeSheet";
 import { StatusBadge } from "../components/StatusBadge";
 
-export default function Home() {
-  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
+export default function Home({ householdSize }: { householdSize?: number }) {
+  const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
   const [addedIds, setAddedIds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -21,117 +23,76 @@ export default function Home() {
 
   return (
     <main>
-      <div className="hero-banner">
+      <header className="page-head">
         <div>
-          <span className="eyebrow-chip">Good to see you</span>
-          <h1 className="page-title">
-            MTG Warehouse<br />shop smarter.
-          </h1>
-          <p className="page-subtitle">
-            Personalized, dietary-safe grocery picks tailored to your profile and household size.
-          </p>
+          <h1>Today's MTG Warehouse picks</h1>
+          <p>Sized for your household and checked against your dietary choices.</p>
         </div>
-        <div className="choice-pill choice-pill-selected" style={{ width: "fit-content" }}>
-          <span aria-hidden="true">✦</span>
-          <span>AI matched</span>
-        </div>
-      </div>
-
-      <section aria-labelledby="recommendations-heading" className="ui-card" style={{ padding: "2rem" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1.5rem" }}>
-          <div>
-            <span className="stat-label">Your next best picks</span>
-            <h2 id="recommendations-heading" style={{ fontSize: "1.45rem", fontWeight: 700, margin: "0.25rem 0 0" }}>
-              Food that fits your needs.
-            </h2>
-          </div>
-          <span
-            aria-hidden="true"
-            style={{
-              width: "2.5rem",
-              height: "2.5rem",
-              borderRadius: "50%",
-              background: "var(--pastel-blue-bg)",
-              color: "var(--pastel-blue-text)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "1.1rem",
-            }}
-          >
-            ✦
-          </span>
-        </div>
-
-        {recommendations.length === 0 ? (
-          <div style={{ padding: "3rem 1rem", textAlign: "center", color: "var(--text-muted)" }}>
-            <p style={{ margin: 0 }}>No recommendations yet.</p>
+        {householdSize ? (
+          <div className="figure">
+            <b>{householdSize}</b>
+            <span>{householdSize === 1 ? "person" : "people"} in your household</span>
           </div>
         ) : (
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "1.25rem",
-            }}
-          >
-            {recommendations.map((item) => {
-              const isAdded = addedIds.includes(item.product_id);
-              return (
-                <article key={item.product_id} className="item-card ui-card-hover">
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "0.5rem" }}>
-                    <h3 style={{ fontSize: "1.15rem", fontWeight: 700, margin: 0, color: "var(--text-dark)" }}>
-                      {item.name}
-                    </h3>
-                    <StatusBadge status={item.status} />
-                  </div>
-
-                  <p style={{ color: "var(--text-body)", fontSize: "0.9rem", lineHeight: 1.5, margin: 0 }}>
-                    {item.rationale}
-                  </p>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginTop: "auto",
-                      paddingTop: "0.85rem",
-                      borderTop: "1px solid var(--border-card)",
-                    }}
-                  >
-                    <p style={{ margin: 0, fontSize: "0.88rem", color: "var(--text-muted)" }}>
-                      Suggested quantity: <strong>{item.quantity}</strong>
-                    </p>
-                    {item.aisle && (
-                      <span
-                        style={{
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          padding: "0.2rem 0.55rem",
-                          borderRadius: "var(--radius-pill)",
-                          background: "#f1f5f9",
-                          color: "var(--text-body)",
-                        }}
-                      >
-                        Aisle {item.aisle}
-                      </span>
-                    )}
-                  </div>
-
-                  <button
-                    className={`btn ${isAdded ? "btn-secondary" : "btn-primary"}`}
-                    style={{ width: "100%", marginTop: "0.5rem" }}
-                    onClick={() => void handleAdd(item)}
-                  >
-                    {isAdded ? "Added to cart ✓" : "Add to cart"}
-                  </button>
-                </article>
-              );
-            })}
-          </div>
+          recommendations &&
+          recommendations.length > 0 && (
+            <div className="figure">
+              <b>{recommendations.length}</b>
+              <span>picks in stock</span>
+            </div>
+          )
         )}
-      </section>
+      </header>
+
+      {recommendations === null ? (
+        <p className="empty">Finding groceries that fit you…</p>
+      ) : recommendations.length === 0 ? (
+        <div className="panel empty">
+          <Icon name="home" />
+          <strong>No recommendations yet.</strong>
+          <span>Update your dietary choices in Profile, or scan a product to check it.</span>
+        </div>
+      ) : (
+        <section aria-label="Recommended groceries" className="grid grid-2">
+          {recommendations.map((item) => {
+            const isAdded = addedIds.includes(item.product_id);
+            return (
+              <article key={item.product_id} className="label-panel">
+                <StatusBadge bar status={item.status} />
+                <h2>{item.name}</h2>
+                <hr className="rule-heavy" />
+                <div className="figure-row">
+                  <span>Suggested quantity:</span> <b>{item.quantity}</b>
+                </div>
+                <hr className="rule-mid" />
+                {item.aisle && (
+                  <span className="location">
+                    <Icon name="pin" />
+                    Aisle {item.aisle} · Shelf {item.shelf} · Bin {item.bin}
+                  </span>
+                )}
+                <p className="why">{item.rationale}</p>
+                <button
+                  className={`btn btn-block ${isAdded ? "btn-done" : "btn-primary"}`}
+                  style={{ marginTop: "auto" }}
+                  type="button"
+                  onClick={() => void handleAdd(item)}
+                >
+                  {isAdded ? (
+                    <>
+                      <Icon name="check" /> Added to cart
+                    </>
+                  ) : (
+                    "Add to cart"
+                  )}
+                </button>
+              </article>
+            );
+          })}
+        </section>
+      )}
+
+      <RecipeSheet />
     </main>
   );
 }

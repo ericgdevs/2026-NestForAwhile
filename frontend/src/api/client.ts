@@ -106,7 +106,14 @@ export function deleteCartItem(product_id: number) {
 
 export type Recipe = {
   title: string;
-  ingredients: { name: string; product_id: number | null }[];
+  // cuisine is proposed in docs/proposals/recipe-cuisine-contract.md; absent until the backend ships it.
+  cuisine?: string;
+  ingredients: {
+    name: string;
+    product_id: number | null;
+    in_cart_or_stock?: boolean;
+    location?: { aisle: string; shelf: string; bin: string } | null;
+  }[];
   steps: string[];
 };
 

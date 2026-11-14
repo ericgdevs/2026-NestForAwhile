@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { apiRequest, getMe } from "../api/client";
+import Icon from "../components/Icon";
 
 const choices = [
   "Low Sugar",
@@ -51,77 +52,42 @@ export default function Profile() {
 
   return (
     <main>
-      <div className="hero-banner">
+      <header className="page-head">
         <div>
-          <span className="eyebrow-chip">Dietary profile</span>
-          <h1 className="page-title">
-            Dietary Restrictions &amp; Preferences
-          </h1>
-          <p className="page-subtitle">
-            Choose any options that help us find a better grocery match. You can edit these anytime.
-          </p>
+          <h1>Dietary Restrictions &amp; Preferences</h1>
+          <p>Pick anything that helps us find food that works for you. You can change these any time.</p>
         </div>
-      </div>
+      </header>
 
-      <section className="ui-card" style={{ maxWidth: "800px" }}>
-        <fieldset style={{ border: "none", padding: 0, margin: 0 }}>
-          <legend className="stat-label" style={{ marginBottom: "1.25rem" }}>
-            Dietary choices
+      <section className="panel stack" style={{ maxWidth: "860px" }}>
+        <fieldset style={{ border: 0, padding: 0, margin: 0 }}>
+          <legend className="field-label" style={{ marginBottom: "0.75rem" }}>
+            Choose all that apply
           </legend>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "0.85rem", marginBottom: "1.75rem" }}>
-            {choices.map((choice) => {
-              const isChecked = selected.includes(choice);
-              return (
-                <label
-                  key={choice}
-                  className={`choice-pill ${isChecked ? "choice-pill-selected" : ""}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isChecked}
-                    onChange={() => toggle(choice)}
-                  />
-                  <span>{choice}</span>
-                </label>
-              );
-            })}
+          <div className="choices">
+            {choices.map((choice) => (
+              <label className="choice" key={choice}>
+                <input checked={selected.includes(choice)} type="checkbox" onChange={() => toggle(choice)} />
+                <span>{choice}</span>
+              </label>
+            ))}
           </div>
         </fieldset>
 
         {saved && (
-          <div
-            style={{
-              background: "var(--pastel-green-bg)",
-              border: "1px solid var(--pastel-green-border)",
-              color: "var(--pastel-green-text)",
-              padding: "0.75rem 1.25rem",
-              borderRadius: "var(--radius-md)",
-              marginBottom: "1.25rem",
-              fontSize: "0.9rem",
-              fontWeight: 600,
-            }}
-          >
+          <p className="alert alert-ok" role="status">
+            <Icon name="check" />
             Your choices were saved.
-          </div>
+          </p>
         )}
-
         {error && (
-          <div
-            style={{
-              background: "var(--pastel-rose-bg)",
-              border: "1px solid var(--pastel-rose-border)",
-              color: "var(--pastel-rose-text)",
-              padding: "0.75rem 1.25rem",
-              borderRadius: "var(--radius-md)",
-              marginBottom: "1.25rem",
-              fontSize: "0.9rem",
-            }}
-          >
+          <p className="alert alert-danger" role="alert">
+            <Icon name="alert" />
             {error}
-          </div>
+          </p>
         )}
 
-        <button className="btn btn-primary" onClick={save} disabled={saving}>
+        <button className="btn btn-primary" disabled={saving} style={{ alignSelf: "flex-start" }} type="button" onClick={save}>
           {saving ? "Saving…" : "Save choices"}
         </button>
       </section>

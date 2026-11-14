@@ -1,4 +1,5 @@
 import type { components } from "../api/generated";
+import type { IconName } from "../components/Icon";
 
 export type AppRole = components["schemas"]["Role"];
 
@@ -18,4 +19,25 @@ export function canVisit(role: AppRole, path: string): boolean {
   }
   if (path === "/waiting") return role === "Client";
   return true;
+}
+
+export type NavLink = { href: string; label: string; icon: IconName };
+
+const allLinks: NavLink[] = [
+  { href: "/scan", label: "Scan", icon: "scan" },
+  { href: "/cart", label: "Cart", icon: "cart" },
+  { href: "/recipes", label: "Recipes", icon: "recipes" },
+  { href: "/profile", label: "Profile", icon: "profile" },
+  { href: "/checkout", label: "Checkout", icon: "checkout" },
+  { href: "/audit", label: "Audit", icon: "audit" },
+  { href: "/replenishment", label: "Restock", icon: "restock" },
+  { href: "/lots", label: "Lots", icon: "lots" },
+  { href: "/analytics", label: "Analytics", icon: "analytics" },
+  { href: "/reports", label: "Reports", icon: "reports" },
+];
+
+// Nav comes from canVisit so a role never sees a link it cannot open.
+export function navFor(role: AppRole): NavLink[] {
+  const home: NavLink = { href: "/", label: role === "Client" ? "Home" : "Overview", icon: "home" };
+  return [home, ...allLinks.filter((link) => canVisit(role, link.href))];
 }
