@@ -192,6 +192,8 @@ def seed_catalog(database: Session) -> None:
                         shelf=f"S{index + 1}",
                         bin=f"B{index + 1}",
                         reorder_threshold=4,
+                        donor_id=donors[index % len(donors)].id,
+                        grant_id=grants[index % len(grants)].id,
                     ),
                     InventoryLot(
                         product_id=product.id,
@@ -202,6 +204,8 @@ def seed_catalog(database: Session) -> None:
                         shelf=f"S{index + 1}",
                         bin=f"B{index + 5}",
                         reorder_threshold=4,
+                        donor_id=donors[index % len(donors)].id,
+                        grant_id=grants[index % len(grants)].id,
                     ),
                 ]
             )
