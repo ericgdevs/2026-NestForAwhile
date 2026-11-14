@@ -13,7 +13,7 @@ def product_lots(database: Session, product_id: int) -> list[InventoryLot]:
         database.scalars(
             select(InventoryLot)
             .where(InventoryLot.product_id == product_id, InventoryLot.quantity >= 0)
-            .order_by(InventoryLot.expiration_date, InventoryLot.received_at)
+            .order_by(InventoryLot.expiration_date, InventoryLot.received_at, InventoryLot.id)
         )
     )
 
@@ -64,7 +64,7 @@ def lot_rows(database: Session) -> list[dict]:
     for lot in database.scalars(
         select(InventoryLot)
         .where(InventoryLot.expiration_date >= today)
-        .order_by(InventoryLot.expiration_date, InventoryLot.received_at)
+        .order_by(InventoryLot.expiration_date, InventoryLot.received_at, InventoryLot.id)
     ):
         rows.append(
             {
