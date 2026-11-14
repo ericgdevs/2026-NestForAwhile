@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AI output schemas",
+  "description": "The recipe schema is passed to Ollama as the structured-output format, then re-checked by Pydantic and the rules engine before display.",
+  "$defs": {
+    "recipe_output": {
+      "type": "object",
+      "required": ["recipes"],
+      "additionalProperties": false,
+      "properties": {
+        "recipes": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "type": "object",
+            "required": ["title", "ingredients", "steps"],
+            "additionalProperties": false,
+            "properties": {
+              "title": { "type": "string", "maxLength": 80 },
+              "ingredients": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "object",
+                  "required": ["name", "product_id"],
+                  "additionalProperties": false,
+                  "properties": {
+                    "name": { "type": "string" },
+                    "product_id": { "type": ["integer", "null"], "description": "Must match a product in the inventory list sent with the request; null is rejected for non-pantry items." }
+                  }
+                }
+              },
+              "steps": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "explanation_output": {
+      "type": "object",
+      "required": ["text"],
+      "additionalProperties": false,
+      "properties": { "text": { "type": "string", "maxLength": 300 } }
+    }
+  }
+}
