@@ -49,3 +49,4 @@
 | Implement T027 | Copilot (GPT-5.6 Terra) | Added a multi-stage frontend/backend Docker build and conditional FastAPI static asset mounting | None | Caden |
 | Implement T029 | Copilot (GPT-5.6 Terra) | Added the production container startup script and Azure App Service image deployment workflow | None | Caden |
 | Implement T031 | Copilot (GPT-5.6 Terra) | Added login, logout, current-profile, capacity, and shopping-session service routes with focused authentication tests | None | Caden |
+| Implement T032 | Copilot (GPT-5.6 Terra) | Added the client login form, navigation, and friendly invalid/inactive-account messages with component tests | None | Caden |

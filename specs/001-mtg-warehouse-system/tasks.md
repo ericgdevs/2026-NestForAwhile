@@ -83,7 +83,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 **Independent test**: log in as seeded Active client; token returned; count increments; non-Active gets a friendly 403.
 
 - [X] T031 [api] [US1] `backend/app/services/sessions.py` and `backend/app/routes/auth.py`: `POST /auth/login` (check `Client_Enrollment_Status`, create `Shopping_Session_Token`), `POST /auth/logout`, `GET /me`; plus `GET /capacity` returning the active shopper count (`routes/capacity.py`, Volunteer/Staff/Manager); tests for valid, invalid (401), non-Active (403), count
-- [ ] T032 [ui] [US1] `frontend/src/pages/Login.tsx`: login form, friendly messages for invalid credentials and non-Active enrollment
+- [X] T032 [ui] [US1] `frontend/src/pages/Login.tsx`: login form, friendly messages for invalid credentials and non-Active enrollment
 - [ ] T033 [qa] [US1] Playwright `e2e/tests/us1-checkin.spec.ts`: valid login, invalid login, non-Active client, active count visible to a volunteer
 
 ## Phase 4: User Story 2 – Dietary Profile in Plain Language (P1)
