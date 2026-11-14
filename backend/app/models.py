@@ -121,6 +121,8 @@ class InventoryLot(Base):
     shelf: Mapped[str] = mapped_column(String(32), nullable=False)
     bin: Mapped[str] = mapped_column(String(32), nullable=False)
     reorder_threshold: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    donor_id: Mapped[int | None] = mapped_column(ForeignKey("donors.id"))
+    grant_id: Mapped[int | None] = mapped_column(ForeignKey("grants.id"))
 
     product: Mapped[Product] = relationship(back_populates="inventory_lots")
     movements: Mapped[list[InventoryMovement]] = relationship(back_populates="lot")

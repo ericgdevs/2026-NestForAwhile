@@ -190,8 +190,8 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 17: User Story 13 – Donor and Grant Reporting (P2)
 
-- [ ] T091 [api] [US13] Link lots to donors/grants (`donor_id`, `grant_id` on `inventory_lots`, migration, seed) and `backend/app/services/reports.py` aggregations (donor metrics, grant attribution, distribution totals, visit metrics); needs a `data-model.md` update first (see Open questions)
-- [ ] T092 [api] [US13] `backend/app/services/docx_report.py` and `POST /reports/{donor|grant}`: python-docx report with four sections from a built-in template; test opens the DOCX and checks the sections and the absence of client identifiers (dependency approval)
+- [X] T091 [api] [US13] Link lots to donors/grants (`donor_id`, `grant_id` on `inventory_lots`, migration, seed) and `backend/app/services/reports.py` aggregations (donor metrics, grant attribution, distribution totals, visit metrics); needs a `data-model.md` update first (see Open questions)
+- [X] T092 [api] [US13] `backend/app/services/docx_report.py` and `POST /reports/{donor|grant}`: python-docx report with four sections from a built-in template; test opens the DOCX and checks the sections and the absence of client identifiers (dependency approval)
 - [ ] T093 [ui] [US13] `frontend/src/pages/Reports.tsx`: choose type and period, download DOCX
 - [ ] T094 [qa] [US13] Playwright `e2e/tests/us13-reports.spec.ts`: generate and download, file is a valid DOCX with all four sections
 
