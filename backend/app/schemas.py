@@ -88,3 +88,14 @@ class LotRead(BaseModel):
     quantity: int
     expiration_date: date | None = None
     expiring_soon: bool
+
+
+class ReplenishmentItem(BaseModel):
+    product_id: int
+    name: str
+    quantity: int
+    reorder_threshold: int
+    aisle: str
+    shelf: str
+    bin: str
+    priority: int

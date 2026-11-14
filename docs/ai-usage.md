@@ -32,3 +32,4 @@
 | Implement | Copilot (Sonnet 5.5) | Added create/update client and profile save services with automatic tier recalculation; PUT /me/profile route | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | Added profile tests: persistence, encryption at rest, invalid option, strictest tier, recalculation, Household_Size | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | T081: FIFO service (received_at, expiry, id), 7-day expiring flag, GET /inventory/lots per contract, tests | Eric approved plan and decisions | Eric |
+| Implement | Copilot (Sonnet 5.5) | T078: replenishment service (ratio priority, sort=location as aisle-sequenced route) and GET /inventory/replenishment, tests | Eric approved plan and decisions | Eric |
