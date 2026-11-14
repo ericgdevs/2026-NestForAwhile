@@ -141,3 +141,4 @@
 | Deploy | Gemini | Added Vercel entrypoint wrapper | None | Eric |
 | Deploy | Gemini | Updated engine for Supabase postgresql+psycopg | None | Eric |
 | Deploy | Gemini | Pinned psycopg[binary] dependency | None | Eric |
+| Deploy | Gemini | Set API_BASE_URL to /api in production | None | Eric |
