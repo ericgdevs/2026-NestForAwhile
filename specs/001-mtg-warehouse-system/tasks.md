@@ -42,7 +42,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T001 [deploy] Create repo skeleton `backend/`, `frontend/`, `e2e/`, `deploy/`, `scripts/` (with `.gitkeep`) and confirm `.gitignore` ignores `.env`, `*.db`, `node_modules/`, `__pycache__/`
 - [ ] T002 [api] Init backend: `backend/requirements.txt`, `backend/app/main.py` with `GET /health` (status + `ai_provider`), ruff config, pytest config (dependency approval: FastAPI, Pydantic, SQLAlchemy, Alembic, httpx, pytest, ruff)
 - [ ] T003 [P] [ui] Init frontend: Vite + React + TypeScript in `frontend/`, Tailwind CSS, shadcn/ui (`frontend/components.json`), Vitest (dependency approval)
-- [ ] T004 [P] [docs] Create `.env.example` with `DATABASE_URL`, `JWT_SECRET`, `FIELD_ENCRYPTION_KEY`, `AI_PROVIDER`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `GROQ_API_KEY`, `GROQ_MODEL`, `USDA_API_KEY`, `ALLOWED_ORIGINS`, `COOKIE_SECURE`, `SEED_DEMO_DATA` (placeholders only)
+- [X] T004 [P] [docs] Create `.env.example` with `DATABASE_URL`, `JWT_SECRET`, `FIELD_ENCRYPTION_KEY`, `AI_PROVIDER`, `OLLAMA_BASE_URL`, `OLLAMA_MODEL`, `GROQ_API_KEY`, `GROQ_MODEL`, `USDA_API_KEY`, `ALLOWED_ORIGINS`, `COOKIE_SECURE`, `SEED_DEMO_DATA` (placeholders only)
 - [ ] T005 [P] [qa] CI backend workflow `.github/workflows/backend.yml`: ruff + pytest on every PR
 - [ ] T006 [P] [qa] CI frontend workflow `.github/workflows/frontend.yml`: lint + typecheck + Vitest + build on every PR
 - [ ] T007 [P] [qa] CI hygiene workflow `.github/workflows/hygiene.yml` + `scripts/check_hygiene.sh`: fail if `.env` is tracked, if the phrase "HIPAA compliant" appears anywhere
