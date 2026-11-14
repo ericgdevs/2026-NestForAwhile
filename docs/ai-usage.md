@@ -17,3 +17,4 @@
 | Spec (constitution) | Copilot (Sonnet 5.5) | Drafted constitution v1.0.0 from Eric's principles; filled plan-template Constitution Check | Eric supplied all principles and rules; reviewed draft | Eric |
 | Implement (T024) | Copilot (Sonnet 5.5) | Added OpenAPI type generation and a cookie-aware typed fetch client with mocked error handling tests | Caden approved the dependency and reviewed the generated contract output | Caden |
 | Implement (T035) | Copilot (Sonnet 5.5) | Added the plain-language dietary profile page with mock saved-state feedback and selection tests | Caden reviewed the UI copy and choice list | Caden |
+| Implement (T038) | Copilot (Sonnet 5.5) | Added realistic mock recommendations with deterministic rationale and accessible status labels | Caden reviewed the recommendation copy | Caden |
