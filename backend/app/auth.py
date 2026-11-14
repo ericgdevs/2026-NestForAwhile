@@ -46,12 +46,12 @@ def decode_access_token(token: str) -> dict:
 
 
 def get_current_user(
-    session_token: str | None = Cookie(default=None, alias=COOKIE_NAME),
+    cookie_token: str | None = Cookie(default=None, alias=COOKIE_NAME),
     session: Session = Depends(get_session),
 ) -> User:
-    if not session_token:
+    if not cookie_token:
         raise HTTPException(status_code=401, detail="Please sign in.")
-    user = session.get(User, int(decode_access_token(session_token)["sub"]))
+    user = session.get(User, int(decode_access_token(cookie_token)["sub"]))
     if user is None or not user.is_active:
         raise HTTPException(status_code=401, detail="Please sign in again.")
     return user
