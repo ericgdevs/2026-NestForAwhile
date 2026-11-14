@@ -8,6 +8,7 @@
 | Review | Ponytail review / Copilot code review | | | |
 | Testing & debugging | Copilot | | | |
 | In the product | Local open-source model (Ollama) | | | |
+| Implement | Copilot (Sonnet 5.5) | T019: idempotent seed loader (tiers, one user per role, five synthetic personas) and tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T022: tiers.py (placeholder tiers, strictest wins) and classify.py with table-driven tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T021: clinical_rules_matrix.json (synthetic placeholders, condition mapping) + validating loader and tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | T018: Argon2/JWT auth skeleton, Role guard, route skeletons (501) and tests | None | Eric |

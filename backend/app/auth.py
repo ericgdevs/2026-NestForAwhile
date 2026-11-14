@@ -1,3 +1,4 @@
+import hashlib
 from datetime import datetime, timedelta, timezone
 
 import jwt
@@ -11,6 +12,11 @@ from app.models import Role, User
 
 COOKIE_NAME = "access_token"
 _hasher = PasswordHash.recommended()  # Argon2
+
+
+def email_digest(email: str) -> str:
+    # shortcut: unkeyed SHA-256 for lookup, add a keyed HMAC if emails need stronger protection
+    return hashlib.sha256(email.strip().lower().encode()).hexdigest()
 
 
 def hash_password(password: str) -> str:
