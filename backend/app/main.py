@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 
-from app.routes import auth, capacity, checkout, inventory, profile, queue, recommendations
+from app.routes import analytics, auth, capacity, checkout, inventory, profile, queue, recommendations
 
 app = FastAPI(title="Nest API")
+app.include_router(analytics.router)
 app.include_router(auth.router)
 app.include_router(capacity.router)
 app.include_router(checkout.router)

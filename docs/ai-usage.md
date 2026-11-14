@@ -35,3 +35,4 @@
 | Implement | Copilot (Sonnet 5.5) | T078: replenishment service (ratio priority, sort=location as aisle-sequenced route) and GET /inventory/replenishment, tests | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | T063: checkout validation service (re-classify lines; Restricted, unknown product, shortfall, expired stock block) and movement logger, tests | Eric approved plan and decisions | Eric |
 | Implement | Copilot (Sonnet 5.5) | T064: atomic checkout (FIFO guarded decrement, movements, receipt, visit, session end), interventions, /checkout routes; renamed cookie param in auth.py to free the session_token path name; tests | Eric approved plan and decisions | Eric |
+| Implement | Copilot (Sonnet 5.5) | T088: analytics service (contract metrics plus service-level category/tier/checkout-history breakdowns) and GET /analytics, identifier-scan tests | Eric approved plan and decisions (2a: breakdowns stay internal) | Eric |

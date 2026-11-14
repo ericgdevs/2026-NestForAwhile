@@ -119,3 +119,17 @@ class InterventionCreate(BaseModel):
     product_id: int
     action: Literal["removed_item"]
     note: str = ""
+
+
+class WasteReduction(BaseModel):
+    expiring_soon_lots: int
+    pounds_saved: float
+
+
+class Analytics(BaseModel):
+    families_served: int
+    visits_completed: int
+    pounds_distributed: float
+    inventory_usage: int
+    recommendation_adoption_rate: float
+    waste_reduction: WasteReduction
