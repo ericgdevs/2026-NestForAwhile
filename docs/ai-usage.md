@@ -134,6 +134,7 @@
 | Review | Copilot (Sonnet 5.5) | Ran ruff format and lint fixes on the AI layer and its tests (docstring wrapping, isinstance union); no behaviour change, 194 tests pass | Eric approved plan (no E501 ignores) | Eric |
 | Docs | Gemini 3.8 Flash | Deduplicated ai-usage rows after the AI merge | Eric reviewed | Eric |
 | Prove queue promotion is atomic with checkout | Copilot (Sonnet 5.5) | Found promotion already runs inside the checkout transaction (no code change needed); added tests for rollback on promotion failure and for slot release plus promoting the next waiting client | Eric approved a tests-only fix | Eric |
+<<<<<<< HEAD
 | Redesign UI (Nutrition Facts label direction) | Copilot (Sonnet 5.5) | Wrote PRODUCT.md, ran the Impeccable direction roll, rebuilt the design system, shell, and all 13 screens; added role-filtered nav, staff Overview with expiring-lots warning, sign-out, cuisine-grouped recipe sheet, Vitest and Playwright UI tests; Ponytail and Impeccable reviews with fixes | Caden chose the direction, cuisine steer, IDs-not-names rule, and fix scope | Caden |
 | Apply login page feedback | Copilot (Sonnet 5.5) / Agentation | Removed the brand and label-legend section from the sign-in page and its CSS; wordmark top bar now shows at every width | Caden supplied the page feedback | Caden |
 | Cart layout + dev proxy fix | Copilot (Sonnet 5.5) / Agentation | Restyled Cart as Home-style label cards; fixed the Vite dev proxy so page loads of /cart, /checkout, /recipes, /analytics, /reports serve the app instead of API JSON | Caden supplied the page feedback and chose the reading | Caden |
@@ -141,3 +142,8 @@
 | Client flow design + plan | Copilot (Sonnet 5.5) | Ran a design conversation, wrote the client flow design and builder-checked it, then wrote the implementation plan (docs/superpowers/plans/2026-11-14-client-flow-plan.md) | Caden answered every design question and approved the design | Caden |
 | Client flow frontend (F1–F10, T1) | Copilot (Sonnet 5.5) / Impeccable / Ponytail | Sign-up, household editor, approvals, scan labels/swaps/recipes, shopping list, cart QR, volunteer checkout, Playwright journey specs | Caden approved the design, plan and QR package | Caden |
 | Review follow-ups (frontend, ui/client-flow) | Copilot (Sonnet 5.5) / Impeccable | Awaiting-approval screen for Pending clients, ICD-10 condition codes saved and editable in Household, sign-up copy, Playwright spec update, design doc update | Caden decided Pending and ICD-10 handling after Eric's review | Caden |
+=======
+| Chore | Gemini Flash | Added union merge attributes for ai-usage and decisions docs | None | Eric |
+| CI (qa) | Gemini Flash | Configured 15m timeout, browser caching, and demo env in e2e workflow; aligned Playwright config project, retries, and local webServer | None | Eric |
+| Test (qa) | Gemini Flash | Fixed auth fixture to use page.request for session cookie attachment and added demo seed fallbacks | None | Eric |
+>>>>>>> origin/main
