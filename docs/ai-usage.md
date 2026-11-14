@@ -24,3 +24,4 @@
 | Implement (T061) | Copilot (Sonnet 5.5) | Added inventory-aware mock recipes with fallback messaging and aisle/shelf/bin locations | Caden reviewed the fallback UX and synthetic ingredient data | Caden |
 | Implement (T065) | Copilot (Sonnet 5.5) | Added volunteer checkout review, session-token validation UI, hard-stop intervention, and receipt state | Caden reviewed the mock checkout flow | Caden |
 | Implement (T068) | Copilot (Sonnet 5.5) | Added role-aware navigation and protected route access using the contract’s five roles | Caden reviewed the role-to-screen mapping | Caden |
+| Implement (T076) | Copilot (Sonnet 5.5) | Added the warehouse audit flow with scanner reuse, variance calculation, and confirmation state | Caden reviewed the mock inventory count | Caden |

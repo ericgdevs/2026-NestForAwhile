@@ -11,6 +11,7 @@ const navigation = [
   { to: '/recipes', label: 'Recipes', icon: BookOpen, roles: ['Client'] },
   { to: '/profile', label: 'My preferences', icon: UserRound, roles: ['Client'] },
   { to: '/inventory', label: 'Inventory', icon: PackageCheck, roles: ['Warehouse Staff', 'Warehouse Manager', 'Director'] },
+  { to: '/audit', label: 'Audit counts', icon: PackageCheck, roles: ['Warehouse Staff', 'Warehouse Manager'] },
 ]
 
 export function AppShell() {
