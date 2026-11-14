@@ -103,3 +103,4 @@
 | Fix local login proxy | Copilot / Ponytail | Routed frontend API paths to the local FastAPI server so the seeded demo credentials work from the Vite dev server | None | Caden |
 | Add password visibility toggle | Copilot / Agentation | Added an accessible eye button to show or hide the login password and covered the toggle in the login test | Caden supplied the page feedback | Caden |
 | Refine client UI patterns | Copilot / Impeccable | Applied the supplied references across home, scan, cart, and recipes with stronger card hierarchy, pill metadata, responsive controls, and compact nutrition/ingredient groups | Caden approved the all-client-screen scope | Caden |
+| Update company branding | Copilot | Replaced the visible NestForAwhile product label with Epic-Cure while retaining MTG Warehouse as the product descriptor | Caden supplied the company name | Caden |

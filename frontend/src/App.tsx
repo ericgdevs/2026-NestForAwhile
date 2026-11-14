@@ -31,7 +31,7 @@ function StaffHome() {
 
   return (
     <main className="min-h-screen bg-slate-50 p-6 text-slate-900">
-      <h1 className="text-2xl font-semibold">NestForAwhile MTG Warehouse</h1>
+      <h1 className="text-2xl font-semibold">Epic-Cure MTG Warehouse</h1>
       <p className="mt-2 text-slate-600">Welcome to the grocery support workspace.</p>
       {capacity && (
         <p className="mt-4 rounded-lg bg-white p-4 shadow-sm">

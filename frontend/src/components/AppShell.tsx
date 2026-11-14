@@ -19,7 +19,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <a className="brand-lockup" href="/">
           <span className="brand-mark" aria-hidden="true">N</span>
           <span>
-            <strong>NestForAwhile</strong>
+            <strong>Epic-Cure</strong>
             <small>MTG warehouse</small>
           </span>
         </a>
