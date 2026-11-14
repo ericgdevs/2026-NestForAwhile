@@ -38,3 +38,12 @@ test("adding a recipe that only uses the scanned item sends nothing", async () =
   expect(fetchMock).not.toHaveBeenCalled();
   vi.unstubAllGlobals();
 });
+
+test("report downloads go through the API base URL", async () => {
+  const { downloadReport } = await import("./client");
+  const fetchMock = vi.fn().mockResolvedValue(new Response(new Blob(["docx"]), { status: 200 }));
+  vi.stubGlobal("fetch", fetchMock);
+  await downloadReport("donor");
+  expect(fetchMock).toHaveBeenCalledWith("/reports/donor", expect.objectContaining({ method: "POST", credentials: "include" }));
+  vi.unstubAllGlobals();
+});
