@@ -45,3 +45,4 @@
 | Implement T023 | Copilot (GPT-5.6 Terra) | Added isolated SQLite, seeded-data, role login, and mocked AI fixtures with a fixture smoke test | None | Caden |
 | Implement T024 | Copilot (GPT-5.6 Terra) | Generated OpenAPI TypeScript types and added a cookie-including typed API client with a fetch test | None | Caden |
 | Implement T025 | Copilot (GPT-5.6 Terra) | Added the mobile-first app shell, auth context, protected route guard, and signed-out behavior test | None | Caden |
+| Implement T026 | Copilot (GPT-5.6 Terra) | Added accessible Green/Yellow/Red safety badges with icons, text, and focused rendering coverage | None | Caden |
