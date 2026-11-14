@@ -58,7 +58,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 - [X] T012 [api] `backend/app/crypto.py`: Fernet field encryption + an `EncryptedText` column type; test that stored values are not plaintext
 - [X] T013 [api] Models for identity and profile in `backend/app/models.py`: `users`, `clients` (`Client_Enrollment_Status`, `Household_Size`, `Dietary_Tier_ID`), `dietary_profiles` (encrypted), `visits`
 - [X] T014 [api] Models for catalog and inventory in `backend/app/models.py`: `products`, `inventory_lots` (expiry, threshold, aisle/shelf/bin), `inventory_movements`, `audit_events`
-- [ ] T015 [api] Models for sessions and transactions in `backend/app/models.py`: `shopping_sessions` (`Shopping_Session_Token`), `capacity_settings` (`Max_Floor_Capacity`), `queue_entries`, `carts`, `cart_items`, `recommendations`, `checkouts`, `checkout_items`, `interventions`
+- [X] T015 [api] Models for sessions and transactions in `backend/app/models.py`: `shopping_sessions` (`Shopping_Session_Token`), `capacity_settings` (`Max_Floor_Capacity`), `queue_entries`, `carts`, `cart_items`, `recommendations`, `checkouts`, `checkout_items`, `interventions`
 - [ ] T016 [api] Models for reporting and AI in `backend/app/models.py`: `donors`, `grants`, `reports`, `ai_requests`
 - [ ] T017 [api] Alembic init and migration `0001` for all tables in `backend/alembic/`; test `upgrade head` on SQLite
 - [ ] T018 [api] `backend/app/auth.py`: Argon2 hashing, JWT in HttpOnly cookie (`COOKIE_SECURE` from config), `get_current_user`, `Role` enum, `require_roles(...)`; tests for wrong password, expired token, wrong role (403)
