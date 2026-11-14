@@ -95,3 +95,4 @@
 | Implement T076/T079/T082/T086/T089/T093 | Copilot (GPT-5.6 Terra) | Added warehouse inventory, queue, analytics, and report screens with role routing and focused frontend coverage | None | Caden |
 | Implement T077/T080/T083/T087/T090/T094 | Copilot (GPT-5.6 Terra) | Added Playwright coverage for the inventory, queue, analytics, and reports screens with safe credential skips | None | Caden |
 | Complete T091 seed linkage | Copilot (GPT-5.6 Terra) | Linked synthetic seeded lots to synthetic donor and grant records | None | Caden |
+| Resolve PR conflicts | Copilot | Merged main into the implementation branch, kept the approved SQLAlchemy implementation, and removed incompatible main-only scaffold files | Caden approved the conflict-resolution merge | Caden |
