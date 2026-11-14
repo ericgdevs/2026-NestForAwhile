@@ -143,3 +143,4 @@
 | Deploy | Gemini | Pinned psycopg[binary] dependency | None | Eric |
 | Deploy | Gemini | Set API_BASE_URL to /api in production | None | Eric |
 | Deploy | Gemini | Added Deploy (Vercel + Supabase) section | None | Eric |
+| Deploy | Gemini | Logged Vercel + Supabase deployment decision | None | Eric |
