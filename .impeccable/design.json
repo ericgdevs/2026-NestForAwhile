@@ -1,0 +1,491 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-14T19:53:43+00:00",
+  "title": "Design System: Epic-Cure MTG Warehouse",
+  "extensions": {
+    "colorMeta": {
+      "blue": {
+        "role": "primary",
+        "displayName": "Epic-Cure Blue",
+        "canonical": "#1f5fbf",
+        "tonalRamp": [
+          "oklch(15% 0.081 259)",
+          "oklch(26% 0.104 259)",
+          "oklch(38% 0.128 259)",
+          "oklch(49% 0.152 259)",
+          "oklch(61% 0.152 259)",
+          "oklch(72% 0.128 259)",
+          "oklch(84% 0.104 259)",
+          "oklch(95% 0.081 259)"
+        ]
+      },
+      "blue-hover": {
+        "role": "primary",
+        "displayName": "Pressed Blue",
+        "canonical": "#184c99",
+        "tonalRamp": [
+          "oklch(15% 0.067 259)",
+          "oklch(26% 0.087 259)",
+          "oklch(38% 0.107 259)",
+          "oklch(49% 0.127 259)",
+          "oklch(61% 0.127 259)",
+          "oklch(72% 0.107 259)",
+          "oklch(84% 0.087 259)",
+          "oklch(95% 0.067 259)"
+        ]
+      },
+      "blue-wash": {
+        "role": "primary",
+        "displayName": "Blue Wash",
+        "canonical": "#e8f0fc",
+        "tonalRamp": [
+          "oklch(15% 0.010 258)",
+          "oklch(26% 0.013 258)",
+          "oklch(38% 0.016 258)",
+          "oklch(49% 0.019 258)",
+          "oklch(61% 0.019 258)",
+          "oklch(72% 0.016 258)",
+          "oklch(84% 0.013 258)",
+          "oklch(95% 0.010 258)"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Label Ink",
+        "canonical": "#0b1b33",
+        "tonalRamp": [
+          "oklch(15% 0.025 258)",
+          "oklch(26% 0.033 258)",
+          "oklch(38% 0.041 258)",
+          "oklch(49% 0.048 258)",
+          "oklch(61% 0.048 258)",
+          "oklch(72% 0.041 258)",
+          "oklch(84% 0.033 258)",
+          "oklch(95% 0.025 258)"
+        ]
+      },
+      "ink-2": {
+        "role": "neutral",
+        "displayName": "Shell Ink Raised",
+        "canonical": "#1a2b47",
+        "tonalRamp": [
+          "oklch(15% 0.028 260)",
+          "oklch(26% 0.036 260)",
+          "oklch(38% 0.044 260)",
+          "oklch(49% 0.052 260)",
+          "oklch(61% 0.052 260)",
+          "oklch(72% 0.044 260)",
+          "oklch(84% 0.036 260)",
+          "oklch(95% 0.028 260)"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Ink Mist",
+        "canonical": "#a9b6cc",
+        "tonalRamp": [
+          "oklch(15% 0.017 261)",
+          "oklch(26% 0.022 261)",
+          "oklch(38% 0.027 261)",
+          "oklch(49% 0.032 261)",
+          "oklch(61% 0.032 261)",
+          "oklch(72% 0.027 261)",
+          "oklch(84% 0.022 261)",
+          "oklch(95% 0.017 261)"
+        ]
+      },
+      "ground": {
+        "role": "neutral",
+        "displayName": "Cool Ground",
+        "canonical": "#f1f4f9",
+        "tonalRamp": [
+          "oklch(15% 0.010 261)",
+          "oklch(26% 0.013 261)",
+          "oklch(38% 0.016 261)",
+          "oklch(49% 0.019 261)",
+          "oklch(61% 0.019 261)",
+          "oklch(72% 0.016 261)",
+          "oklch(84% 0.013 261)",
+          "oklch(95% 0.010 261)"
+        ]
+      },
+      "panel": {
+        "role": "neutral",
+        "displayName": "Panel White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% 0.000 90)",
+          "oklch(26% 0.000 90)",
+          "oklch(38% 0.000 90)",
+          "oklch(49% 0.000 90)",
+          "oklch(61% 0.000 90)",
+          "oklch(72% 0.000 90)",
+          "oklch(84% 0.000 90)",
+          "oklch(95% 0.000 90)"
+        ]
+      },
+      "muted": {
+        "role": "neutral",
+        "displayName": "Slate Note",
+        "canonical": "#4a5874",
+        "tonalRamp": [
+          "oklch(15% 0.024 264)",
+          "oklch(26% 0.031 264)",
+          "oklch(38% 0.038 264)",
+          "oklch(49% 0.046 264)",
+          "oklch(61% 0.046 264)",
+          "oklch(72% 0.038 264)",
+          "oklch(84% 0.031 264)",
+          "oklch(95% 0.024 264)"
+        ]
+      },
+      "line": {
+        "role": "neutral",
+        "displayName": "Soft Line",
+        "canonical": "#d5dce8",
+        "tonalRamp": [
+          "oklch(15% 0.010 261)",
+          "oklch(26% 0.013 261)",
+          "oklch(38% 0.016 261)",
+          "oklch(49% 0.019 261)",
+          "oklch(61% 0.019 261)",
+          "oklch(72% 0.016 261)",
+          "oklch(84% 0.013 261)",
+          "oklch(95% 0.010 261)"
+        ]
+      },
+      "field-line": {
+        "role": "neutral",
+        "displayName": "Field Line",
+        "canonical": "#7a8699",
+        "tonalRamp": [
+          "oklch(15% 0.016 260)",
+          "oklch(26% 0.020 260)",
+          "oklch(38% 0.025 260)",
+          "oklch(49% 0.030 260)",
+          "oklch(61% 0.030 260)",
+          "oklch(72% 0.025 260)",
+          "oklch(84% 0.020 260)",
+          "oklch(95% 0.016 260)"
+        ]
+      },
+      "ok-bg": {
+        "role": "status",
+        "displayName": "Good Match Tint",
+        "canonical": "#e3f1e6",
+        "tonalRamp": [
+          "oklch(15% 0.010 152)",
+          "oklch(26% 0.013 152)",
+          "oklch(38% 0.016 152)",
+          "oklch(49% 0.019 152)",
+          "oklch(61% 0.019 152)",
+          "oklch(72% 0.016 152)",
+          "oklch(84% 0.013 152)",
+          "oklch(95% 0.010 152)"
+        ]
+      },
+      "ok-ink": {
+        "role": "status",
+        "displayName": "Good Match Ink",
+        "canonical": "#174a27",
+        "tonalRamp": [
+          "oklch(15% 0.040 151)",
+          "oklch(26% 0.051 151)",
+          "oklch(38% 0.063 151)",
+          "oklch(49% 0.075 151)",
+          "oklch(61% 0.075 151)",
+          "oklch(72% 0.063 151)",
+          "oklch(84% 0.051 151)",
+          "oklch(95% 0.040 151)"
+        ]
+      },
+      "warn-bg": {
+        "role": "status",
+        "displayName": "Please Check Tint",
+        "canonical": "#fff4cc",
+        "tonalRamp": [
+          "oklch(15% 0.026 94)",
+          "oklch(26% 0.034 94)",
+          "oklch(38% 0.042 94)",
+          "oklch(49% 0.049 94)",
+          "oklch(61% 0.049 94)",
+          "oklch(72% 0.042 94)",
+          "oklch(84% 0.034 94)",
+          "oklch(95% 0.026 94)"
+        ]
+      },
+      "warn-ink": {
+        "role": "status",
+        "displayName": "Please Check Ink",
+        "canonical": "#6b4a00",
+        "tonalRamp": [
+          "oklch(15% 0.044 79)",
+          "oklch(26% 0.057 79)",
+          "oklch(38% 0.070 79)",
+          "oklch(49% 0.084 79)",
+          "oklch(61% 0.084 79)",
+          "oklch(72% 0.070 79)",
+          "oklch(84% 0.057 79)",
+          "oklch(95% 0.044 79)"
+        ]
+      },
+      "stop-bg": {
+        "role": "status",
+        "displayName": "Not Recommended Tint",
+        "canonical": "#fbe4e4",
+        "tonalRamp": [
+          "oklch(15% 0.012 18)",
+          "oklch(26% 0.016 18)",
+          "oklch(38% 0.020 18)",
+          "oklch(49% 0.023 18)",
+          "oklch(61% 0.023 18)",
+          "oklch(72% 0.020 18)",
+          "oklch(84% 0.016 18)",
+          "oklch(95% 0.012 18)"
+        ]
+      },
+      "stop-ink": {
+        "role": "status",
+        "displayName": "Not Recommended Ink",
+        "canonical": "#8a1c1c",
+        "tonalRamp": [
+          "oklch(15% 0.071 26)",
+          "oklch(26% 0.093 26)",
+          "oklch(38% 0.114 26)",
+          "oklch(49% 0.135 26)",
+          "oklch(61% 0.135 26)",
+          "oklch(72% 0.114 26)",
+          "oklch(84% 0.093 26)",
+          "oklch(95% 0.071 26)"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Page titles over the heavy rule."
+      },
+      "figure": {
+        "displayName": "Figure",
+        "purpose": "The one decisive number per page, like the Calories line."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Product, recipe and panel names."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Headings inside plain panels."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text; subtitles cap at 60ch."
+      },
+      "body-sm": {
+        "displayName": "Body small",
+        "purpose": "Fact rows, table cells, field labels, alerts."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Tab bar, role tag, tags, table headers."
+      }
+    },
+    "shadows": [
+      {
+        "name": "shadow-1",
+        "value": "0 1px 2px rgba(11, 27, 51, 0.06), 0 6px 16px -6px rgba(11, 27, 51, 0.12)",
+        "purpose": "Resting plain panels."
+      },
+      {
+        "name": "shadow-2",
+        "value": "0 2px 4px rgba(11, 27, 51, 0.06), 0 16px 32px -12px rgba(11, 27, 51, 0.24)",
+        "purpose": "Product label panels and the login form."
+      },
+      {
+        "name": "shadow-3",
+        "value": "0 4px 8px rgba(11, 27, 51, 0.08), 0 28px 56px -16px rgba(11, 27, 51, 0.34)",
+        "purpose": "Top recipe pick, recipe sheet, login legend."
+      },
+      {
+        "name": "primary-glow",
+        "value": "0 1px 2px rgba(11, 27, 51, 0.12), 0 6px 14px -6px rgba(31, 95, 191, 0.6)",
+        "purpose": "Primary button only."
+      },
+      {
+        "name": "tabbar",
+        "value": "0 -10px 28px -14px rgba(11, 27, 51, 0.3)",
+        "purpose": "Upward shadow on the fixed client tab bar."
+      }
+    ],
+    "rules": {
+      "heavy": "10px solid #0b1b33",
+      "mid": "5px solid #0b1b33",
+      "hairline": "1px solid #0b1b33"
+    },
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All authored transitions."
+      },
+      {
+        "name": "control",
+        "value": "160ms",
+        "purpose": "Button background and shadow changes."
+      },
+      {
+        "name": "sheet",
+        "value": "420ms",
+        "purpose": "Recipe sheet slide and chevron flip; the one authored motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "table-stack",
+        "value": "639px (max)"
+      },
+      {
+        "name": "grid",
+        "value": "720px"
+      },
+      {
+        "name": "login-split",
+        "value": "900px"
+      },
+      {
+        "name": "sidebar",
+        "value": "1024px"
+      },
+      {
+        "name": "grid-wide",
+        "value": "1280px"
+      }
+    ],
+    "font": {
+      "family": "Archivo",
+      "source": "frontend/public/fonts/archivo-latin-var.woff2",
+      "license": "OFL",
+      "weights": "400 900"
+    }
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The one action per panel or screen.",
+      "html": "<button class=\"ds-btn ds-btn-primary\">Add to cart</button>",
+      "css": ".ds-btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:0 1.125rem;border:2px solid transparent;border-radius:var(--r-md,10px);font-family:Archivo,sans-serif;font-size:1rem;font-weight:700;cursor:pointer;transition:background-color 160ms cubic-bezier(.16,1,.3,1)} .ds-btn-primary{background:#1f5fbf;color:#fff;box-shadow:0 1px 2px rgba(11,27,51,.12),0 6px 14px -6px rgba(31,95,191,.6)} .ds-btn-primary:hover{background:#184c99} .ds-btn:focus-visible{outline:3px solid #1f5fbf;outline-offset:2px}"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Alternate action; white with a 2px ink border.",
+      "html": "<button class=\"ds-btn-secondary\">See recipe ideas</button>",
+      "css": ".ds-btn-secondary{display:inline-flex;align-items:center;min-height:48px;padding:0 1.125rem;border:2px solid #0b1b33;border-radius:10px;background:#fff;color:#0b1b33;font-family:Archivo,sans-serif;font-size:1rem;font-weight:700;cursor:pointer} .ds-btn-secondary:hover{background:#f1f4f9} .ds-btn-secondary:focus-visible{outline:3px solid #1f5fbf;outline-offset:2px}"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "48px field with a bold label above.",
+      "html": "<label class=\"ds-field\"><span>Product SKU</span><input class=\"ds-input\" placeholder=\"e.g. SKU-1042\"></label>",
+      "css": ".ds-field{display:flex;flex-direction:column;gap:.375rem;font-family:Archivo,sans-serif;font-size:.9375rem;font-weight:700;color:#0b1b33} .ds-input{min-height:48px;padding:0 .875rem;border:1px solid #7a8699;border-radius:10px;background:#fff;color:#0b1b33;font:400 1rem Archivo,sans-serif} .ds-input::placeholder{color:#4a5874} .ds-input:focus-visible{outline:3px solid #1f5fbf;outline-offset:0;border-color:#1f5fbf}"
+    },
+    {
+      "name": "Status Badges",
+      "kind": "chip",
+      "refersTo": "status-approved",
+      "description": "Safety status as icon plus words; three tints.",
+      "html": "<div class=\"ds-row\"><span class=\"ds-badge ds-ok\"><svg viewBox=\"0 0 24 24\"><path d=\"M5 12.5l4.5 4.5L19 7.5\"/></svg>Good match</span><span class=\"ds-badge ds-warn\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 8v5M12 16.5h.01M10.3 3.9 2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z\"/></svg>Please check</span><span class=\"ds-badge ds-stop\"><svg viewBox=\"0 0 24 24\"><path d=\"M7 7l10 10M17 7 7 17\"/></svg>Not recommended</span></div>",
+      "css": ".ds-row{display:flex;flex-wrap:wrap;gap:.5rem} .ds-badge{display:inline-flex;align-items:center;gap:.375rem;padding:.25rem .625rem;border-radius:999px;font:900 .875rem Archivo,sans-serif;white-space:nowrap} .ds-badge svg{width:1rem;height:1rem;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round} .ds-ok{background:#e3f1e6;color:#174a27} .ds-warn{background:#fff4cc;color:#6b4a00} .ds-stop{background:#fbe4e4;color:#8a1c1c}"
+    },
+    {
+      "name": "Product Label Panel",
+      "kind": "card",
+      "refersTo": "label-panel",
+      "description": "Signature: a product set as a Nutrition Facts label.",
+      "html": "<article class=\"ds-label\"><span class=\"ds-bar\">Good match</span><h3>Low-sodium black beans</h3><hr class=\"ds-heavy\"><div class=\"ds-fig\"><span>Suggested quantity:</span><b>3</b></div><hr class=\"ds-mid\"><dl class=\"ds-facts\"><div><dt>Aisle</dt><dd>4</dd></div><div><dt>Shelf</dt><dd>B</dd></div></dl><button class=\"ds-go\">Add to cart</button></article>",
+      "css": ".ds-label{display:flex;flex-direction:column;max-width:320px;background:#fff;color:#0b1b33;border:2px solid #0b1b33;border-radius:6px;padding:.75rem .875rem .875rem;box-shadow:0 2px 4px rgba(11,27,51,.06),0 16px 32px -12px rgba(11,27,51,.24);font-family:Archivo,sans-serif} .ds-bar{display:block;border-radius:6px;padding:.5rem .625rem;margin-bottom:.625rem;background:#e3f1e6;color:#174a27;font-weight:900} .ds-label h3{margin:0;font-size:1.375rem;font-weight:900;line-height:1.1;letter-spacing:-.02em} .ds-heavy{border:0;border-top:10px solid #0b1b33;margin:.5rem 0} .ds-mid{border:0;border-top:5px solid #0b1b33;margin:.375rem 0} .ds-fig{display:flex;justify-content:space-between;align-items:baseline;font-weight:700} .ds-fig b{font-size:2.25rem;font-weight:900;line-height:1;font-variant-numeric:tabular-nums} .ds-facts{margin:0} .ds-facts div{display:flex;justify-content:space-between;padding:.3125rem 0;border-top:1px solid #0b1b33;font-size:.9375rem} .ds-facts div:first-child{border-top:0} .ds-facts dt{font-weight:900} .ds-facts dd{margin:0;font-weight:700} .ds-go{margin-top:.75rem;min-height:48px;border:0;border-radius:10px;background:#1f5fbf;color:#fff;font:700 1rem Archivo,sans-serif;cursor:pointer} .ds-go:hover{background:#184c99} .ds-go:focus-visible{outline:3px solid #1f5fbf;outline-offset:2px}"
+    },
+    {
+      "name": "Page Head",
+      "kind": "custom",
+      "refersTo": "display",
+      "description": "Page title over the heavy rule, with the one decisive figure.",
+      "html": "<header class=\"ds-head\"><div><h1>Today's picks</h1><p>Sized for your household.</p></div><div class=\"ds-figure\"><b>4</b><span>people in your household</span></div></header>",
+      "css": ".ds-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:1rem;padding-bottom:.875rem;border-bottom:10px solid #0b1b33;font-family:Archivo,sans-serif;color:#0b1b33} .ds-head h1{margin:0;font-size:2.5rem;font-weight:900;line-height:1.05;letter-spacing:-.03em} .ds-head p{margin:.375rem 0 0;color:#4a5874} .ds-figure{display:flex;align-items:baseline;gap:.625rem} .ds-figure b{font-size:2.5rem;font-weight:900;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums} .ds-figure span{font-size:.9375rem;font-weight:700;color:#4a5874}"
+    },
+    {
+      "name": "Sidebar Navigation",
+      "kind": "nav",
+      "refersTo": "nav-item-active",
+      "description": "Ink shell nav; current page is solid blue.",
+      "html": "<nav class=\"ds-nav\"><a href=\"#\" aria-current=\"page\">Home</a><a href=\"#\">Scan</a><a href=\"#\">Cart</a></nav>",
+      "css": ".ds-nav{display:flex;flex-direction:column;gap:.25rem;width:216px;padding:1rem;background:#0b1b33;font-family:Archivo,sans-serif} .ds-nav a{display:flex;align-items:center;min-height:44px;padding:0 .875rem;border-radius:10px;color:#a9b6cc;font-size:.9375rem;font-weight:700;text-decoration:none} .ds-nav a:hover{color:#fff;background:rgba(255,255,255,.06)} .ds-nav a[aria-current=page]{color:#fff;background:#1f5fbf} .ds-nav a:focus-visible{outline:3px solid #1f5fbf;outline-offset:2px}"
+    },
+    {
+      "name": "Tag",
+      "kind": "chip",
+      "refersTo": "tag",
+      "description": "Small blue-wash note such as \"Recommended for you\".",
+      "html": "<span class=\"ds-tag\">Recommended for you</span>",
+      "css": ".ds-tag{display:inline-flex;padding:.125rem .5rem;border-radius:6px;background:#e8f0fc;color:#1f5fbf;font:700 .8125rem Archivo,sans-serif}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Nutrition Facts Label",
+    "overview": "Every screen reads like the label on the back of a grocery package, the one format clients already trust to tell them what is in their food. Facts are ranked by rule weight rather than by boxes and color: a heavy ink rule sits under every page title and product name, a medium rule opens each section, and hairlines separate one fact from the next. The decisive number on a screen (household size, picks in stock, items to restock) is set huge and black like the Calories line.\n\nThe world is a deep ink shell around a cool pale ground. Navigation lives in the ink: a sidebar at laptop width, a top bar on phones, and a bottom tab bar for clients. Content sits on white panels. Product panels are the label itself, with a 2px ink border; everything else floats on soft layered shadows. Epic-Cure blue is rare on purpose: it marks where you are and what to do next, never whether a food is safe.\n\nDensity is calm and touch-first. Clients may be older or have low vision, so targets are at least 44px, body text is 16px, and status always comes as an icon plus plain words. The system refuses the gray SaaS card grid with pastel icon tiles.",
+    "keyCharacteristics": [
+      "Ink rules at three weights (10px, 5px, 1px) carry the hierarchy.",
+      "One family, Archivo, at three weights (400, 700, 900); headings and figures at 900 with tight tracking.",
+      "Blue only for current location, selection and the primary action.",
+      "Status in three tints (green, yellow, red) always with an icon and words.",
+      "Phone-first; the client's scan-to-cart path is the fastest route."
+    ],
+    "rules": [
+      {
+        "name": "The Blue Means Go Rule",
+        "body": "Blue marks location, selection and the next action. It never signals safety; safety belongs to the three status tints.",
+        "section": "colors"
+      },
+      {
+        "name": "The Words-First Status Rule",
+        "body": "Every status shows an icon and a plain-language label (\"Good match\", \"Please check\", \"Not recommended\"). Color is the third signal, never the only one.",
+        "section": "colors"
+      },
+      {
+        "name": "The Calories Line Rule",
+        "body": "Each page gets at most one oversized figure, set at 900 with tabular numbers, beside a short muted unit (\"people in your household\").",
+        "section": "typography"
+      },
+      {
+        "name": "The Three Weights Rule",
+        "body": "Only 400, 700 and 900. Hierarchy comes from weight and rules, not from extra sizes or colors.",
+        "section": "typography"
+      },
+      {
+        "name": "The Lift Means Priority Rule",
+        "body": "A heavier shadow means more important, not more interactive. Only the top recipe pick and floating surfaces use the lifted level.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "**Do** put a 10px ink rule under every page title and product name, a 5px rule above sections and table headers, and 1px ink hairlines between facts.",
+      "**Do** show every safety status as icon plus words, using only the three status tints.",
+      "**Do** keep touch targets at 44px minimum; buttons and inputs at 48px.",
+      "**Do** use tabular figures for every quantity, count, location and table number.",
+      "**Do** keep blue for the current nav item, selection, links, focus and the primary action.",
+      "**Do** honor reduced motion; transitions collapse to near zero."
+    ],
+    "donts": [
+      "**Don't** use blue, or any color alone, to say whether a product is safe.",
+      "**Don't** build gray SaaS card grids with pastel icon tiles; facts go in labelled rows under ink rules.",
+      "**Don't** add uppercase eyebrows or tracked kicker labels above headings.",
+      "**Don't** add a fourth font weight, a second typeface, or icon fonts; use the authored stroke icon set.",
+      "**Don't** put ink-mist text on white; it is only for text on the ink shell.",
+      "**Don't** invent a logo; the brand is the \"Epic-Cure\" wordmark with the \"MTG Warehouse\" descriptor."
+    ]
+  }
+}

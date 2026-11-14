@@ -126,6 +126,7 @@
 | Switch accent palette to blue | Copilot / Impeccable | Replaced the orange/coral accent system with cool blue backgrounds, highlights, buttons, focus states, and client-screen surfaces | Caden supplied the color direction | Caden |
 | Rebuild Epic-Cure UI | Copilot / Impeccable | Rebuilt the shared visual system, responsive shell, role-aware navigation, sign-in experience, and staff overview around plain-language task-first patterns | Caden approved the full UI rebuild direction | Caden |
 | Redesign UI with professional shadows and dashboard layout | Copilot / Impeccable | Refined visual system with multi-layer ambient shadows, rounded card architecture, pastel metric chips, and responsive navigation based on reference images | Caden provided reference designs and approved implementation plan | Caden |
+<<<<<<< HEAD
 | Implement | Copilot (Sonnet 5.5) | T017: Alembic init + migration 0001 for all tables, upgrade-head test | Fixed generated migration import by hand | Eric |
 | Implement | Copilot (Sonnet 5.5) | T037: deterministic recommendation service (stock, expiry, rules, household scaling), generated at session start, GET /recommendations and tests | None | Eric |
 | Implement | Copilot (Sonnet 5.5) | US1.3: FIFO queue service (join, promote, expire), session start/end/claim primitives, GET/POST /queue/me and tests | None | Eric |
@@ -133,3 +134,6 @@
 | Integration | Copilot (Sonnet 5.5) | Merged origin/main into the T051 branch: this branch's AI layer is the base; folded in main's recipe fallback and recipe instructions, added Groq 429 backoff and default model, rebuilt /recipes on run_ai_task plus rules guards with missing-ingredient locations, removed main's duplicate providers, adapted AI tests to main's classify() | Eric approved plan and decisions (this branch's AI layer is the base; Groq retry ported) | Eric |
 | Review | Copilot (Sonnet 5.5) | Ran ruff format and lint fixes on the AI layer and its tests (docstring wrapping, isinstance union); no behaviour change, 194 tests pass | Eric approved plan (no E501 ignores) | Eric |
 | Docs | Gemini 3.8 Flash | Deduplicated ai-usage rows after the AI merge | Eric reviewed | Eric |
+=======
+| Prove queue promotion is atomic with checkout | Copilot (Sonnet 5.5) | Found promotion already runs inside the checkout transaction (no code change needed); added tests for rollback on promotion failure and for slot release plus promoting the next waiting client | Eric approved a tests-only fix | Eric |
+>>>>>>> origin/main
