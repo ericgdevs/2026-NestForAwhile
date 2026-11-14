@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router-dom'
 import { CartProvider, useCart } from '../lib/cart'
 import { Cart } from './Cart'
 
@@ -10,7 +11,7 @@ function SeededCart() {
 
 test('changes quantity and removes a cart item', async () => {
   const user = userEvent.setup()
-  render(<CartProvider><SeededCart /></CartProvider>)
+  render(<MemoryRouter><CartProvider><SeededCart /></CartProvider></MemoryRouter>)
   await user.click(screen.getByRole('button', { name: 'Seed item' }))
   expect(screen.getByText('Brown rice')).toBeInTheDocument()
   await user.click(screen.getByRole('button', { name: 'Increase Brown rice' }))

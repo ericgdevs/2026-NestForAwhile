@@ -1,14 +1,16 @@
-import { Home, LogOut, Menu, PackageCheck, ScanLine, ShoppingBasket, X } from 'lucide-react'
+import { BookOpen, Home, LogOut, Menu, PackageCheck, ScanLine, ShoppingBasket, UserRound, X } from 'lucide-react'
 import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../lib/auth'
 import { cn } from '../lib/utils'
 
 const navigation = [
-  { to: '/', label: 'My recommendations', icon: Home },
-  { to: '/scan', label: 'Scan an item', icon: ScanLine },
-  { to: '/cart', label: 'My cart', icon: ShoppingBasket },
-  { to: '/inventory', label: 'Inventory', icon: PackageCheck },
+  { to: '/', label: 'My recommendations', icon: Home, roles: ['Client'] },
+  { to: '/scan', label: 'Scan an item', icon: ScanLine, roles: ['Client'] },
+  { to: '/cart', label: 'My cart', icon: ShoppingBasket, roles: ['Client'] },
+  { to: '/recipes', label: 'Recipes', icon: BookOpen, roles: ['Client'] },
+  { to: '/profile', label: 'My preferences', icon: UserRound, roles: ['Client'] },
+  { to: '/inventory', label: 'Inventory', icon: PackageCheck, roles: ['Warehouse Staff', 'Warehouse Manager', 'Director'] },
 ]
 
 export function AppShell() {
@@ -26,7 +28,7 @@ export function AppShell() {
           <button className="rounded-lg p-2 text-sage-700 lg:hidden" onClick={() => setOpen(false)} aria-label="Close navigation"><X size={20} /></button>
         </div>
         <nav className="mt-10 space-y-2" aria-label="Main navigation">
-          {navigation.map(({ to, label, icon: Icon }) => (
+          {navigation.filter((item) => user && item.roles.includes(user.role)).map(({ to, label, icon: Icon }) => (
             <NavLink key={to} to={to} onClick={() => setOpen(false)} className={({ isActive }) => cn('flex items-center gap-3 rounded-xl px-3 py-3 text-sm font-semibold transition-colors', isActive ? 'bg-sage-100 text-sage-950' : 'text-sage-700 hover:bg-sage-50')}>
               <Icon size={19} aria-hidden="true" />{label}
             </NavLink>
