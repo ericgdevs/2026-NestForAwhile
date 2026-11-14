@@ -22,7 +22,7 @@ export default function Recipes() {
         <h1 className="display-title mt-3">Easy<br />recipes.</h1>
       </div>
         {fallback && (
-          <p className="rounded-2xl bg-[#fff0df] p-3 text-sm text-[#8d4a2d]">
+          <p className="rounded-2xl bg-[#e5f1fb] p-3 text-sm text-[#24527a]">
             We used our rules-only recipe fallback while the recipe assistant was unavailable.
           </p>
         )}
@@ -34,7 +34,7 @@ export default function Recipes() {
             </div>
             <h3 className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Ingredients</h3>
             <ul className="mt-3 flex flex-wrap gap-2">
-              {recipe.ingredients.map((ingredient) => <li className="rounded-full bg-[#f7f1e9] px-3 py-1.5 text-sm" key={ingredient.name}>{ingredient.name}</li>)}
+              {recipe.ingredients.map((ingredient) => <li className="rounded-full bg-[#edf5fc] px-3 py-1.5 text-sm" key={ingredient.name}>{ingredient.name}</li>)}
             </ul>
             <h3 className="mt-6 text-xs font-bold uppercase tracking-[0.16em] text-stone-500">Steps</h3>
             <ol className="mt-3 space-y-2 pl-5 text-stone-600">

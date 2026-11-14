@@ -37,9 +37,9 @@ export default function Cart() {
           <article key={item.product_id} className="soft-card flex items-center justify-between gap-4 p-4 sm:p-5">
             <div>
               <h2 className="font-semibold">{item.name}</h2>
-              {item.from_recommendation && <p className="text-sm text-[#d66d43]">Recommended for you</p>}
+              {item.from_recommendation && <p className="text-sm text-[#3275ad]">Recommended for you</p>}
             </div>
-            <div className="flex items-center gap-3 rounded-full bg-[#f7f1e9] p-1">
+            <div className="flex items-center gap-3 rounded-full bg-[#edf5fc] p-1">
               <button className="flex h-8 w-8 items-center justify-center rounded-full text-lg transition hover:bg-white" aria-label={`Decrease ${item.name}`} onClick={() => void update(item, item.quantity - 1)}>-</button>
               <span className="min-w-5 text-center text-sm font-bold">{item.quantity}</span>
               <button className="flex h-8 w-8 items-center justify-center rounded-full text-lg transition hover:bg-white" aria-label={`Increase ${item.name}`} onClick={() => void update(item, item.quantity + 1)}>+</button>

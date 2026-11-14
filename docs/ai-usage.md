@@ -104,3 +104,4 @@
 | Add password visibility toggle | Copilot / Agentation | Added an accessible eye button to show or hide the login password and covered the toggle in the login test | Caden supplied the page feedback | Caden |
 | Refine client UI patterns | Copilot / Impeccable | Applied the supplied references across home, scan, cart, and recipes with stronger card hierarchy, pill metadata, responsive controls, and compact nutrition/ingredient groups | Caden approved the all-client-screen scope | Caden |
 | Update company branding | Copilot | Replaced the visible NestForAwhile product label with Epic-Cure while retaining MTG Warehouse as the product descriptor | Caden supplied the company name | Caden |
+| Switch accent palette to blue | Copilot / Impeccable | Replaced the orange/coral accent system with cool blue backgrounds, highlights, buttons, focus states, and client-screen surfaces | Caden supplied the color direction | Caden |

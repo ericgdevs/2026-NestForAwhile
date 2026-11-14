@@ -70,10 +70,10 @@ export default function Scan() {
             </div>
             <p>{result.explanation}</p>
             <dl className="grid grid-cols-2 gap-2 text-sm sm:grid-cols-4">
-              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Sodium</dt><dd className="mt-1 font-semibold">{result.sodium_mg ?? "Unknown"} mg</dd></div>
-              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Sugar</dt><dd className="mt-1 font-semibold">{result.sugar_g ?? "Unknown"} g</dd></div>
-              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Sat. fat</dt><dd className="mt-1 font-semibold">{result.sat_fat_g ?? "Unknown"} g</dd></div>
-              <div className="rounded-2xl bg-[#f7f1e9] p-3"><dt className="text-slate-500">Potassium</dt><dd className="mt-1 font-semibold">{result.potassium_mg ?? "Unknown"} mg</dd></div>
+              <div className="rounded-2xl bg-[#edf5fc] p-3"><dt className="text-slate-500">Sodium</dt><dd className="mt-1 font-semibold">{result.sodium_mg ?? "Unknown"} mg</dd></div>
+              <div className="rounded-2xl bg-[#edf5fc] p-3"><dt className="text-slate-500">Sugar</dt><dd className="mt-1 font-semibold">{result.sugar_g ?? "Unknown"} g</dd></div>
+              <div className="rounded-2xl bg-[#edf5fc] p-3"><dt className="text-slate-500">Sat. fat</dt><dd className="mt-1 font-semibold">{result.sat_fat_g ?? "Unknown"} g</dd></div>
+              <div className="rounded-2xl bg-[#edf5fc] p-3"><dt className="text-slate-500">Potassium</dt><dd className="mt-1 font-semibold">{result.potassium_mg ?? "Unknown"} mg</dd></div>
             </dl>
             {result.image_url && <img alt="" className="max-h-48 rounded-lg" src={result.image_url} />}
             {result.product_id && (
