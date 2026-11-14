@@ -24,10 +24,13 @@ def is_expiring_soon(lot: InventoryLot, today: date) -> bool:
 
 
 def all_lots_fifo(session: Session) -> list[InventoryLot]:
-    return sorted(session.exec(select(InventoryLot).where(InventoryLot.quantity > 0)).all(), key=fifo_key)
+    lots = session.exec(select(InventoryLot).where(InventoryLot.quantity > 0)).all()
+    return sorted(lots, key=fifo_key)
 
 
-def usable_lots_fifo(session: Session, product_id: int, today: date | None = None) -> list[InventoryLot]:
+def usable_lots_fifo(
+    session: Session, product_id: int, today: date | None = None
+) -> list[InventoryLot]:
     """In-stock, non-expired lots of one product in the order checkout must take them."""
     today = today or date.today()
     lots = session.exec(select(InventoryLot).where(InventoryLot.product_id == product_id,

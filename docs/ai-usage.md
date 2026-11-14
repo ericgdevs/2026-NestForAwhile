@@ -108,3 +108,4 @@
 | Implement | Copilot (Sonnet 5.5) | T092: deterministic four-section ReportData builder (service-level; no DOCX, no route, no python-docx), tests | Eric approved plan (3b: structured object, DOCX later) | Eric |
 | Review | Copilot (GPT-5.6 Terra) | Resolved PR #14 checkout concurrency, transactional queue-promotion, and expiry-first lot ordering findings; added regression tests | Eric approved implementation plan | Eric |
 | Resolve PR conflicts | Copilot (GPT-5.6 Terra) | Merged main's SQLAlchemy implementation and retained atomic checkout, transactional queue promotion, deterministic lot ordering, and API-stream audit rows | Eric approved main-canonical resolution | Eric |
+| Debug | Claude Code (Sonnet 5.5) | Fixed PR #14 CI: wrapped 10 Ruff E501 lines (formatting only) and reordered the e2e workflow (build frontend, alembic upgrade, seed, uvicorn on :8000 with health wait, BASE_URL :8000) | Eric approved plan | Eric |
