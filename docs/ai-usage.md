@@ -46,3 +46,4 @@
 | Implement | Copilot (Sonnet 5.5) | T054 (orchestration only): ai/orchestrator.py run_ai_task (manifest -> provider -> validation, runtime failures wrapped as AIOrchestrationError, bad AI_PROVIDER stays a startup ValueError), ProviderError, tests with fake provider; no prompts or LLM calls | Eric approved plan and decision (config errors not wrapped) | Eric |
 | Implement | Copilot (Sonnet 5.5) | T053 (guard only): ai/rules_guard.py deterministic post-AI filter (invalid/stale index, unavailable stock, Restricted via fresh classify(), classification mismatch vs manifest), tests; no provider calls | Eric approved plan | Eric |
 | Implement | Copilot (GPT-5.6 Terra) | T050: Ollama `/api/generate` provider with raw JSON responses, runtime failure handling, and provider/orchestrator tests | None | Eric |
+| Implement | Copilot (GPT-5.6 Terra) | T051: Groq chat-completions provider with raw JSON responses and transport failure tests | None | Eric |

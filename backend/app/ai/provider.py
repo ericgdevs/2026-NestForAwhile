@@ -32,7 +32,59 @@ class GroqProvider(AIProvider):
     name = "groq"
 
     def generate_json(self, task: AITask, manifest: ContextManifest) -> dict:
-        raise NotImplementedError("Groq client is not implemented yet (T051)")
+        api_key = (os.getenv("GROQ_API_KEY") or "").strip()
+        model = (os.getenv("GROQ_MODEL") or "").strip()
+        if not api_key or not model:
+            raise ProviderError("GROQ_API_KEY and GROQ_MODEL must be configured")
+
+        payload = json.dumps(
+            {"task": task.value, "manifest": manifest.model_dump(mode="json")},
+            separators=(",", ":"),
+        )
+        try:
+            response = httpx.post(
+                "https://api.groq.com/openai/v1/chat/completions",
+                headers={"Authorization": f"Bearer {api_key}"},
+                json={
+                    "model": model,
+                    "messages": [{"role": "user", "content": payload}],
+                    "response_format": {"type": "json_object"},
+                },
+                timeout=30,
+            )
+        except (httpx.TimeoutException, httpx.RequestError) as exc:
+            raise ProviderError(f"Groq request failed: {exc}") from exc
+
+        if response.status_code == 429:
+            raise ProviderError("Groq rate limited")
+        try:
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            raise ProviderError(f"Groq request failed: {exc}") from exc
+
+        try:
+            body = response.json()
+        except (json.JSONDecodeError, ValueError) as exc:
+            raise ProviderError("Groq returned malformed JSON") from exc
+        if not isinstance(body, dict) or not isinstance(body.get("choices"), list) or not body["choices"]:
+            raise ProviderError("Groq returned an invalid response")
+
+        choice = body["choices"][0]
+        if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
+            raise ProviderError("Groq returned an invalid response")
+        content = choice["message"].get("content")
+        if content is None or (isinstance(content, str) and not content.strip()):
+            raise ProviderError("Groq response content is missing")
+        if not isinstance(content, str):
+            raise ProviderError("Groq returned an invalid response")
+
+        try:
+            output = json.loads(content)
+        except json.JSONDecodeError as exc:
+            raise ProviderError("Groq returned malformed JSON") from exc
+        if not isinstance(output, dict):
+            raise ProviderError("Groq returned an invalid response")
+        return output
 
 
 class OllamaProvider(AIProvider):

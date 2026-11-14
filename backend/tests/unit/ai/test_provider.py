@@ -26,17 +26,12 @@ def test_factory_rejects_unset(monkeypatch):
         get_provider()
 
 
-def test_groq_stub_makes_no_calls():
-    with pytest.raises(NotImplementedError):
-        GroqProvider().generate_json(AITask.EXPLAIN, ContextManifest(restrictions=[], items=[]))
-
-
-def test_provider_module_does_not_contain_groq_transport_logic():
+def test_provider_module_does_not_import_groq_sdk():
     import app.ai.provider as module
     from pathlib import Path
 
     source = Path(module.__file__).read_text().lower()
-    for forbidden in ("import groq", "from groq", "api.groq", "chat/completions"):
+    for forbidden in ("import groq", "from groq"):
         assert forbidden not in source
 
 
@@ -135,3 +130,79 @@ def test_ollama_invalid_response_raises_provider_error(monkeypatch, ollama_env, 
 
     with pytest.raises(ProviderError, match="invalid response"):
         OllamaProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+@pytest.fixture
+def groq_env(monkeypatch):
+    monkeypatch.setenv("GROQ_API_KEY", "test-key")
+    monkeypatch.setenv("GROQ_MODEL", "llama-test")
+
+
+def groq_response(status_code=200, *, json_body=None, content=None):
+    return httpx.Response(
+        status_code,
+        json=json_body,
+        content=content,
+        request=httpx.Request("POST", "https://api.groq.com/openai/v1/chat/completions"),
+    )
+
+
+def test_groq_returns_raw_structured_json(monkeypatch, groq_env, manifest):
+    captured = {}
+
+    def post(url, **kwargs):
+        captured["url"] = url
+        captured.update(kwargs)
+        return groq_response(json_body={"choices": [{"message": {"content": '{"text":"Use canned beans."}'}}]})
+
+    monkeypatch.setattr("app.ai.provider.httpx.post", post)
+
+    assert GroqProvider().generate_json(AITask.EXPLAIN, manifest) == {"text": "Use canned beans."}
+    assert captured["url"] == "https://api.groq.com/openai/v1/chat/completions"
+    assert captured["headers"] == {"Authorization": "Bearer test-key"}
+    assert captured["json"]["model"] == "llama-test"
+    assert captured["json"]["response_format"] == {"type": "json_object"}
+    assert json.loads(captured["json"]["messages"][0]["content"]) == {"task": "explain", "manifest": manifest.model_dump(mode="json")}
+    assert captured["timeout"] == 30
+
+
+@pytest.mark.parametrize(
+    ("exception", "message"),
+    [(httpx.TimeoutException("slow"), "request failed"), (httpx.ConnectError("down"), "request failed")],
+)
+def test_groq_transport_failures_raise_provider_error(monkeypatch, groq_env, manifest, exception, message):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: (_ for _ in ()).throw(exception))
+
+    with pytest.raises(ProviderError, match=message):
+        GroqProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_groq_rate_limit_raises_provider_error(monkeypatch, groq_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: groq_response(429, json_body={"error": "limited"}))
+
+    with pytest.raises(ProviderError, match="rate limited"):
+        GroqProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_groq_non_success_response_raises_provider_error(monkeypatch, groq_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: groq_response(500, json_body={"error": "failed"}))
+
+    with pytest.raises(ProviderError, match="request failed"):
+        GroqProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_groq_malformed_json_raises_provider_error(monkeypatch, groq_env, manifest):
+    monkeypatch.setattr(
+        "app.ai.provider.httpx.post",
+        lambda *args, **kwargs: groq_response(json_body={"choices": [{"message": {"content": "not json"}}]}),
+    )
+
+    with pytest.raises(ProviderError, match="malformed JSON"):
+        GroqProvider().generate_json(AITask.EXPLAIN, manifest)
+
+
+def test_groq_missing_response_content_raises_provider_error(monkeypatch, groq_env, manifest):
+    monkeypatch.setattr("app.ai.provider.httpx.post", lambda *args, **kwargs: groq_response(json_body={"choices": [{"message": {}}]}))
+
+    with pytest.raises(ProviderError, match="content is missing"):
+        GroqProvider().generate_json(AITask.EXPLAIN, manifest)
