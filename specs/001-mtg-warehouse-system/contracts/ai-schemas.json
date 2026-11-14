@@ -11,13 +11,14 @@
         "recipes": {
           "type": "array",
           "minItems": 1,
-          "maxItems": 3,
+          "maxItems": 6,
           "items": {
             "type": "object",
             "required": ["title", "ingredients", "steps"],
             "additionalProperties": false,
             "properties": {
               "title": { "type": "string", "maxLength": 80 },
+              "cuisine": { "type": ["string", "null"], "maxLength": 30 },
               "ingredients": {
                 "type": "array",
                 "minItems": 1,

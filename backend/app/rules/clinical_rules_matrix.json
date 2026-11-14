@@ -31,31 +31,86 @@
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish"]
+      "exclusions": [
+        "contains_meat",
+        "contains_poultry",
+        "contains_fish",
+        "contains_shellfish"
+      ]
     },
     "Vegan": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_meat", "contains_poultry", "contains_fish", "contains_shellfish", "contains_egg", "contains_dairy"]
+      "exclusions": [
+        "contains_meat",
+        "contains_poultry",
+        "contains_fish",
+        "contains_shellfish",
+        "contains_egg",
+        "contains_dairy"
+      ]
     },
     "Gluten Free": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_gluten"]
+      "exclusions": [
+        "contains_gluten"
+      ]
     },
     "Nut Allergy": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_peanut", "contains_tree_nut"]
+      "exclusions": [
+        "contains_peanut",
+        "contains_tree_nut"
+      ]
     },
     "Dairy Free": {
       "nutrient": null,
       "capped_above": null,
       "restricted_above": null,
-      "exclusions": ["contains_dairy"]
+      "exclusions": [
+        "contains_dairy"
+      ]
+    }
+  },
+  "conditions": {
+    "_note": "ICD-10 code -> dietary choices (Epic 2: parse the ICD-10 array against the dietary matrix). Placeholder mapping pending Epic Cure guidance.",
+    "E11": {
+      "label": "Type 2 diabetes",
+      "choices": [
+        "Low Sugar"
+      ]
+    },
+    "I10": {
+      "label": "High blood pressure",
+      "choices": [
+        "Low Sodium",
+        "Heart Healthy"
+      ]
+    },
+    "I25": {
+      "label": "Heart disease",
+      "choices": [
+        "Heart Healthy",
+        "Low Sodium"
+      ]
+    },
+    "N18": {
+      "label": "Chronic kidney disease",
+      "choices": [
+        "Kidney Friendly",
+        "Low Sodium"
+      ]
+    },
+    "K90.0": {
+      "label": "Celiac disease",
+      "choices": [
+        "Gluten Free"
+      ]
     }
   }
 }

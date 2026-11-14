@@ -24,7 +24,7 @@ and the session is counted as an active shopper.
 
 1. **Given** a client with valid credentials and `Client_Enrollment_Status` of Active, **When** they log in, **Then** their profile loads, a `Shopping_Session_Token` is created, and they see a personalized recommendation view.
 2. **Given** a session was just created, **When** a staff member views the active shopper count, **Then** the count includes that session.
-3. **Given** a client whose `Client_Enrollment_Status` is not Active, **When** they try to start a session, **Then** no session is created and they see a friendly message explaining what to do next.
+3. **Given** a client whose `Client_Enrollment_Status` is not Active, **When** they try to start a session, **Then** no session is created and they see a friendly message explaining what to do next. (A Pending self sign-up sees a "waiting for staff approval" screen until a Warehouse Manager approves the account.)
 4. **Given** invalid credentials, **When** a user tries to log in, **Then** access is denied and no session is created.
 
 ---
@@ -132,6 +132,7 @@ intervention. A successful checkout produces a receipt and decrements inventory 
 **Acceptance Scenarios**:
 
 1. **Given** a cart with a Restricted item, **When** the volunteer validates checkout, **Then** checkout stops and requires volunteer intervention.
+1a. **Given** a household where an item is restricted for every member (Red), **When** the volunteer validates, **Then** checkout stops until the item is removed or a Warehouse Manager records an override with a reason. **Given** an item matching an allergy of some members (Yellow with allergy), **Then** checkout pauses until the volunteer confirms it with the client and acknowledges it (logged). *(Added 2026-11-14, client flow design; review: Aditya.)*
 2. **Given** a cart with no Restricted items, **When** checkout completes, **Then** a receipt is generated.
 3. **Given** a successful checkout, **When** it completes, **Then** every item's inventory is decremented together or not at all.
 4. **Given** a checkout that fails partway, **When** the failure occurs, **Then** no inventory is changed.
@@ -302,7 +303,7 @@ login, and the core journey demonstrable live.
 - **FR-016**: System MUST provide a deterministic fallback when AI output is unavailable or invalid.
 
 **Checkout and inventory**
-- **FR-017**: Volunteers MUST be able to validate a cart at checkout. A Restricted item MUST cause a hard stop requiring volunteer intervention, and any intervention MUST be recorded.
+- **FR-017**: Volunteers MUST be able to validate a cart at checkout, loading it from the client's QR code or client ID. An item Restricted for the whole household MUST cause a hard stop (removal, or a logged Warehouse Manager override with a reason). An item matching any member's allergy MUST require a logged volunteer acknowledgement. A Pending account MUST NOT complete checkout. Volunteer additions and removals MUST be recorded. *(Amended 2026-11-14.)*
 - **FR-018**: A successful checkout MUST generate a receipt and decrement all affected inventory atomically.
 - **FR-019**: Warehouse staff MUST be able to scan a product, view its quantity, enter a counted quantity, and have the system calculate the variance, store an audit event, and update inventory.
 - **FR-020**: System MUST detect items below threshold and produce a replenishment list showing aisle, shelf, and bin, sortable by priority.

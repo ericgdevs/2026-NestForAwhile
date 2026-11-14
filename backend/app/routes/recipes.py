@@ -1,9 +1,9 @@
 from __future__ import annotations
 
-import json
 import time
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Body, Depends
+from pydantic import BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -17,6 +17,7 @@ from app.db import get_db
 from app.models import AIRequest, Client, InventoryLot, Product, User
 from app.rules.classify import RESTRICTED, classify
 from app.services.cart import active_session, build_manifest, get_or_create_cart
+from app.services.nutrition import household_choices
 from app.services.recipe_guard import guard_recipes
 
 router = APIRouter()
@@ -39,7 +40,38 @@ def _allowed_stock(database: Session, profile_data: dict):
     return {p.id: p for p in candidates if classify(p, profile_data)[0] != RESTRICTED}, locations
 
 
-def _ai_suggestions(products, locations, cart, profile_data, household_size):
+class RecipeRequest(BaseModel):
+    scanned_product_id: int | None = None
+    cuisine: str | None = Field(default=None, max_length=30)
+
+
+def _matches(recipe: dict, focus: int | None, cuisine: str | None) -> bool:
+    uses_focus = focus is None or any(i["product_id"] == focus for i in recipe["ingredients"])
+    same_cuisine = cuisine is None or (recipe.get("cuisine") or "").lower() == cuisine.lower()
+    return uses_focus and same_cuisine
+
+
+def _with_locations(recipes: list[dict], locations: dict, stocked: set[int]) -> list[dict]:
+    """Fill the contract's per-ingredient location and in-stock flag."""
+    return [
+        {
+            **recipe,
+            "ingredients": [
+                {
+                    **ingredient,
+                    "in_cart_or_stock": ingredient["product_id"] in stocked,
+                    "location": locations.get(ingredient["product_id"]),
+                }
+                for ingredient in recipe["ingredients"]
+            ],
+        }
+        for recipe in recipes
+    ]
+
+
+def _ai_suggestions(
+    products, locations, cart, profile_data, household_size, focus=None, cuisine=None
+):
     """Recipes plus missing-ingredient suggestions; raises if the AI cannot give a safe recipe."""
     items = list(products.values())
     restrictions = [*profile_data["restrictions"], *profile_data["allergies"]]
@@ -48,7 +80,15 @@ def _ai_suggestions(products, locations, cart, profile_data, household_size):
     in_stock = set(products)
 
     def run(task):
-        result = run_ai_task(task, items, restrictions, quantities, household_size)
+        result = run_ai_task(
+            task,
+            items,
+            restrictions,
+            quantities,
+            household_size,
+            focus_product_id=focus,
+            cuisine=cuisine,
+        )
         return result, apply_rules_guard(result, manifest, items, restrictions, in_stock).output
 
     result, output = run(AITask.RECIPES)
@@ -56,6 +96,7 @@ def _ai_suggestions(products, locations, cart, profile_data, household_size):
         [
             {
                 "title": recipe.title,
+                "cuisine": recipe.cuisine,
                 "steps": recipe.steps,
                 "ingredients": [
                     {"name": i.name, "product_id": index_map.get(i.product_id)}
@@ -68,6 +109,7 @@ def _ai_suggestions(products, locations, cart, profile_data, household_size):
         profile_data,
         in_stock,
     )
+    recipes = [recipe for recipe in recipes if _matches(recipe, focus, cuisine)]
     if not recipes:
         raise AIOrchestrationError("no safe recipes")
     try:
@@ -88,19 +130,17 @@ def _ai_suggestions(products, locations, cart, profile_data, household_size):
 
 @router.post("/recipes")
 def recipes(
+    payload_in: RecipeRequest | None = Body(default=None),
     current_user: User = Depends(require_roles(Role.CLIENT)),
     database: Session = Depends(get_db),
 ):
+    request = payload_in or RecipeRequest()
     started = time.monotonic()
     client = database.get(Client, current_user.id)
     session = active_session(database, client) if client else None
     cart = get_or_create_cart(database, session) if session else None
     manifest = build_manifest(database, cart) if cart else []
-    profile = client.dietary_profile if client else None
-    profile_data = {
-        "restrictions": json.loads(profile.restrictions) if profile else [],
-        "allergies": json.loads(profile.allergies) if profile else [],
-    }
+    profile_data = household_choices(client)  # stricter than the label: safe for every member
     try:
         products, locations = _allowed_stock(database, profile_data)
     except ValueError:
@@ -113,13 +153,17 @@ def recipes(
             manifest,
             profile_data,
             client.Household_Size if client else None,
+            request.scanned_product_id,
+            request.cuisine,
         )
     except Exception:
         pass  # any AI failure falls through to the deterministic fallback below
     used_fallback = payload is None
     if used_fallback:
         inventory = [{"product_id": p.id, "name": p.name} for p in products.values()]
-        payload = build_fallback_recipes(manifest, inventory)
+        payload = build_fallback_recipes(
+            manifest, inventory, request.scanned_product_id, request.cuisine
+        )
     database.add(
         AIRequest(
             kind="recipes",
@@ -130,4 +174,9 @@ def recipes(
         )
     )
     database.commit()
-    return {"recipes": payload, "missing_ingredients": missing, "used_fallback": used_fallback}
+    stocked = set(products) | {row["product_id"] for row in manifest}
+    return {
+        "recipes": _with_locations(payload, locations, stocked),
+        "missing_ingredients": missing,
+        "used_fallback": used_fallback,
+    }

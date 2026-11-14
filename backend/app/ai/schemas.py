@@ -78,6 +78,10 @@ class ContextManifest(Strict):
     restrictions: list[str]
     household_size_bucket: Literal["1-2", "3-4", "5+"] | None = None
     items: list[ManifestItem]
+    focus_index: StrictInt | None = Field(
+        default=None, ge=0, description="Index of the scanned item every recipe must use."
+    )
+    cuisine: str | None = Field(default=None, max_length=30, description="Only this cuisine.")
 
 
 class RecipeIngredient(Strict):
@@ -93,12 +97,13 @@ class Recipe(Strict):
     """A single recipe; title capped at 80 characters per the contract."""
 
     title: str = Field(max_length=80)
+    cuisine: str | None = Field(default=None, max_length=30)
     ingredients: list[RecipeIngredient] = Field(min_length=1)
     steps: list[str] = Field(min_length=1)
 
 
 class RecipeOutput(Strict):
-    """Recipe suggestions (1-3).
+    """Recipe suggestions (1-6).
 
     Mirrors contracts/ai-schemas.json `recipe_output`; `product_id` is a manifest index."""
 
@@ -119,7 +124,7 @@ class RecipeOutput(Strict):
         },
     )
 
-    recipes: list[Recipe] = Field(min_length=1, max_length=3)
+    recipes: list[Recipe] = Field(min_length=1, max_length=6)
 
 
 class ExplanationOutput(Strict):

@@ -9,6 +9,8 @@ from app.routes.auth import router as auth_router
 from app.routes.capacity import router as capacity_router
 from app.routes.cart import router as cart_router
 from app.routes.checkout import router as checkout_router
+from app.routes.clients import router as clients_router
+from app.routes.household import router as household_router
 from app.routes.inventory import router as inventory_router
 from app.routes.products import router as products_router
 from app.routes.profile import router as profile_router
@@ -16,6 +18,8 @@ from app.routes.queue import router as queue_router
 from app.routes.recipes import router as recipes_router
 from app.routes.recommendations import router as recommendations_router
 from app.routes.reports import router as reports_router
+from app.routes.saved_recipes import router as saved_recipes_router
+from app.routes.shopping_list import router as shopping_list_router
 
 app = FastAPI(title="NestForAwhile MTG Warehouse API", version="0.1.0")
 app.include_router(auth_router)
@@ -27,6 +31,10 @@ app.include_router(inventory_router)
 app.include_router(queue_router)
 app.include_router(reports_router)
 app.include_router(profile_router)
+app.include_router(household_router)
+app.include_router(clients_router)
+app.include_router(saved_recipes_router)
+app.include_router(shopping_list_router)
 app.include_router(recommendations_router)
 app.include_router(recipes_router)
 app.include_router(products_router)

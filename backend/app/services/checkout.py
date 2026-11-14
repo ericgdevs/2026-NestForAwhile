@@ -11,14 +11,17 @@ from app.models import (
     Checkout,
     CheckoutItem,
     Client,
+    Intervention,
     InventoryLot,
     InventoryMovement,
+    Product,
     ShoppingSession,
     User,
     Visit,
 )
-from app.rules.classify import RESTRICTED, classify
+from app.rules.classify import RESTRICTED, household_label
 from app.services import queue
+from app.services.nutrition import members_for
 
 
 def session_by_token(database: Session, token: str) -> ShoppingSession | None:
@@ -30,38 +33,122 @@ def session_by_token(database: Session, token: str) -> ShoppingSession | None:
     )
 
 
-def validate_checkout(database: Session, session: ShoppingSession) -> list[str]:
+ALLERGY_ACK = "allergy_ack"
+MANAGER_OVERRIDE = "manager_override"
+
+
+def _cart_items(database: Session, session: ShoppingSession) -> list[CartItem]:
     cart = database.scalar(select(Cart).where(Cart.session_id == session.id))
     if cart is None:
-        return ["Cart is empty."]
-    client = database.get(Client, session.client_id)
-    profile = client.dietary_profile if client else None
-    profile_data = {"restrictions": [], "allergies": []}
-    if profile:
-        import json
+        return []
+    return list(database.scalars(select(CartItem).where(CartItem.cart_id == cart.id)))
 
-        profile_data = {
-            "restrictions": json.loads(profile.restrictions),
-            "allergies": json.loads(profile.allergies),
-        }
-    errors = []
-    for item in database.scalars(select(CartItem).where(CartItem.cart_id == cart.id)):
-        lots = database.scalars(
-            select(InventoryLot)
-            .where(
-                InventoryLot.product_id == item.product_id,
-                InventoryLot.quantity > 0,
-                InventoryLot.expiration_date >= date.today(),
+
+def _logged(database: Session, session: ShoppingSession, action: str) -> set[int]:
+    """Product IDs with a recorded intervention of this kind for the session."""
+    return set(
+        database.scalars(
+            select(Intervention.product_id)
+            .join(Checkout, Checkout.id == Intervention.checkout_id)
+            .where(Checkout.session_id == session.id, Intervention.action == action)
+        )
+    )
+
+
+def record_intervention(
+    database: Session,
+    session: ShoppingSession,
+    user: User,
+    product_id: int,
+    action: str,
+    note: str | None = None,
+) -> Intervention:
+    """Log a volunteer/manager action against the session's review checkout row."""
+    review = database.scalar(
+        select(Checkout).where(Checkout.session_id == session.id, Checkout.status == "blocked")
+    )
+    if review is None:
+        review = Checkout(session_id=session.id, validated_by=user.id, status="blocked")
+        database.add(review)
+        database.flush()
+    entry = Intervention(
+        checkout_id=review.id,
+        product_id=product_id,
+        volunteer_id=user.id,
+        action=action,
+        note=note,
+    )
+    database.add(entry)
+    return entry
+
+
+def review_checkout(database: Session, session: ShoppingSession) -> dict[str, object]:
+    """Everything the volunteer must see: labelled items, hard stops, and allergy confirmations."""
+    client = database.get(Client, session.client_id)
+    members = members_for(client)
+    acknowledged = _logged(database, session, ALLERGY_ACK)
+    overridden = _logged(database, session, MANAGER_OVERRIDE)
+    items, blocking, needs_ack = [], [], []
+    cart_items = _cart_items(database, session)
+    if not cart_items:
+        blocking.append("Cart is empty.")
+    if client is not None and client.Client_Enrollment_Status != "Active":
+        blocking.append("This account is waiting for staff approval.")
+    for item in cart_items:
+        product = database.get(Product, item.product_id)
+        available = sum(
+            database.scalars(
+                select(InventoryLot.quantity).where(
+                    InventoryLot.product_id == item.product_id,
+                    InventoryLot.quantity > 0,
+                    InventoryLot.expiration_date >= date.today(),
+                )
             )
-            .order_by(InventoryLot.expiration_date)
-        ).all()
-        available = sum(lot.quantity for lot in lots)
-        product = lots[0].product if lots else None
-        if product is None or available < item.quantity:
-            errors.append(f"Insufficient stock for product {item.product_id}.")
-        elif classify(product, profile_data)[0] == RESTRICTED:
-            errors.append(f"Product {item.product_id} is restricted.")
-    return errors
+        )
+        label = household_label(product, members)
+        if available < item.quantity:
+            blocking.append(f"Insufficient stock for product {item.product_id}.")
+        if label["status"] == RESTRICTED and item.product_id not in overridden:
+            blocking.append(
+                f"{product.name} isn't safe for anyone in this household. "
+                "Remove it, or a manager can record an override."
+            )
+        if label["allergy_match"] and item.product_id not in acknowledged:
+            needs_ack.append(
+                {"product_id": item.product_id, "name": product.name, "not_for": label["not_for"]}
+            )
+        items.append(
+            {
+                "product_id": item.product_id,
+                "name": product.name,
+                "quantity": item.quantity,
+                "status": label["status"],
+                "not_for": label["not_for"],
+                "allergy_match": label["allergy_match"],
+                "acknowledged": item.product_id in acknowledged,
+                "overridden": item.product_id in overridden,
+            }
+        )
+    return {
+        "Shopping_Session_Token": session.Shopping_Session_Token,
+        "client_id": session.client_id,
+        "Client_Enrollment_Status": client.Client_Enrollment_Status if client else None,
+        "items": items,
+        "blocking": blocking,
+        "needs_ack": needs_ack,
+    }
+
+
+def validate_checkout(database: Session, session: ShoppingSession) -> list[str]:
+    """Hard stops plus any allergy still waiting for the volunteer to confirm with the client."""
+    review = review_checkout(database, session)
+    unconfirmed = [
+        f"Confirm with the client: {entry['name']} is not for "
+        + ", ".join(f"{who['nickname']} ({who['reason']})" for who in entry["not_for"])
+        + "."
+        for entry in review["needs_ack"]
+    ]
+    return [*review["blocking"], *unconfirmed]
 
 
 def complete_checkout(database: Session, session: ShoppingSession, volunteer: User) -> Checkout:
