@@ -17,3 +17,4 @@
 | Spec (constitution) | Copilot (Sonnet 5.5) | Drafted constitution v1.0.0 from Eric's principles; filled plan-template Constitution Check | Eric supplied all principles and rules; reviewed draft | Eric |
 | Install | Copilot | Installed Agentation as a development dependency | Caden approved the dependency installation | Caden |
 | Install | Copilot | Installed Ponytail as a development dependency | Caden approved the dependency installation | Caden |
+| Install | Copilot | Installed Impeccable globally for design skills and added the project hook | Caden selected global scope | Caden |
