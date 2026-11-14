@@ -12,6 +12,7 @@ const navigation = [
   { to: '/profile', label: 'My preferences', icon: UserRound, roles: ['Client'] },
   { to: '/inventory', label: 'Inventory', icon: PackageCheck, roles: ['Warehouse Staff', 'Warehouse Manager', 'Director'] },
   { to: '/audit', label: 'Audit counts', icon: PackageCheck, roles: ['Warehouse Staff', 'Warehouse Manager'] },
+  { to: '/lots', label: 'Inventory lots', icon: PackageCheck, roles: ['Warehouse Staff', 'Warehouse Manager', 'Director'] },
 ]
 
 export function AppShell() {

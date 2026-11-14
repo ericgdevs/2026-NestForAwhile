@@ -3,9 +3,9 @@ import type { MockUser } from './auth'
 export const rolePaths: Record<MockUser['role'], string[]> = {
   Client: ['/', '/home', '/profile', '/scan', '/cart', '/recipes'],
   Volunteer: ['/checkout'],
-  'Warehouse Staff': ['/inventory', '/audit'],
-  'Warehouse Manager': ['/inventory', '/audit', '/checkout'],
-  Director: ['/inventory'],
+  'Warehouse Staff': ['/inventory', '/audit', '/lots'],
+  'Warehouse Manager': ['/inventory', '/audit', '/lots', '/checkout'],
+  Director: ['/inventory', '/lots'],
 }
 
 export function canAccessPath(role: MockUser['role'], path: string) {
