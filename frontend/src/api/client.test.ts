@@ -24,7 +24,7 @@ test("API requests include cookies and return typed JSON", async () => {
     Queue_Waiting: 0,
   });
   expect(fetch).toHaveBeenCalledWith(
-    "/api/capacity",
+    "/capacity",
     expect.objectContaining({ credentials: "include" }),
   );
 });

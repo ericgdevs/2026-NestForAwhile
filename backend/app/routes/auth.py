@@ -56,6 +56,7 @@ def me(current_user: User = Depends(get_current_user), database: Session = Depen
     client = database.get(Client, current_user.id)
     profile = client.dietary_profile
     return {
+        "role": current_user.role,
         "name": client.name,
         "Household_Size": client.Household_Size,
         "Client_Enrollment_Status": client.Client_Enrollment_Status,

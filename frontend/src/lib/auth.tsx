@@ -22,7 +22,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     getMe()
-      .then((profile) => setUser({ ...profile, role: "Client" }))
+      .then((profile) =>
+        setUser({
+          ...profile,
+          role: (profile as components["schemas"]["Client"] & { role?: UserSession["role"] }).role ?? "Client",
+        }),
+      )
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);

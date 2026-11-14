@@ -24,7 +24,7 @@ export const test = base.extend<AuthFixture>({
         throw new Error(`Missing ${prefix}EMAIL or ${prefix}PASSWORD for e2e login`);
       }
 
-      const response = await request.post("/api/auth/login", {
+      const response = await request.post("/auth/login", {
         data: { email, password },
       });
       expect(response.ok()).toBeTruthy();
