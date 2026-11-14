@@ -54,7 +54,7 @@ A shared file has one owner. Everyone else changes it only through a small PR th
 
 ## Phase 2: Foundational (blocks all stories)
 
-- [ ] T011 [api] `backend/app/config.py` (settings from env/`.env`) and `backend/app/db.py` (SQLAlchemy engine/session; SQLite or PostgreSQL from `DATABASE_URL`), with a unit test
+- [X] T011 [api] `backend/app/config.py` (settings from env/`.env`) and `backend/app/db.py` (SQLAlchemy engine/session; SQLite or PostgreSQL from `DATABASE_URL`), with a unit test
 - [ ] T012 [api] `backend/app/crypto.py`: Fernet field encryption + an `EncryptedText` column type; test that stored values are not plaintext
 - [ ] T013 [api] Models for identity and profile in `backend/app/models.py`: `users`, `clients` (`Client_Enrollment_Status`, `Household_Size`, `Dietary_Tier_ID`), `dietary_profiles` (encrypted), `visits`
 - [ ] T014 [api] Models for catalog and inventory in `backend/app/models.py`: `products`, `inventory_lots` (expiry, threshold, aisle/shelf/bin), `inventory_movements`, `audit_events`

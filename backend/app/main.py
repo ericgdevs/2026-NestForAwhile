@@ -1,6 +1,6 @@
-import os
-
 from fastapi import FastAPI
+
+from app.config import Settings
 
 app = FastAPI(title="NestForAwhile MTG Warehouse API", version="0.1.0")
 
@@ -9,5 +9,5 @@ app = FastAPI(title="NestForAwhile MTG Warehouse API", version="0.1.0")
 def health() -> dict[str, str]:
     return {
         "status": "ok",
-        "ai_provider": os.getenv("AI_PROVIDER", "ollama"),
+        "ai_provider": Settings.from_env().ai_provider,
     }
