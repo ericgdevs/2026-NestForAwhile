@@ -7,12 +7,15 @@ import { Login } from './pages/Login'
 import { Placeholder } from './pages/Placeholder'
 import { Profile } from './pages/Profile'
 import { Scan } from './pages/Scan'
+import { Cart } from './pages/Cart'
+import { CartProvider } from './lib/cart'
 import { Unauthorized } from './pages/Unauthorized'
 
 export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <CartProvider>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route element={<ProtectedRoute />}>
@@ -21,13 +24,14 @@ export default function App() {
               <Route path="/home" element={<Home />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/scan" element={<Scan />} />
-              <Route path="/cart" element={<Placeholder title="My cart" message="Items you choose during your visit will collect here for an easy checkout." />} />
+              <Route path="/cart" element={<Cart />} />
               <Route path="/inventory" element={<Placeholder title="Inventory" message="Warehouse inventory tools will appear here for staff and volunteers." />} />
               <Route path="/unauthorized" element={<Unauthorized />} />
             </Route>
           </Route>
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        </CartProvider>
         <Agentation />
       </AuthProvider>
     </BrowserRouter>

@@ -20,3 +20,4 @@
 | Implement (T038) | Copilot (Sonnet 5.5) | Added realistic mock recommendations with deterministic rationale and accessible status labels | Caden reviewed the recommendation copy | Caden |
 | Implement (T043) | Copilot (Sonnet 5.5) | Added an iOS-Safari-compatible ZXing scanner with a mandatory manual SKU fallback | Caden selected and approved @zxing/browser | Caden |
 | Implement (T044) | Copilot (Sonnet 5.5) | Added the scan page with synthetic safety results, explanations, nutrition facts, and unknown-code handling | Caden reviewed the mock product data | Caden |
+| Implement (T047) | Copilot (Sonnet 5.5) | Added a shared mock cart with quantity controls, removal, and add-to-cart actions from recommendations and scans | Caden reviewed the cart interaction scope | Caden |

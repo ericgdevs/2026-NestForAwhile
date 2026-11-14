@@ -1,0 +1,8 @@
+import { Minus, Plus, Trash2 } from 'lucide-react'
+import { EmptyState } from '../components/States'
+import { useCart } from '../lib/cart'
+
+export function Cart() {
+  const { items, updateQuantity, removeItem } = useCart()
+  return <div className="mx-auto max-w-3xl"><p className="text-sm font-semibold uppercase tracking-[0.18em] text-sage-600">Your visit</p><h1 className="mt-2 text-3xl font-bold tracking-tight text-sage-950">My cart</h1><p className="mt-3 text-sage-700">Keep the items you’re considering in one place.</p>{items.length === 0 ? <div className="mt-8"><EmptyState title="Your cart is waiting" message="Add an item from recommendations or the scanner and it will appear here." /></div> : <div className="mt-8 space-y-3">{items.map((item) => <article key={item.productId} className="flex items-center justify-between gap-4 rounded-2xl border border-sage-200 bg-white p-4"><div><h2 className="font-bold text-sage-950">{item.name}</h2><p className="mt-1 text-sm text-sage-600">Recommended for your household</p></div><div className="flex items-center gap-2"><button aria-label={`Decrease ${item.name}`} className="rounded-lg border border-sage-200 p-2" onClick={() => updateQuantity(item.productId, item.quantity - 1)}><Minus size={15} /></button><span className="w-6 text-center font-semibold">{item.quantity}</span><button aria-label={`Increase ${item.name}`} className="rounded-lg border border-sage-200 p-2" onClick={() => updateQuantity(item.productId, item.quantity + 1)}><Plus size={15} /></button><button aria-label={`Remove ${item.name}`} className="ml-2 rounded-lg p-2 text-rose-700" onClick={() => removeItem(item.productId)}><Trash2 size={17} /></button></div></article>)}</div>}</div>
+}
