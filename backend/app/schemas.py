@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.models import EnrollmentStatus, QueueStatus, Role
+from app.rules.matrix import load_matrix
 
 
 class LoginRequest(BaseModel):
@@ -41,6 +42,27 @@ class DietaryProfileRead(BaseModel):
     allergies: list[str] = []
     preferences: list[str] = []
     Dietary_Tier_ID: int | None = None
+
+
+class DietaryProfileWrite(BaseModel):
+    """Client-editable fields; Dietary_Tier_ID is server-assigned and ignored if sent."""
+
+    restrictions: list[str] = []
+    allergies: list[str] = []
+    preferences: list[str] = []
+
+    @field_validator("restrictions", "allergies")
+    @classmethod
+    def only_supported_options(cls, values: list[str]) -> list[str]:
+        unknown = [v for v in values if v not in load_matrix()["restrictions"]]
+        if unknown:
+            raise ValueError(f"Unsupported option: {', '.join(unknown)}")
+        return list(dict.fromkeys(values))
+
+    @field_validator("preferences")
+    @classmethod
+    def clean_preferences(cls, values: list[str]) -> list[str]:
+        return list(dict.fromkeys(v.strip()[:100] for v in values if v.strip()))
 
 
 class RecommendationRead(BaseModel):
