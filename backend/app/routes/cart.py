@@ -7,6 +7,7 @@ from app.auth import Role, require_roles
 from app.db import get_db
 from app.models import CartItem, Client, Product, User
 from app.services.cart import active_session, build_manifest, get_or_create_cart
+from app.services.nutrition import local_label, members_for
 
 router = APIRouter()
 
@@ -14,6 +15,23 @@ router = APIRouter()
 class CartItemRequest(BaseModel):
     product_id: int
     quantity: int = Field(ge=1)
+
+
+def cart_response(database: Session, cart, user: User) -> dict[str, list[dict[str, object]]]:
+    """Cart items plus stored nutrition and rules-engine status, so the cart reads like a label."""
+    items = build_manifest(database, cart)
+    products = {
+        product.id: product
+        for product in database.scalars(
+            select(Product).where(Product.id.in_([item["product_id"] for item in items]))
+        )
+    }
+    members = members_for(database.get(Client, user.id))
+    return {
+        "items": [
+            {**item, **local_label(products[item["product_id"]], members)} for item in items
+        ]
+    }
 
 
 def client_cart(database: Session, user: User):
@@ -30,7 +48,7 @@ def get_cart(
     database: Session = Depends(get_db),
 ):
     cart = client_cart(database, current_user)
-    return {"items": build_manifest(database, cart)}
+    return cart_response(database, cart, current_user)
 
 
 @router.post("/cart/items")
@@ -52,7 +70,7 @@ def add_cart_item(
     else:
         item.quantity = payload.quantity
     database.commit()
-    return {"items": build_manifest(database, cart)}
+    return cart_response(database, cart, current_user)
 
 
 @router.patch("/cart/items/{product_id}")
@@ -70,7 +88,7 @@ def update_cart_item(
         raise HTTPException(status_code=404, detail="Cart item not found")
     item.quantity = payload.quantity
     database.commit()
-    return {"items": build_manifest(database, cart)}
+    return cart_response(database, cart, current_user)
 
 
 @router.delete("/cart/items/{product_id}", status_code=204)

@@ -12,6 +12,7 @@ from app.models import (
     DietaryProfile,
     Donor,
     Grant,
+    HouseholdMember,
     InventoryLot,
     Product,
     User,
@@ -43,6 +44,14 @@ USER_SEEDS = (
     ),
     ("director@example.test", Role.DIRECTOR, "Demo Director", None, None, None),
 )
+
+# Synthetic households: (nickname, age, restrictions, allergies). Others get one "Person 1".
+MEMBER_SEEDS = {
+    "client.active@example.test": (
+        ("Person 1", 38, ["Low Sodium"], []),
+        ("Little one", 7, [], ["Nut Allergy"]),
+    ),
+}
 
 PRODUCT_SEEDS = (
     {
@@ -151,6 +160,20 @@ def seed_users(database: Session) -> dict[str, User]:
                         preferences="[]",
                     )
                 )
+            if not client.members:
+                members = MEMBER_SEEDS.get(email, (("Person 1", None, restrictions or [], []),))
+                client.members = [
+                    HouseholdMember(
+                        position=position,
+                        nickname=nickname,
+                        age=age,
+                        restrictions=json.dumps(member_restrictions),
+                        allergies=json.dumps(allergies),
+                    )
+                    for position, (nickname, age, member_restrictions, allergies) in enumerate(
+                        members, start=1
+                    )
+                ]
     database.commit()
     return seeded
 
