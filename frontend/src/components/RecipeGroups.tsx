@@ -52,6 +52,9 @@ const ACTION_LABELS = {
   onDelete: ["Delete", "Deleted"],
 } as const;
 
+// When the server had nothing to add, "On your list" would overstate what happened.
+const NOTHING_TO_ADD = "Nothing to add";
+
 const isListResult = (value: unknown): value is RecipeListResult =>
   typeof value === "object" && value !== null && "added" in value && "blocked" in value;
 
@@ -69,8 +72,8 @@ function ListConfirmation({ result, recipe }: { result: RecipeListResult; recipe
   const [swapped, setSwapped] = useState<string[]>([]);
   return (
     <div className="stack" style={{ gap: "0.5rem" }}>
-      <p className="alert alert-info" role="status">
-        <Icon name="check" />
+      <p className={`alert ${result.added.length ? "alert-ok" : "alert-info"}`} role="status">
+        <Icon name={result.added.length ? "check" : "list"} />
         <span>
           {listSummary(result)}. <a href="/list">View your list</a>
         </span>
@@ -91,26 +94,30 @@ function ListConfirmation({ result, recipe }: { result: RecipeListResult; recipe
         </ul>
       )}
       {result.blocked.map((blocked) => (
-        <div className="alert alert-warn stack" key={blocked.name} role="alert" style={{ gap: "0.5rem" }}>
-          <span>
-            <Icon name="stop" /> Not added: {blocked.name} isn't recommended for everyone at home.{" "}
-            {blocked.not_for.map((who) => `Not for ${who.nickname}: ${who.reason}.`).join(" ")}
-          </span>
-          {blocked.swaps.map((swap) => (
-            <button
-              className="btn btn-secondary"
-              disabled={swapped.includes(swap.name)}
-              key={swap.product_id}
-              type="button"
-              onClick={() =>
-                void addToShoppingList([{ text: swap.name, product_id: swap.product_id }], recipe).then(() =>
-                  setSwapped((names) => [...names, swap.name]),
-                )
-              }
-            >
-              {swapped.includes(swap.name) ? `Added ${swap.name}` : `Add ${swap.name} instead`} · Aisle {swap.aisle} · {swap.shelf} · {swap.bin}
-            </button>
-          ))}
+        <div className="alert alert-warn" key={blocked.name} role="alert">
+          <Icon name="stop" />
+          <div className="stack" style={{ gap: "0.5rem", flex: 1 }}>
+            <span>Not added: {blocked.name} isn't recommended for everyone at home.</span>
+            {blocked.not_for.length > 0 && (
+              <span className="blocked-who">{blocked.not_for.map((who) => `Not for ${who.nickname}: ${who.reason}.`).join(" ")}</span>
+            )}
+            {blocked.swaps.map((swap) => (
+              <button
+                className="btn btn-secondary swap-btn"
+                disabled={swapped.includes(swap.name)}
+                key={swap.product_id}
+                type="button"
+                onClick={() =>
+                  void addToShoppingList([{ text: swap.name, product_id: swap.product_id }], recipe).then(() =>
+                    setSwapped((names) => [...names, swap.name]),
+                  )
+                }
+              >
+                {swapped.includes(swap.name) && <Icon name="check" />}
+                {swapped.includes(swap.name) ? `Added ${swap.name}` : `Add ${swap.name} instead`} · Aisle {swap.aisle} · {swap.shelf} · {swap.bin}
+              </button>
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -121,6 +128,7 @@ function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeAct
   const [done, setDone] = useState<string[]>([]);
   const [failed, setFailed] = useState(false);
   const [result, setResult] = useState<RecipeListResult | null>(null);
+  const [nothingAdded, setNothingAdded] = useState(false);
   const keys = (Object.keys(ACTION_LABELS) as (keyof RecipeActions)[]).filter((key) => actions[key]);
   if (!keys.length) return null;
 
@@ -129,6 +137,7 @@ function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeAct
     try {
       const outcome = await actions[key]!(recipe);
       if (isListResult(outcome)) setResult(outcome);
+      if (key === "onAddToList") setNothingAdded(isListResult(outcome) && outcome.added.length === 0);
       setDone((list) => [...list, key]);
     } catch {
       setFailed(true);
@@ -139,7 +148,8 @@ function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeAct
     <div className="stack" style={{ marginTop: "0.75rem", gap: "0.5rem" }}>
       <div className="row" style={{ justifyContent: "flex-start", flexWrap: "wrap" }}>
         {keys.map((key) => {
-          const [label, doneLabel] = ACTION_LABELS[key];
+          const [label, finished] = ACTION_LABELS[key];
+          const doneLabel = key === "onAddToList" && nothingAdded ? NOTHING_TO_ADD : finished;
           const isDone = done.includes(key);
           return (
             <button
