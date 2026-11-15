@@ -14,15 +14,21 @@ MAX_SWAPS = 2
 
 
 def find_swaps(
-    database: Session, product: Product, members: list[dict[str, object]]
+    database: Session,
+    product: Product,
+    members: list[dict[str, object]],
+    limit: int = MAX_SWAPS,
 ) -> list[dict[str, object]]:
-    """Same category, in stock, Green first then Yellow; one entry per product with its location."""
+    """Same category, in stock, Green first then Yellow; one entry per product with its location.
+
+    `product` only needs `.id` and `.category`; a None category searches every category.
+    """
     lots = database.scalars(
         select(InventoryLot)
         .options(joinedload(InventoryLot.product))
         .join(Product)
         .where(
-            Product.category == product.category,
+            *([Product.category == product.category] if product.category else []),
             Product.id != product.id,
             InventoryLot.quantity > 0,
             InventoryLot.expiration_date >= date.today(),
@@ -49,5 +55,5 @@ def find_swaps(
             "shelf": lot.shelf,
             "bin": lot.bin,
         }
-        for _, lot, label in ranked[:MAX_SWAPS]
+        for _, lot, label in ranked[:limit]
     ]

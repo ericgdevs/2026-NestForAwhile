@@ -46,7 +46,7 @@ def test_groq_provider_parses_json_response_with_default_model(monkeypatch):
     assert "instructions" in sent["messages"][0]["content"]
 
 
-def test_groq_retries_rate_limit_then_succeeds(monkeypatch):
+def test_groq_retries_rate_limit_once_then_succeeds(monkeypatch):
     monkeypatch.setenv("GROQ_API_KEY", "synthetic")
     monkeypatch.setattr("app.ai.provider.time.sleep", lambda seconds: None)
     calls = []
@@ -54,11 +54,11 @@ def test_groq_retries_rate_limit_then_succeeds(monkeypatch):
     def post(url, **kwargs):
         calls.append(url)
         request = httpx.Request("POST", url)
-        if len(calls) < 3:
+        if len(calls) < 2:
             return httpx.Response(429, json={}, request=request)
         body = {"choices": [{"message": {"content": "{}"}}]}
         return httpx.Response(200, json=body, request=request)
 
     monkeypatch.setattr("app.ai.provider.httpx.post", post)
     assert GroqProvider().generate_json(AITask.RECIPES, MANIFEST) == {}
-    assert len(calls) == 3
+    assert len(calls) == 2  # one retry at most

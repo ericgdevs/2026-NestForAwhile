@@ -13,7 +13,7 @@ def test_open_food_facts_maps_saved_response():
                 "image_front_url": "https://example.test/image.png",
                 "ingredients_text": "Synthetic ingredient",
                 "allergens_tags": ["en:milk"],
-                "nutriments": {"sodium_100g": 12, "sugars_100g": 3},
+                "nutriments": {"sodium_100g": 0.012, "sugars_100g": 3}  # grams per 100 g,
             },
         },
     )

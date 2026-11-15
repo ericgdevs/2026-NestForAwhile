@@ -10,7 +10,8 @@ from app.ai.recipes import RECIPE_INSTRUCTIONS
 from app.ai.schemas import ContextManifest
 
 GROQ_DEFAULT_MODEL = "openai/gpt-oss-20b"
-GROQ_ATTEMPTS = 3
+GROQ_ATTEMPTS = 2  # one try plus a single retry on 429, never more
+MAX_RETRY_WAIT = 2.0
 OLLAMA_DEFAULT_URL = "http://127.0.0.1:11434"
 
 
@@ -28,6 +29,10 @@ class ProviderError(RuntimeError):
 
     Real clients raise this."""
 
+    def __init__(self, message: str, status_code: int | None = None):
+        super().__init__(message)
+        self.status_code = status_code  # logged on fallback; never the prompt or response body
+
 
 class AIProvider(ABC):
     name: str
@@ -42,6 +47,15 @@ def _payload(task: AITask, manifest: ContextManifest) -> str:
     if task is AITask.RECIPES:
         body["instructions"] = RECIPE_INSTRUCTIONS
     return json.dumps(body, separators=(",", ":"))
+
+
+def _retry_wait(response: httpx.Response) -> float:
+    """Seconds to wait after a 429: Retry-After if it is a number, else 1 s, capped at 2 s."""
+    try:
+        wait = float(response.headers.get("retry-after", 1.0))
+    except ValueError:
+        wait = 1.0
+    return min(max(wait, 0.0), MAX_RETRY_WAIT)
 
 
 class GroqProvider(AIProvider):
@@ -68,16 +82,16 @@ class GroqProvider(AIProvider):
                 )
                 if response.status_code != 429 or attempt == GROQ_ATTEMPTS - 1:
                     break
-                time.sleep(0.1 * 2**attempt)  # exponential backoff on rate limits
+                time.sleep(_retry_wait(response))
         except (httpx.TimeoutException, httpx.RequestError) as exc:
             raise ProviderError(f"Groq request failed: {exc}") from exc
 
         if response.status_code == 429:
-            raise ProviderError("Groq rate limited")
+            raise ProviderError("Groq rate limited", 429)
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:
-            raise ProviderError(f"Groq request failed: {exc}") from exc
+            raise ProviderError(f"Groq request failed: {exc}", response.status_code) from exc
 
         try:
             body = response.json()

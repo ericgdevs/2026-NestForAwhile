@@ -5,7 +5,11 @@ from app.db import get_db
 from app.main import app
 
 
-def test_scan_returns_local_product_and_friendly_unknown_404(database, logged_in_client):
+def test_scan_returns_local_product_and_friendly_unknown_404(
+    database, logged_in_client, monkeypatch
+):
+    monkeypatch.setattr("app.services.nutrition.lookup_open_food_facts", lambda code: None)
+    monkeypatch.setattr("app.services.nutrition.lookup_usda", lambda code: None)
     app.dependency_overrides[get_db] = lambda: database
     try:
         client = TestClient(app)
