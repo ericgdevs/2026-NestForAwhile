@@ -1,31 +1,35 @@
 {
   "version": "placeholder-2026-11-14",
-  "status": "synthetic placeholders pending Epic Cure guidance",
+  "status": "synthetic placeholders pending Epic Cure guidance (guideline sources cited per rule; numbers not clinically signed off)",
   "unit": "per serving",
   "rules": {
     "Low Sugar": {
       "nutrient": "sugar_g",
       "capped_above": 12,
       "restricted_above": 24,
-      "exclusions": []
+      "exclusions": [],
+      "source": "ADA Standards of Care (nutrition therapy for diabetes) and AHA added-sugar limit (25 g/day women, 36 g/day men). Per-serving cut-offs are placeholders: capped is about 1/4 and restricted about 1/2 of a 50 g daily sugar budget. Total sugars are used, so this is stricter than the added-sugar guidance."
     },
     "Low Sodium": {
       "nutrient": "sodium_mg",
       "capped_above": 480,
       "restricted_above": 960,
-      "exclusions": []
+      "exclusions": [],
+      "source": "AHA/DASH: under 2,300 mg/day, ideal 1,500 mg/day. Capped above 480 mg is about 20% of 2,300 mg (FDA 'high' is 20% DV or more); restricted above 960 mg is about 40%."
     },
     "Heart Healthy": {
       "nutrient": "sat_fat_g",
       "capped_above": 4,
       "restricted_above": 8,
-      "exclusions": []
+      "exclusions": [],
+      "source": "AHA/DASH: saturated fat under 6% of calories, about 13 g/day at 2,000 kcal. Capped above 4 g is about 30% of that; restricted above 8 g is about 60% (FDA 'high' is 20% DV or more, 4 g)."
     },
     "Kidney Friendly": {
       "nutrient": "potassium_mg",
       "capped_above": 300,
       "restricted_above": 600,
-      "exclusions": []
+      "exclusions": [],
+      "source": "NKF/KDOQI 2020 CKD nutrition guideline: potassium is individualised (typically 2,000-3,000 mg/day when serum potassium is high); NKF lists under 200 mg/serving as low potassium. Capped above 300 mg and restricted above 600 mg are looser pantry cut-offs."
     },
     "Vegetarian": {
       "nutrient": null,
@@ -36,7 +40,8 @@
         "contains_poultry",
         "contains_fish",
         "contains_shellfish"
-      ]
+      ],
+      "source": "Academy of Nutrition and Dietetics position on vegetarian diets: no meat, poultry, fish or shellfish."
     },
     "Vegan": {
       "nutrient": null,
@@ -49,7 +54,8 @@
         "contains_shellfish",
         "contains_egg",
         "contains_dairy"
-      ]
+      ],
+      "source": "Academy of Nutrition and Dietetics position on vegetarian diets: no animal products (adds egg and dairy to the vegetarian exclusions)."
     },
     "Gluten Free": {
       "nutrient": null,
@@ -57,7 +63,8 @@
       "restricted_above": null,
       "exclusions": [
         "contains_gluten"
-      ]
+      ],
+      "source": "ACG celiac disease guideline / NIDDK: avoid wheat, barley and rye."
     },
     "Nut Allergy": {
       "nutrient": null,
@@ -66,7 +73,8 @@
       "exclusions": [
         "contains_peanut",
         "contains_tree_nut"
-      ]
+      ],
+      "source": "NIAID food allergy guidelines and FDA major food allergens: strict avoidance of peanut and tree nut."
     },
     "Dairy Free": {
       "nutrient": null,
@@ -74,7 +82,8 @@
       "restricted_above": null,
       "exclusions": [
         "contains_dairy"
-      ]
+      ],
+      "source": "NIAID food allergy guidelines and FDA major food allergens: strict avoidance of milk."
     }
   },
   "conditions": {
@@ -83,34 +92,39 @@
       "label": "Type 2 diabetes",
       "choices": [
         "Low Sugar"
-      ]
+      ],
+      "source": "ADA Standards of Care: carbohydrate and sugar management."
     },
     "I10": {
       "label": "High blood pressure",
       "choices": [
         "Low Sodium",
         "Heart Healthy"
-      ]
+      ],
+      "source": "AHA/ACC hypertension guideline and DASH: sodium reduction, saturated fat limit."
     },
     "I25": {
       "label": "Heart disease",
       "choices": [
         "Heart Healthy",
         "Low Sodium"
-      ]
+      ],
+      "source": "AHA dietary guidance for heart disease: saturated fat and sodium limits."
     },
     "N18": {
       "label": "Chronic kidney disease",
       "choices": [
         "Kidney Friendly",
         "Low Sodium"
-      ]
+      ],
+      "source": "NKF/KDOQI 2020 CKD nutrition guideline: potassium and sodium management."
     },
     "K90.0": {
       "label": "Celiac disease",
       "choices": [
         "Gluten Free"
-      ]
+      ],
+      "source": "ACG celiac disease guideline: lifelong gluten-free diet."
     }
   }
 }

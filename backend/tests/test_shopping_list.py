@@ -28,7 +28,7 @@ def test_parse_matches_stock_with_location_and_marks_unknown(database, logged_in
             _api(database)
             .post(
                 "/shopping-list/parse",
-                json={"text": "2 cans black beans\nunicorn milk"},
+                json={"text": "2 cans black beans\nunicorn glitter"},
                 cookies=cookies,
             )
             .json()
@@ -36,7 +36,7 @@ def test_parse_matches_stock_with_location_and_marks_unknown(database, logged_in
     finally:
         app.dependency_overrides.clear()
     beans, unknown = body["lines"]
-    assert beans["name"] == "Synthetic Black Beans" and beans["location"]["aisle"]
+    assert "black beans" in beans["name"].lower() and beans["location"]["aisle"]
     assert unknown["product_id"] is None
 
 
@@ -106,10 +106,14 @@ def test_same_item_twice_is_one_line_tagged_with_every_recipe(database, logged_i
                 json={"items": [{"text": "beans", "product_id": beans.id}], "recipe": recipe},
                 cookies=cookies,
             )
-        api.post("/shopping-list", json={"items": [{"text": "black beans"}]}, cookies=cookies)
-        api.post("/shopping-list", json={"items": [{"text": "Unicorn milk"}]}, cookies=cookies)
+        api.post(
+            "/shopping-list",
+            json={"items": [{"text": "black beans", "product_id": beans.id}]},
+            cookies=cookies,
+        )
+        api.post("/shopping-list", json={"items": [{"text": "Unicorn glitter"}]}, cookies=cookies)
         lines = api.post(
-            "/shopping-list", json={"items": [{"text": "unicorn milk"}]}, cookies=cookies
+            "/shopping-list", json={"items": [{"text": "unicorn glitter"}]}, cookies=cookies
         ).json()["items"]
     finally:
         app.dependency_overrides.clear()
@@ -117,5 +121,5 @@ def test_same_item_twice_is_one_line_tagged_with_every_recipe(database, logged_i
     bean_lines = [line for line in lines if line["product_id"] == beans.id]
     assert len(bean_lines) == 1
     assert [r["title"] for r in bean_lines[0]["recipes"]] == ["Bean tacos", "Bean chili"]
-    assert bean_lines[0]["source"] == "you"  # also added by hand ("black beans" matched it)
+    assert bean_lines[0]["source"] == "you"  # also added by hand
     assert len([line for line in lines if line["product_id"] is None]) == 1

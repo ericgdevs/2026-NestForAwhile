@@ -1,0 +1,132 @@
+sku,barcode,name,category,serving_size_g,calories,sodium_mg,sugar_g,added_sugar_g,sat_fat_g,fiber_g,protein_g,potassium_mg,phosphorus_mg,carbs_g,ingredients_text,allergens,diet_flags,weight_lb,aisle,shelf,bin,quantity
+SYN-PROD-001,200000000011,"Apples, fresh",Produce,182,95,2,19,0,0.1,4.4,0.5,195,20,25,"Apples, fresh",,is_vegan,0.5,A5,S1,B21,27
+SYN-PROD-002,200000000028,"Bananas, fresh",Produce,118,105,1,14,0,0.1,3.1,1.3,422,26,27,"Bananas, fresh",,is_vegan,0.4,A5,S2,B22,34
+SYN-PROD-003,200000000035,"Oranges, fresh",Produce,131,62,0,12.2,0,0,3.1,1.2,237,18,15.4,"Oranges, fresh",,is_vegan,0.5,A5,S3,B23,41
+SYN-PROD-004,200000000042,"Carrots, fresh",Produce,61,25,42,2.9,0,0,1.7,0.6,195,21,5.8,"Carrots, fresh",,is_vegan,1.0,A5,S4,B24,48
+SYN-PROD-005,200000000059,"Broccoli, fresh",Produce,91,31,30,1.5,0,0,2.4,2.6,288,66,6,"Broccoli, fresh",,is_vegan,1.0,A5,S1,B25,55
+SYN-PROD-006,200000000066,"Cabbage, green, fresh",Produce,70,18,16,2.2,0,0,1.7,1.0,151,21,4.1,"Cabbage, green, fresh",,is_vegan,2.0,A5,S2,B26,21
+SYN-PROD-007,200000000073,"Cauliflower, fresh",Produce,107,27,32,2,0,0,2.1,2.0,320,44,5.3,"Cauliflower, fresh",,is_vegan,1.5,A5,S3,B27,28
+SYN-PROD-008,200000000080,"Onions, yellow, fresh",Produce,80,32,3,3.4,0,0,1.4,0.9,117,24,7.5,"Onions, yellow, fresh",,is_vegan,3.0,A5,S4,B28,35
+SYN-PROD-009,200000000097,"Bell peppers, green, fresh",Produce,119,24,4,2.9,0,0,2.0,1.1,208,24,5.5,"Bell peppers, green, fresh",,is_vegan,0.5,A5,S1,B29,42
+SYN-PROD-010,200000000103,"Cucumbers, fresh",Produce,52,8,1,0.9,0,0,0.3,0.4,76,12,1.9,"Cucumbers, fresh",,is_vegan,0.7,A5,S2,B30,49
+SYN-PROD-011,200000000110,"Tomatoes, fresh",Produce,123,22,6,3.2,0,0,1.5,1.1,292,30,4.8,"Tomatoes, fresh",,is_vegan,0.5,A5,S3,B31,56
+SYN-PROD-012,200000000127,"Potatoes, russet, fresh",Produce,173,164,24,2,0,0.1,4.7,4.6,952,121,37,"Potatoes, russet, fresh",,is_vegan,5.0,A5,S4,B32,22
+SYN-PROD-013,200000000134,"Sweet potatoes, fresh",Produce,114,103,41,7.4,0,0,3.8,2.3,438,54,24,"Sweet potatoes, fresh",,is_vegan,3.0,A5,S1,B33,29
+SYN-PROD-014,200000000141,"Spinach, fresh",Produce,30,7,24,0.1,0,0,0.7,0.9,167,15,1.1,"Spinach, fresh",,is_vegan,0.6,A5,S2,B34,36
+SYN-PROD-015,200000000158,"Romaine lettuce, fresh",Produce,94,16,8,1.1,0,0,2.0,1.1,232,28,3.1,"Romaine lettuce, fresh",,is_vegan,0.8,A5,S3,B35,43
+SYN-PROD-016,200000000165,"Zucchini, fresh",Produce,124,21,10,3.1,0,0.1,1.2,1.5,324,47,3.8,"Zucchini, fresh",,is_vegan,0.7,A5,S4,B36,50
+SYN-PROD-017,200000000172,"Green beans, fresh",Produce,100,31,6,3.3,0,0.1,2.7,1.8,211,38,7,"Green beans, fresh",,is_vegan,0.5,A5,S1,B37,57
+SYN-PROD-018,200000000189,"Garlic, fresh",Produce,9,13,1,0.1,0,0,0.6,0.6,36,14,3,"Garlic, fresh",,is_vegan,0.2,A5,S2,B38,23
+SYN-PROD-019,200000000196,"Celery, fresh",Produce,80,13,64,1.3,0,0,1.3,0.6,208,19,2.4,"Celery, fresh",,is_vegan,1.0,A5,S3,B39,30
+SYN-PROD-020,200000000202,"Strawberries, fresh",Produce,152,49,2,7.4,0,0,3.0,1.0,233,36,11.7,"Strawberries, fresh",,is_vegan,1.0,A5,S4,B40,37
+SYN-PROD-021,200000000219,"Blueberries, fresh",Produce,148,84,1,15,0,0.1,3.6,1.1,114,18,21,"Blueberries, fresh",,is_vegan,0.7,A5,S1,B41,44
+SYN-PROD-022,200000000226,"Avocados, fresh",Produce,50,80,4,0.2,0,1.1,3.4,1.0,242,26,4.3,"Avocados, fresh",,is_vegan,0.5,A5,S2,B42,51
+SYN-PROD-023,200000000233,"Grapes, red, fresh",Produce,151,104,3,23,0,0.1,1.4,1.1,288,30,27,"Grapes, red, fresh",,is_vegan,1.5,A5,S3,B43,58
+SYN-PROD-024,200000000240,"Cantaloupe, fresh",Produce,177,60,28,14,0,0.1,1.6,1.5,427,24,14.7,"Cantaloupe, fresh",,is_vegan,3.0,A5,S4,B44,24
+SYN-PROT-001,200000000257,"Eggs, large, fresh",Proteins,50,72,71,0.2,0,1.6,0,6.3,69,99,0.4,"Eggs, large, fresh",contains_egg,contains_egg,1.5,A6,S1,B45,31
+SYN-PROT-002,200000000264,"Chicken breast, boneless skinless, raw",Proteins,112,134,50,0,0,0.3,0,25,374,238,0,"Chicken breast, boneless skinless, raw",,contains_poultry,1.5,A6,S2,B46,38
+SYN-PROT-003,200000000271,"Ground turkey, 93% lean, raw",Proteins,112,168,90,0,0,2.8,0,21,302,220,0,"Ground turkey, 93% lean, raw",,contains_poultry,1.0,A6,S3,B47,45
+SYN-PROT-004,200000000288,"Ground beef, 90% lean, raw",Proteins,112,197,74,0,0,5.0,0,22.4,356,211,0,"Ground beef, 90% lean, raw",,contains_meat,1.0,A6,S4,B48,52
+SYN-PROT-005,200000000295,"Salmon fillet, frozen",Proteins,112,233,66,0,0,3.5,0,22.4,407,269,0,"Salmon fillet, frozen",contains_fish,contains_fish,1.0,A6,S1,B49,59
+SYN-PROT-006,200000000301,"Tofu, firm",Proteins,85,65,6,0.6,0,1.1,0.3,6.8,103,82,1.6,"Tofu, firm",contains_soy,contains_soy;is_vegan,1.0,A6,S2,B50,25
+SYN-PROT-007,200000000318,"Lentils, brown, dry",Proteins,48,169,3,1,0,0.1,5.1,11.8,325,135,30,"Lentils, brown, dry",,is_vegan,1.0,A6,S3,B51,32
+SYN-PROT-008,200000000325,"Black beans, dry",Proteins,45,153,2,1,0,0.3,7,9.7,667,158,28,"Black beans, dry",,is_vegan,1.0,A6,S4,B52,39
+SYN-PROT-009,200000000332,"Chickpeas, dry",Proteins,50,189,12,5.4,0,0.3,6.1,10.3,437,183,31.5,"Chickpeas, dry",,is_vegan,1.0,A6,S1,B53,46
+SYN-PROT-010,200000000349,"Peanut butter, creamy",Proteins,32,190,147,3.1,1,3.3,1.9,7.1,208,115,7.7,"Peanut butter, creamy",contains_peanut,contains_peanut;is_vegan,1.0,A6,S2,B54,53
+SYN-PROT-011,200000000356,"Almonds, raw",Proteins,28,164,0,1.2,0,1.1,3.5,6,208,136,6.1,"Almonds, raw",contains_tree_nut,contains_tree_nut;is_vegan,0.8,A6,S3,B55,60
+SYN-PROT-012,200000000363,"Walnuts, halves",Proteins,28,185,1,0.7,0,1.7,1.9,4.3,125,98,3.9,"Walnuts, halves",contains_tree_nut,contains_tree_nut;is_vegan,0.8,A6,S4,B56,26
+SYN-PROT-013,200000000370,"Sunflower seeds, hulled",Proteins,28,163,3,0.8,0,1.3,2.4,5.8,181,185,5.6,"Sunflower seeds, hulled",,is_vegan,0.8,A6,S1,B57,33
+SYN-PROT-014,200000000387,"Turkey breast, sliced deli",Proteins,56,60,560,1,0,0.5,0,10,140,120,2,"Turkey breast, sliced deli",,contains_poultry,0.5,A6,S2,B58,40
+SYN-PROT-015,200000000394,"Ham, sliced deli",Proteins,56,60,690,1,0,0.6,0,9.5,190,130,1,"Ham, sliced deli",,contains_meat,0.5,A6,S3,B59,47
+SYN-PROT-016,200000000400,"Bacon, cooked",Proteins,24,130,412,0,0,3.4,0,8.9,136,108,0.1,"Bacon, cooked",,contains_meat,0.8,A6,S4,B60,54
+SYN-DAIR-001,200000000417,"Milk, 2% reduced fat",Dairy,244,122,115,12.3,0,3.1,0,8.1,342,232,11.4,"Milk, 2% reduced fat",contains_dairy,contains_dairy,8.6,A7,S1,B61,20
+SYN-DAIR-002,200000000424,"Milk, whole",Dairy,244,149,105,12.3,0,4.5,0,7.7,322,205,11.7,"Milk, whole",contains_dairy,contains_dairy,8.6,A7,S2,B62,27
+SYN-DAIR-003,200000000431,"Milk, skim",Dairy,245,83,103,12.5,0,0.1,0,8.3,382,247,12.2,"Milk, skim",contains_dairy,contains_dairy,8.6,A7,S3,B63,34
+SYN-DAIR-004,200000000448,"Yogurt, plain, nonfat",Dairy,170,95,131,13.1,0,0.1,0,9.7,433,339,13,"Yogurt, plain, nonfat",contains_dairy,contains_dairy,1.0,A7,S4,B64,41
+SYN-DAIR-005,200000000455,"Greek yogurt, plain, nonfat",Dairy,170,100,61,6.1,0,0.1,0,17.3,240,230,6.1,"Greek yogurt, plain, nonfat",contains_dairy,contains_dairy,1.0,A7,S1,B65,48
+SYN-DAIR-006,200000000462,Cheddar cheese,Dairy,28,113,174,0.1,0,6,0,6.4,28,145,0.4,Cheddar cheese,contains_dairy,contains_dairy,0.5,A7,S2,B66,55
+SYN-DAIR-007,200000000479,"Mozzarella cheese, part-skim",Dairy,28,72,175,0.2,0,2.9,0,6.9,27,131,0.8,"Mozzarella cheese, part-skim",contains_dairy,contains_dairy,0.5,A7,S3,B67,21
+SYN-DAIR-008,200000000486,"Cottage cheese, low-fat",Dairy,113,92,363,4.5,0,1.2,0,12.4,142,152,5.1,"Cottage cheese, low-fat",contains_dairy,contains_dairy,1.0,A7,S4,B68,28
+SYN-DAIR-009,200000000493,"Butter, salted",Dairy,14,102,91,0,0,7.3,0,0.1,3,3,0,"Butter, salted",contains_dairy,contains_dairy,1.0,A7,S1,B69,35
+SYN-DAIR-010,200000000509,Cream cheese,Dairy,29,99,91,1.4,0,5.7,0,1.7,38,30,1.6,Cream cheese,contains_dairy,contains_dairy,0.5,A7,S2,B70,42
+SYN-DAIR-011,200000000516,"Parmesan cheese, grated",Dairy,28,122,428,0.3,0,4.6,0,10.9,28,213,1,"Parmesan cheese, grated",contains_dairy,contains_dairy,0.5,A7,S3,B71,49
+SYN-DAIR-012,200000000523,"Ice cream, vanilla",Dairy,66,137,53,14,12,4.9,0.5,2.3,131,80,16,"Ice cream, vanilla",contains_dairy,contains_dairy,1.5,A7,S4,B72,56
+SYN-DAIR-013,200000000530,"Chocolate milk, low-fat",Dairy,250,190,150,24.8,11,1.5,1,8,425,250,31,"Chocolate milk, low-fat",contains_dairy,contains_dairy,8.6,A7,S1,B73,22
+SYN-DAIR-014,200000000547,"Soy milk, unsweetened",Dairy,243,80,90,1,0,0.5,1,7,300,120,4,"Soy milk, unsweetened",contains_soy,contains_soy;is_vegan,8.6,A7,S2,B74,29
+SYN-DAIR-015,200000000554,"Almond milk, unsweetened",Dairy,240,30,170,0,0,0,1,1,170,20,1,"Almond milk, unsweetened",contains_tree_nut,contains_tree_nut;is_vegan,8.6,A7,S3,B75,36
+SYN-GRAN-001,200000000561,"Rice, white, long-grain, dry",Grains,45,164,2,0,0,0.1,0.6,3.2,52,52,36,"Rice, white, long-grain, dry",,is_vegan,2.0,A8,S1,B76,43
+SYN-GRAN-002,200000000578,"Rice, brown, dry",Grains,45,167,3,0.4,0,0.3,1.6,3.6,100,119,35,"Rice, brown, dry",,is_vegan,2.0,A8,S2,B77,50
+SYN-GRAN-003,200000000585,"Spaghetti, dry",Grains,56,208,3,1.5,0,0.2,1.8,7.3,125,106,42,"Spaghetti, dry",,contains_gluten;is_vegan,1.0,A8,S3,B78,57
+SYN-GRAN-004,200000000592,"Whole wheat pasta, dry",Grains,56,198,3,1.1,0,0.3,4.8,8,200,190,40,"Whole wheat pasta, dry",,contains_gluten;is_vegan,1.0,A8,S4,B79,23
+SYN-GRAN-005,200000000608,"Rolled oats, old-fashioned",Grains,40,150,0,1,0,0.5,4,5,143,133,27,"Rolled oats, old-fashioned",,is_vegan,1.5,A8,S1,B80,30
+SYN-GRAN-006,200000000615,"Whole wheat bread, sliced",Grains,28,69,132,1.4,0,0.2,1.9,3.6,71,64,11.6,"Whole wheat bread, sliced",,contains_gluten;is_vegan,1.3,A8,S2,B81,37
+SYN-GRAN-007,200000000622,"White bread, sliced",Grains,25,67,130,1.4,1,0.2,0.6,2,31,29,12.7,"White bread, sliced",,contains_gluten;is_vegan,1.3,A8,S3,B82,44
+SYN-GRAN-008,200000000639,Corn tortillas,Grains,52,104,22,0.4,0,0.2,3,2.7,90,134,22,Corn tortillas,,is_vegan,1.0,A8,S4,B83,51
+SYN-GRAN-009,200000000646,"Flour tortillas, 8-inch",Grains,49,146,363,1,0,1.4,1.2,4,74,80,24.6,"Flour tortillas, 8-inch",,contains_gluten;is_vegan,1.0,A8,S1,B84,58
+SYN-GRAN-010,200000000653,"Quinoa, dry",Grains,43,158,2,0,0,0.3,3,6,242,196,27.5,"Quinoa, dry",,is_vegan,1.0,A8,S2,B85,24
+SYN-GRAN-011,200000000660,"Couscous, dry",Grains,56,210,6,0.5,0,0.1,2.8,7.3,93,95,43,"Couscous, dry",,contains_gluten;is_vegan,1.0,A8,S3,B86,31
+SYN-GRAN-012,200000000677,"Corn flakes cereal, plain",Grains,28,100,200,2,2,0,0.4,2,25,20,24,"Corn flakes cereal, plain",,contains_gluten;is_vegan,0.8,A8,S4,B87,38
+SYN-GRAN-013,200000000684,Sugar-coated puffed cereal,Grains,39,160,190,17,17,0,1,2,45,40,36,Sugar-coated puffed cereal,,contains_gluten;is_vegan,0.9,A8,S1,B88,45
+SYN-GRAN-014,200000000691,Saltine crackers,Grains,15,62,156,0.1,0,0.4,0.4,1.3,20,17,11,Saltine crackers,,contains_gluten;is_vegan,0.8,A8,S2,B89,52
+SYN-CANN-001,200000000707,"Low-sodium black beans, canned",Canned Goods,130,120,140,0.3,0,0.1,7.5,7.5,270,100,20,"Low-sodium black beans, canned",,is_vegan,1.0,A9,S1,B90,59
+SYN-CANN-002,200000000714,"Black beans, canned",Canned Goods,130,120,490,0.3,0,0.1,7,7,340,100,20,"Black beans, canned",,is_vegan,1.0,A9,S2,B91,25
+SYN-CANN-003,200000000721,"Chickpeas, canned, no salt added",Canned Goods,120,140,10,4,0,0.3,5,7,205,100,22,"Chickpeas, canned, no salt added",,is_vegan,1.0,A9,S3,B92,32
+SYN-CANN-004,200000000738,"Low-sodium kidney beans, canned",Canned Goods,130,110,135,1,0,0.1,6,7,260,100,20,"Low-sodium kidney beans, canned",,is_vegan,1.0,A9,S4,B93,39
+SYN-CANN-005,200000000745,"Green beans, canned, no salt added",Canned Goods,120,25,10,1.2,0,0,1.6,1,130,20,5,"Green beans, canned, no salt added",,is_vegan,1.0,A9,S1,B94,46
+SYN-CANN-006,200000000752,"Green beans, canned",Canned Goods,120,20,380,1.2,0,0,1.6,1,130,20,5,"Green beans, canned",,is_vegan,1.0,A9,S2,B95,53
+SYN-CANN-007,200000000769,"Corn, whole kernel, canned, no salt added",Canned Goods,125,80,8,3,0,0.1,2.2,2,170,65,17,"Corn, whole kernel, canned, no salt added",,is_vegan,1.0,A9,S3,B96,60
+SYN-CANN-008,200000000776,"Diced tomatoes, canned, no salt added",Canned Goods,120,25,20,4,0,0,1.3,1.2,264,20,5,"Diced tomatoes, canned, no salt added",,is_vegan,1.0,A9,S4,B97,26
+SYN-CANN-009,200000000783,"Tomato sauce, canned",Canned Goods,125,37,640,6.8,0,0,1.9,1.6,440,40,8.5,"Tomato sauce, canned",,is_vegan,1.0,A9,S1,B98,33
+SYN-CANN-010,200000000790,"Tomato paste, canned",Canned Goods,33,27,25,4.5,0,0,1.2,1.4,335,40,6.3,"Tomato paste, canned",,is_vegan,0.4,A9,S2,B99,40
+SYN-CANN-011,200000000806,"Tuna, light, canned in water",Canned Goods,85,73,250,0,0,0.2,0,16.5,200,140,0,"Tuna, light, canned in water",contains_fish,contains_fish,0.4,A9,S3,B100,47
+SYN-CANN-012,200000000813,"Salmon, pink, canned",Canned Goods,85,117,360,0,0,1.2,0,17,277,250,0,"Salmon, pink, canned",contains_fish,contains_fish,0.5,A9,S4,B101,54
+SYN-CANN-013,200000000820,"Chicken breast, canned in water",Canned Goods,85,90,330,0,0,0.5,0,15,170,150,0,"Chicken breast, canned in water",,contains_poultry,0.6,A9,S1,B102,20
+SYN-CANN-014,200000000837,"Chicken noodle soup, canned",Canned Goods,240,62,860,0.5,0,0.7,0.5,3.2,55,40,7.3,"Chicken noodle soup, canned",,contains_gluten;contains_poultry,1.0,A9,S2,B103,27
+SYN-CANN-015,200000000844,"Tomato soup, canned",Canned Goods,244,85,700,12,8,0.4,1.5,2,264,50,17,"Tomato soup, canned",,contains_gluten;is_vegan,1.0,A9,S3,B104,34
+SYN-CANN-016,200000000851,"Low-sodium vegetable soup, canned",Canned Goods,245,70,140,7,0,0,2,2,300,50,14,"Low-sodium vegetable soup, canned",,is_vegan,1.1,A9,S4,B105,41
+SYN-CANN-017,200000000868,"Cream of mushroom soup, condensed",Canned Goods,120,110,870,1.5,0,1.5,0.5,2,130,60,9,"Cream of mushroom soup, condensed",contains_dairy,contains_dairy;contains_gluten,0.7,A9,S1,B106,48
+SYN-CANN-018,200000000875,"Peaches in heavy syrup, canned",Canned Goods,125,100,10,23,20,0,1.7,0.6,120,20,27,"Peaches in heavy syrup, canned",,is_vegan,1.0,A9,S2,B107,55
+SYN-CANN-019,200000000882,"Fruit cocktail in juice, canned",Canned Goods,125,60,5,13,0,0,1.2,0.5,110,15,15,"Fruit cocktail in juice, canned",,is_vegan,1.0,A9,S3,B108,21
+SYN-CANN-020,200000000899,"Applesauce, unsweetened",Canned Goods,122,50,2,11,0,0,1.4,0.2,90,10,13.5,"Applesauce, unsweetened",,is_vegan,1.0,A9,S4,B109,28
+SYN-CANN-021,200000000905,"Dill pickles, whole",Canned Goods,65,5,785,1.0,0,0,0.5,0.2,100,10,1.2,"Dill pickles, whole",,is_vegan,1.0,A9,S1,B110,35
+SYN-PANT-001,200000000912,"Olive oil, extra virgin",Pantry,13.5,119,0,0,0,1.9,0,0,0,0,0,"Olive oil, extra virgin",,is_vegan,1.5,A10,S1,B111,42
+SYN-PANT-002,200000000929,Canola oil,Pantry,14,124,0,0,0,1.0,0,0,0,0,0,Canola oil,,is_vegan,1.5,A10,S2,B112,49
+SYN-PANT-003,200000000936,Coconut oil,Pantry,13.6,121,0,0,0,11.2,0,0,0,0,0,Coconut oil,,is_vegan,1.0,A10,S3,B113,56
+SYN-PANT-004,200000000943,"All-purpose flour, white",Pantry,31,114,1,0.1,0,0.1,0.9,3.2,34,31,24,"All-purpose flour, white",,contains_gluten;is_vegan,2.0,A10,S4,B114,22
+SYN-PANT-005,200000000950,"Sugar, granulated",Pantry,12.6,48,0,12.6,12.6,0,0,0,0,0,12.6,"Sugar, granulated",,is_vegan,2.0,A10,S1,B115,29
+SYN-PANT-006,200000000967,Honey,Pantry,21,64,1,17.3,17.3,0,0,0.1,11,1,17.3,Honey,,is_vegan,1.0,A10,S2,B116,36
+SYN-PANT-007,200000000974,Soy sauce,Pantry,16,8,879,0.1,0,0,0.1,1.3,70,21,0.8,Soy sauce,contains_soy,contains_soy;contains_gluten;is_vegan,0.7,A10,S3,B117,43
+SYN-PANT-008,200000000981,Reduced-sodium soy sauce,Pantry,16,10,575,0.1,0,0,0.1,1.5,65,20,1,Reduced-sodium soy sauce,contains_soy,contains_soy;contains_gluten;is_vegan,0.7,A10,S4,B118,50
+SYN-PANT-009,200000000998,Ketchup,Pantry,17,17,154,3.7,3.4,0,0.2,0.2,54,8,4.5,Ketchup,,is_vegan,1.0,A10,S1,B119,57
+SYN-PANT-010,200000001001,Mayonnaise,Pantry,14,94,88,0.1,0,1.6,0,0.1,5,4,0.1,Mayonnaise,contains_egg,contains_egg,1.0,A10,S2,B120,23
+SYN-PANT-011,200000001018,"Mustard, yellow",Pantry,5,3,57,0.1,0,0,0.2,0.2,7,4,0.3,"Mustard, yellow",,is_vegan,0.6,A10,S3,B121,30
+SYN-PANT-012,200000001025,Low-sodium chicken broth,Pantry,240,10,140,0.5,0,0,0,1,220,40,1,Low-sodium chicken broth,,contains_poultry,2.0,A10,S4,B122,37
+SYN-PANT-013,200000001032,Low-sodium vegetable broth,Pantry,240,15,140,3,0,0,0.5,0.5,260,30,3,Low-sodium vegetable broth,,is_vegan,2.0,A10,S1,B123,44
+SYN-PANT-014,200000001049,"Salsa, jarred",Pantry,32,10,190,1.5,0,0,0.5,0.5,105,10,2,"Salsa, jarred",,is_vegan,1.0,A10,S2,B124,51
+SYN-PANT-015,200000001056,"Maple syrup, pure",Pantry,40,104,5,26.8,26.8,0,0,0,84,4,26.8,"Maple syrup, pure",,is_vegan,1.0,A10,S3,B125,58
+SYN-PANT-016,200000001063,Dried apricots,Pantry,40,96,4,21,0,0,2.9,1.4,465,28,25,Dried apricots,,is_vegan,0.5,A10,S4,B126,24
+SYN-PANT-017,200000001070,Raisins,Pantry,36,108,4,21,0,0,1.3,1.1,270,36,32,Raisins,,is_vegan,0.7,A10,S1,B127,31
+SYN-PANT-018,200000001087,"Instant ramen noodles with seasoning, dry",Pantry,85,380,1580,2,0,7,2,8,190,90,54,"Instant ramen noodles with seasoning, dry",,contains_gluten;is_vegan,0.2,A10,S2,B128,38
+SYN-SNAK-001,200000001094,"Popcorn, air-popped",Snacks,24,93,2,0.2,0,0.2,3.6,3,86,87,18.6,"Popcorn, air-popped",,is_vegan,0.5,A11,S1,B129,45
+SYN-SNAK-002,200000001100,"Potato chips, salted",Snacks,28,152,148,0.1,0,1.6,1.2,1.9,361,51,15,"Potato chips, salted",,is_vegan,0.6,A11,S2,B130,52
+SYN-SNAK-003,200000001117,"Tortilla chips, plain",Snacks,28,142,119,0.1,0,1.4,1.4,2,70,53,18,"Tortilla chips, plain",,is_vegan,0.7,A11,S3,B131,59
+SYN-SNAK-004,200000001124,"Pretzels, salted",Snacks,28,108,380,0.4,0,0.2,1,3,40,35,23,"Pretzels, salted",,contains_gluten;is_vegan,0.6,A11,S4,B132,25
+SYN-SNAK-005,200000001131,"Granola bar, oats and honey",Snacks,42,190,115,13,8,1,2,3,150,90,29,"Granola bar, oats and honey",,contains_gluten;is_vegan,0.3,A11,S1,B133,32
+SYN-SNAK-006,200000001148,Peanut butter crackers,Snacks,39,200,330,4,3,2.5,1,4,100,60,23,Peanut butter crackers,contains_peanut,contains_peanut;contains_gluten;is_vegan,0.2,A11,S2,B134,39
+SYN-SNAK-007,200000001155,Trail mix with peanuts and almonds,Snacks,38,173,35,10,0,2.4,2,5,220,110,16,Trail mix with peanuts and almonds,contains_peanut;contains_tree_nut,contains_peanut;contains_tree_nut;is_vegan,0.5,A11,S3,B135,46
+SYN-SNAK-008,200000001162,"Rice cakes, plain",Snacks,18,70,58,0.1,0,0.2,0.7,1.4,50,40,15,"Rice cakes, plain",,is_vegan,0.4,A11,S4,B136,53
+SYN-SNAK-009,200000001179,"Sandwich cookies, cream-filled",Snacks,34,160,135,14,14,2.0,0.5,1.5,55,25,25,"Sandwich cookies, cream-filled",contains_soy,contains_soy;contains_gluten;is_vegan,0.9,A11,S1,B137,60
+SYN-SNAK-010,200000001186,Hummus,Snacks,30,70,120,0.2,0,0.5,1.5,2,60,41,4,Hummus,,is_vegan,0.6,A11,S2,B138,26
+SYN-SNAK-011,200000001193,"Roasted peanuts, salted",Snacks,28,166,230,1.3,0,2.3,2.7,6.7,200,100,6,"Roasted peanuts, salted",contains_peanut,contains_peanut;is_vegan,0.8,A11,S3,B139,33
+SYN-SNAK-012,200000001209,Cheese crackers,Snacks,30,150,250,1,0,2.5,0.5,3,50,70,18,Cheese crackers,contains_dairy,contains_dairy;contains_gluten,0.5,A11,S4,B140,40
+SYN-BEVR-001,200000001216,"Spring water, bottled",Beverages,500,0,0,0,0,0,0,0,0,0,0,"Spring water, bottled",,is_vegan,1.1,A12,S1,B141,47
+SYN-BEVR-002,200000001223,"Sparkling water, unflavored",Beverages,355,0,0,0,0,0,0,0,0,0,0,"Sparkling water, unflavored",,is_vegan,0.8,A12,S2,B142,54
+SYN-BEVR-003,200000001230,"Orange juice, 100%",Beverages,248,112,2,21,0,0.1,0.5,1.7,496,42,26,"Orange juice, 100%",,is_vegan,2.0,A12,S3,B143,20
+SYN-BEVR-004,200000001247,"Apple juice, 100%",Beverages,248,114,10,24.4,0,0,0.5,0.2,250,17,28,"Apple juice, 100%",,is_vegan,2.0,A12,S4,B144,27
+SYN-BEVR-005,200000001254,Cola soda,Beverages,368,140,15,39,39,0,0,0,4,40,39,Cola soda,,is_vegan,0.8,A12,S1,B145,34
+SYN-BEVR-006,200000001261,Lemon-lime soda,Beverages,368,140,40,38,38,0,0,0,5,5,38,Lemon-lime soda,,is_vegan,0.8,A12,S2,B146,41
+SYN-BEVR-007,200000001278,"Sports drink, fruit-flavored",Beverages,360,80,150,21,21,0,0,0,40,0,21,"Sports drink, fruit-flavored",,is_vegan,0.8,A12,S3,B147,48
+SYN-BEVR-008,200000001285,"Coffee, ground, brewed",Beverages,237,2,5,0,0,0,0,0.3,116,7,0,"Coffee, ground, brewed",,is_vegan,1.0,A12,S4,B148,55
+SYN-BEVR-009,200000001292,"Black tea, unsweetened",Beverages,237,2,7,0,0,0,0,0,88,2,0.7,"Black tea, unsweetened",,is_vegan,0.2,A12,S1,B149,21
+SYN-BEVR-010,200000001308,Tomato juice,Beverages,243,41,615,6.3,0,0,1.0,1.9,527,46,8.6,Tomato juice,,is_vegan,2.0,A12,S2,B150,28
+SYN-BEVR-011,200000001315,Low-sodium vegetable juice,Beverages,240,50,140,9,0,0,2,1,450,40,11,Low-sodium vegetable juice,,is_vegan,2.0,A12,S3,B151,35

@@ -18,8 +18,8 @@ def test_seed_users_creates_synthetic_roles_clients_and_profiles(monkeypatch):
         clients = database.scalars(select(Client)).all()
         profiles = database.scalars(select(DietaryProfile)).all()
 
-    assert len(seeded) == 7
-    assert len(users) == 7
+    assert len(seeded) == 10
+    assert len(users) == 10
     assert {user.role for user in users} == {
         "Client",
         "Volunteer",
@@ -27,6 +27,6 @@ def test_seed_users_creates_synthetic_roles_clients_and_profiles(monkeypatch):
         "Warehouse Manager",
         "Director",
     }
-    assert len(clients) == 3
-    assert len(profiles) == 3
+    assert len(clients) == 6  # 5 personas + the inactive status account
+    assert len(profiles) == 6
     assert SYNTHETIC_PASSWORD == "demo-password"

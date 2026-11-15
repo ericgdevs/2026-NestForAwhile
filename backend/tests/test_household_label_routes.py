@@ -54,6 +54,8 @@ def test_red_scan_offers_safer_in_stock_swaps_with_location(database, logged_in_
     green = _get(database, login.cookies, "/products/scan/000000000001").json()
 
     assert red["status"] == "Restricted"
-    assert [swap["name"] for swap in red["swaps"]] == ["Synthetic Rolled Oats"]  # same category
+    names = [swap["name"] for swap in red["swaps"]]
+    assert names[0] == "Synthetic Rolled Oats"  # same category, oldest stock first
+    assert len(names) == 2  # capped at MAX_SWAPS now that Grains has more stock
     assert {"aisle", "shelf", "bin"} <= set(red["swaps"][0])
     assert green["swaps"] == []
