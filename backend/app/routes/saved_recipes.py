@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.auth import Role, require_roles
 from app.db import get_db
 from app.models import SavedRecipe, User
+from app.services.shopping_list import add_recipe_to_list
 
 router = APIRouter()
 client_only = require_roles(Role.CLIENT)
@@ -18,6 +19,7 @@ class SaveRecipeRequest(BaseModel):
     cuisine: str | None = Field(default=None, max_length=30)
     ingredients: list[dict] = Field(min_length=1, max_length=40)
     steps: list[str] = Field(min_length=1, max_length=40)
+    skip_product_id: int | None = None  # the scanned item the client already holds
 
 
 def _view(row: SavedRecipe) -> dict[str, object]:
@@ -40,10 +42,12 @@ def save_recipe(
     user: User = Depends(client_only),
     database: Session = Depends(get_db),
 ):
-    row = SavedRecipe(client_id=user.id, title=payload.title, recipe=payload.model_dump())
+    recipe = payload.model_dump(exclude={"skip_product_id"})
+    row = SavedRecipe(client_id=user.id, title=payload.title, recipe=recipe)
     database.add(row)
     database.commit()
-    return _view(row)
+    # Liking a recipe puts what is missing on the list, same as "Add to list".
+    return {**_view(row), "list": add_recipe_to_list(database, user, recipe, payload.skip_product_id)}
 
 
 @router.delete("/me/recipes/{recipe_id}", status_code=status.HTTP_204_NO_CONTENT)

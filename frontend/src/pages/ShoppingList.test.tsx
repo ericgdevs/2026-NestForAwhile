@@ -1,5 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { expect, test, vi } from "vitest";
+import { beforeEach, expect, test, vi } from "vitest";
 
 import ShoppingList from "./ShoppingList";
 
@@ -15,8 +15,17 @@ const api = vi.hoisted(() => ({
   deleteListLine: vi.fn(),
   parseShoppingList: vi.fn(),
   addToShoppingList: vi.fn(),
+  scanProduct: vi.fn(),
 }));
+beforeEach(() => vi.clearAllMocks());
 vi.mock("../api/client", () => api);
+vi.mock("../components/BarcodeScanner", () => ({
+  default: ({ onDetected }: { onDetected: (code: string) => void }) => (
+    <button type="button" onClick={() => onDetected("000000000009")}>
+      Fake scan
+    </button>
+  ),
+}));
 
 test("shows locations, sources, and ticks a line", async () => {
   api.getShoppingList.mockResolvedValue({ items: lines });
@@ -63,4 +72,112 @@ test("one line shows every recipe it is for", async () => {
   expect(screen.getByText("For: Bean tacos")).toBeInTheDocument();
   expect(screen.getByText("You added")).toBeInTheDocument();
   expect(screen.getAllByText(/^Open recipe:/)).toHaveLength(2);
+});
+
+const salty = {
+  text: "salty soup",
+  product_id: 5,
+  name: "Salty Soup",
+  status: "Restricted",
+  not_for: [{ nickname: "Person 1", reason: "too much sodium" }],
+  location: null,
+  swaps: [{ product_id: 6, name: "Low Sodium Soup", status: "Approved", not_for: [], aisle: "A3", shelf: "S1", bin: "B1" }],
+};
+
+test("review: restricted item warns and offers a swap; the swap is added only after confirming", async () => {
+  api.getShoppingList.mockResolvedValue({ items: [] });
+  api.parseShoppingList.mockResolvedValue({ lines: [salty, { text: "caviar", product_id: null, name: null, status: null, location: null }] });
+  api.addToShoppingList.mockResolvedValue({ items: [] });
+  render(<ShoppingList />);
+  await screen.findByText(/your list is empty/i);
+
+  fireEvent.change(screen.getByLabelText("Type or paste your list"), { target: { value: "salty soup\ncaviar" } });
+  fireEvent.click(screen.getByRole("button", { name: "Find these items" }));
+
+  expect(await screen.findByText(/isn't recommended for anyone/i)).toBeInTheDocument();
+  expect(screen.getByText(/We don't carry this/)).toBeInTheDocument();
+  expect(api.addToShoppingList).not.toHaveBeenCalled();
+
+  fireEvent.click(screen.getByRole("button", { name: /Use Low Sodium Soup instead/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Remove caviar" }));
+  fireEvent.click(screen.getByRole("button", { name: "Add 1 to my list" }));
+
+  await waitFor(() => expect(api.addToShoppingList).toHaveBeenCalledWith([{ text: "Low Sodium Soup", product_id: 6 }]));
+});
+
+test("review: editing a row's text matches it again", async () => {
+  api.getShoppingList.mockResolvedValue({ items: [] });
+  api.parseShoppingList
+    .mockResolvedValueOnce({ lines: [{ text: "blak beans", product_id: null, name: null, status: null, location: null }] })
+    .mockResolvedValueOnce({ lines: [{ text: "black beans", product_id: 2, name: "Synthetic Black Beans", status: "Approved", location: null }] });
+  render(<ShoppingList />);
+  await screen.findByText(/your list is empty/i);
+  fireEvent.change(screen.getByLabelText("Type or paste your list"), { target: { value: "blak beans" } });
+  fireEvent.click(screen.getByRole("button", { name: "Find these items" }));
+
+  const input = await screen.findByLabelText("Item 1");
+  fireEvent.change(input, { target: { value: "black beans" } });
+  fireEvent.blur(input);
+
+  expect(await screen.findByText(/We matched: Synthetic Black Beans/)).toBeInTheDocument();
+  expect(api.parseShoppingList).toHaveBeenLastCalledWith({ text: "black beans" });
+});
+
+test("scan to add: a scanned product goes to the review step with its safety status", async () => {
+  api.getShoppingList.mockResolvedValue({ items: [] });
+  api.scanProduct.mockResolvedValue({ product_id: 5, name: "Salty Soup", status: "Restricted" });
+  api.parseShoppingList.mockResolvedValue({ lines: [{ ...salty, text: "Salty Soup" }] });
+  api.addToShoppingList.mockResolvedValue({ items: [] });
+  render(<ShoppingList />);
+  await screen.findByText(/your list is empty/i);
+
+  fireEvent.click(screen.getByRole("button", { name: "Fake scan" }));
+
+  expect(await screen.findByText(/isn't recommended for anyone/i)).toBeInTheDocument();
+  expect(api.scanProduct).toHaveBeenCalledWith("000000000009");
+  vi.spyOn(window, "confirm").mockReturnValue(true);
+  fireEvent.click(screen.getByRole("button", { name: "Add 1 to my list" }));
+  await waitFor(() => expect(api.addToShoppingList).toHaveBeenCalledWith([{ text: "Salty Soup", product_id: 5 }]));
+});
+
+test("a photo the model can't read shows the server's clear message", async () => {
+  api.getShoppingList.mockResolvedValue({ items: [] });
+  api.parseShoppingList.mockRejectedValue(new Error("We can't read photos right now. Please type your list instead."));
+  render(<ShoppingList />);
+  await screen.findByText(/your list is empty/i);
+  fireEvent.change(screen.getByLabelText("Type or paste your list"), { target: { value: "oats" } });
+  fireEvent.click(screen.getByRole("button", { name: "Find these items" }));
+  expect(await screen.findByRole("status")).toHaveTextContent(/type your list instead/i);
+});
+
+test("two lines that match the same product become one review row", async () => {
+  api.getShoppingList.mockResolvedValue({ items: [] });
+  const oats = { product_id: 1, name: "Synthetic Rolled Oats", status: "Approved", location: null };
+  api.parseShoppingList.mockResolvedValue({ lines: [{ text: "oats", ...oats }, { text: "rolled oats", ...oats }] });
+  api.addToShoppingList.mockResolvedValue({ items: [] });
+  render(<ShoppingList />);
+  await screen.findByText(/your list is empty/i);
+  fireEvent.change(screen.getByLabelText("Type or paste your list"), { target: { value: "oats\nrolled oats" } });
+  fireEvent.click(screen.getByRole("button", { name: "Find these items" }));
+
+  expect(await screen.findAllByLabelText(/^Item \d/)).toHaveLength(1);
+  fireEvent.click(screen.getByRole("button", { name: "Add 1 to my list" }));
+  await waitFor(() => expect(api.addToShoppingList).toHaveBeenCalledWith([{ text: "oats", product_id: 1 }]));
+});
+
+test("a kept item we don't carry is added as a plain note, with no safety status", async () => {
+  api.getShoppingList.mockResolvedValue({ items: [] });
+  api.parseShoppingList.mockResolvedValue({ lines: [{ text: "pizza", product_id: null, name: null, status: null, location: null }] });
+  api.addToShoppingList.mockResolvedValue({ items: [] });
+  render(<ShoppingList />);
+  await screen.findByText(/your list is empty/i);
+  fireEvent.change(screen.getByLabelText("Type or paste your list"), { target: { value: "pizza" } });
+  fireEvent.click(screen.getByRole("button", { name: "Find these items" }));
+
+  expect(await screen.findByText(/go on your list as a note/)).toBeInTheDocument();
+  expect(screen.queryByRole("status", { name: /Good match/ })).not.toBeInTheDocument();
+  fireEvent.click(screen.getByRole("button", { name: "Add 1 to my list" }));
+  await waitFor(() =>
+    expect(api.addToShoppingList).toHaveBeenCalledWith([{ text: "pizza — not stocked today", product_id: null, note: true }]),
+  );
 });

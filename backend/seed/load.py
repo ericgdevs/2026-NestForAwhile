@@ -53,6 +53,8 @@ MEMBER_SEEDS = {
     ),
 }
 
+# To add a real demo product, append a dict here with a real UPC-A/EAN-13 in "barcode"
+# (the SKU stays our own label code). Scans and /labels pick it up on the next seed run.
 PRODUCT_SEEDS = (
     {
         "sku": "SYN-OATS-001",

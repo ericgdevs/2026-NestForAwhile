@@ -218,9 +218,22 @@ export function getSavedRecipes(): Promise<Recipe[]> {
   return apiRequest("/me/recipes");
 }
 
-export function saveRecipe(recipe: Recipe): Promise<Recipe> {
+/** What a recipe's "Save" or "Add to list" did to the shopping list (the server works out the diff). */
+export type RecipeListResult = {
+  added: { name: string; location: Location | null }[];
+  blocked: { name: string; not_for: NotFor[]; swaps: Swap[] }[];
+  in_cart: number;
+  already_on_list: number;
+};
+
+/** Saving a recipe also puts its missing ingredients on the list; `skipProductId` is the item just scanned. */
+export async function saveRecipe(recipe: Recipe, skipProductId?: number | null): Promise<RecipeListResult> {
   const { title, cuisine, ingredients, steps } = recipe;
-  return apiRequest("/me/recipes", { method: "POST", body: { title, cuisine, ingredients, steps } });
+  const saved = await apiRequest<{ list: RecipeListResult }>("/me/recipes", {
+    method: "POST",
+    body: { title, cuisine, ingredients, steps, skip_product_id: skipProductId ?? null },
+  });
+  return saved.list;
 }
 
 export function deleteSavedRecipe(id: number) {
@@ -245,7 +258,7 @@ export function getShoppingList(): Promise<{ items: ListLine[] }> {
   return apiRequest("/shopping-list");
 }
 
-export function addToShoppingList(items: { text: string; product_id?: number | null }[], recipe?: Recipe) {
+export function addToShoppingList(items: { text: string; product_id?: number | null; note?: boolean }[], recipe?: Recipe) {
   return apiRequest<{ items: ListLine[] }>("/shopping-list", { method: "POST", body: { items, recipe } });
 }
 
@@ -253,20 +266,27 @@ export function tickListLine(id: number, ticked: boolean) {
   return apiRequest<{ items: ListLine[] }>(`/shopping-list/${id}`, { method: "PATCH", body: { ticked } });
 }
 
-/** A recipe's "Add to list": its ingredients go on the shopping list (not the cart), tagged with the recipe. */
+/** A recipe's "Add to list": only ingredients not in the cart, not already listed and safe for everyone. */
 export function addRecipeToList(recipe: Recipe, skipProductId?: number | null) {
-  const items = recipe.ingredients
-    .filter((ingredient) => ingredient.product_id === null || ingredient.product_id !== skipProductId)
-    .map((ingredient) => ({ text: ingredient.name, product_id: ingredient.product_id }));
-  // Nothing else to find (e.g. the recipe only uses the scanned item): already done.
-  return items.length ? addToShoppingList(items, recipe) : Promise.resolve(null);
+  return apiRequest<RecipeListResult>("/shopping-list/from-recipe", {
+    method: "POST",
+    body: { recipe, skip_product_id: skipProductId ?? null },
+  });
 }
 
 export function deleteListLine(id: number) {
   return apiRequest(`/shopping-list/${id}`, { method: "DELETE" });
 }
 
-export type ParsedLine = { text: string; product_id: number | null; name: string | null; status: SafetyStatus | null; location: Location | null };
+export type ParsedLine = {
+  text: string;
+  product_id: number | null;
+  name: string | null;
+  status: SafetyStatus | null;
+  location: Location | null;
+  not_for?: NotFor[];
+  swaps?: Swap[];
+};
 
 export function parseShoppingList(input: { text: string } | { image_base64: string; media_type: string }) {
   return apiRequest<{ lines: ParsedLine[] }>("/shopping-list/parse", { method: "POST", body: input });
@@ -310,6 +330,10 @@ export function validateCheckout(token: string): Promise<{ valid: boolean; error
 
 export function completeCheckout(token: string): Promise<{ checkout_id: number; total_lb: number }> {
   return apiRequest(`/checkout/${encodeURIComponent(token)}/complete`, { method: "POST" });
+}
+
+export function getProductLabels() {
+  return apiRequest<Array<{ sku: string; name: string }>>("/products/labels");
 }
 
 export function getInventoryLots() {

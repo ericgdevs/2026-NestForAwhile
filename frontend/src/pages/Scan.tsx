@@ -190,7 +190,7 @@ export default function Scan() {
           ) : (
             <RecipeGroups
               actions={{
-                onSave: saveRecipe,
+                onSave: (recipe) => saveRecipe(recipe, result.product_id),
                 onAddToList: (recipe) => addRecipeToList(recipe, result.product_id),
               }}
               recipes={recipes}

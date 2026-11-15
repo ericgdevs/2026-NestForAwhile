@@ -3,13 +3,17 @@
 from __future__ import annotations
 
 import re
+from difflib import get_close_matches
 from datetime import date
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
-from app.models import InventoryLot, Product, ShoppingListItem
-from app.rules.classify import household_label
+from app.models import Cart, CartItem, Client, InventoryLot, Product, ShoppingListItem, User
+from app.rules.classify import RESTRICTED, household_label
+from app.services.cart import active_session
+from app.services.nutrition import members_for
+from app.services.swaps import find_swaps
 
 FILLER = {
     "a",
@@ -75,7 +79,9 @@ def match_line(line: str, stocked: dict[int, InventoryLot]) -> Product | None:
     best, best_score = None, 0.0
     for lot in stocked.values():
         product = lot.product
-        score = len(wanted & _words(f"{product.name} {product.category}")) / len(wanted)
+        have = _words(f"{product.name} {product.category}")
+        # Close spellings count too ("blak bean"), so a handwritten typo still matches.
+        score = sum(1 for w in wanted if w in have or get_close_matches(w, have, 1, 0.8)) / len(wanted)
         if score > best_score:
             best, best_score = product, score
     return best if best_score >= 0.5 else None
@@ -142,3 +148,82 @@ def aisle_order(view: dict[str, object]) -> tuple:
         location.get("bin", ""),
         view["id"],
     )
+
+
+NOT_STOCKED = " — not stocked today"
+
+
+def note_text(name: str) -> str:
+    """Plain-note wording for an item we can't point the client to."""
+    return name[: 120 - len(NOT_STOCKED)] + NOT_STOCKED
+
+
+def cart_product_ids(database: Session, client: Client) -> set[int]:
+    session = active_session(database, client)
+    if session is None:
+        return set()
+    return set(
+        database.scalars(
+            select(CartItem.product_id).join(Cart).where(Cart.session_id == session.id)
+        )
+    )
+
+
+def add_recipe_to_list(
+    database: Session, user: User, recipe: dict, skip_product_id: int | None = None
+) -> dict[str, object]:
+    """Put a recipe's missing ingredients on the list; never ones in the cart, already listed,
+    or restricted for the household (those come back with the reason and in-stock swaps)."""
+    client = database.get(Client, user.id)
+    members = members_for(client)
+    stocked = first_lots(database)
+    in_cart = cart_product_ids(database, client)
+    existing = list(
+        database.scalars(select(ShoppingListItem).where(ShoppingListItem.client_id == user.id))
+    )
+    added, blocked, seen = [], [], set()
+    counts = {"in_cart": 0, "already_on_list": 0}
+    for ingredient in recipe["ingredients"]:
+        product_id, name = ingredient.get("product_id"), ingredient["name"]
+        if product_id == skip_product_id and product_id is not None:
+            continue
+        if (product_id, name) in seen:
+            continue
+        seen.add((product_id, name))
+        product = database.get(Product, product_id) if product_id is not None else None
+        if product is not None and product.id in in_cart:
+            counts["in_cart"] += 1
+            continue
+        label = household_label(product, members) if product is not None else None
+        # "Restricted for anyone": the label is Red only when everyone is blocked, so check not_for.
+        if label and (label["status"] == RESTRICTED or label["not_for"]):
+            blocked.append(
+                {
+                    "name": name,
+                    "not_for": label["not_for"],
+                    "swaps": find_swaps(database, product, members),
+                }
+            )
+            continue
+        in_stock = product is not None and product.id in stocked
+        # Not carried or out of stock: a plain note, never a product row with a safety colour.
+        text, line_product = (name, product.id) if in_stock else (note_text(name), None)
+        if product is None:
+            text = name  # a pantry item the catalog doesn't know stays as the recipe wrote it
+        item = find_same_line(existing, line_product, text)
+        if item is not None:
+            counts["already_on_list"] += 1
+        else:
+            item = ShoppingListItem(client_id=user.id, product_id=line_product, text=text)
+            item.source, item.recipe = "recipe", []
+            database.add(item)
+            existing.append(item)
+            added.append(
+                {
+                    "name": product.name if in_stock else text,
+                    "location": location_of(stocked.get(product.id)) if in_stock else None,
+                }
+            )
+        merge_into_line(item, recipe)
+    database.commit()
+    return {"added": added, "blocked": blocked, **counts}

@@ -17,6 +17,7 @@ export function canVisit(role: AppRole, path: string): boolean {
   if (managementPaths.includes(path as (typeof managementPaths)[number])) {
     return role === "Warehouse Manager" || role === "Director";
   }
+  if (path === "/labels") return role === "Warehouse Manager";
   if (path === "/approvals") return role === "Warehouse Manager";
   return true;
 }
@@ -33,6 +34,7 @@ const allLinks: NavLink[] = [
   { href: "/audit", label: "Audit", icon: "audit" },
   { href: "/replenishment", label: "Restock", icon: "restock" },
   { href: "/lots", label: "Lots", icon: "lots" },
+  { href: "/labels", label: "Labels", icon: "scan" },
   { href: "/approvals", label: "Approvals", icon: "profile" },
   { href: "/analytics", label: "Analytics", icon: "analytics" },
   { href: "/reports", label: "Reports", icon: "reports" },

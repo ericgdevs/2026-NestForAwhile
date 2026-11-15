@@ -57,7 +57,7 @@ test("supports manual SKU lookup and shows recipes for the item", async () => {
   fireEvent.click(await screen.findByRole("button", { name: "Save: Oat porridge" }));
   fireEvent.click(screen.getByRole("button", { name: "Add to list: Oat porridge" }));
   await waitFor(() => expect(api.addRecipeToList).toHaveBeenCalledWith(recipe, 1));
-  expect(api.saveRecipe).toHaveBeenCalledWith(recipe);
+  expect(api.saveRecipe).toHaveBeenCalledWith(recipe, 1);
   expect(await screen.findByRole("button", { name: "On your list: Oat porridge" })).toBeDisabled();
 });
 
