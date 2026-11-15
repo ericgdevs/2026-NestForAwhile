@@ -179,26 +179,20 @@ export default function ShoppingList() {
             <button className="btn btn-primary" disabled={busy || !text.trim()} type="button" onClick={() => void parse({ text })}>
               Find these items
             </button>
-            {[
-              { label: "Take photo", icon: "camera", capture: "environment" },
-              { label: "Upload image", icon: "restock", capture: undefined },
-            ].map(({ label, icon, capture }) => (
-              <label className="btn btn-secondary" key={label}>
-                <Icon name={icon as "camera" | "restock"} />
-                {label}
-                <input
-                  accept="image/*"
-                  capture={capture as "environment" | undefined}
-                  className="sr-only"
-                  type="file"
-                  onChange={(event) => {
-                    const file = event.target.files?.[0];
-                    event.target.value = "";
-                    if (file) void readPhoto(file);
-                  }}
-                />
-              </label>
-            ))}
+            <label className="btn btn-secondary">
+              <Icon name="upload" />
+              Upload photo
+              <input
+                accept="image/*"
+                className="sr-only"
+                type="file"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  event.target.value = "";
+                  if (file) void readPhoto(file);
+                }}
+              />
+            </label>
           </div>
           {busy && <p className="panel-sub">Reading your list…</p>}
           {message && (
