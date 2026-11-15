@@ -47,7 +47,7 @@ export default function Labels() {
           <h1>Product labels</h1>
           <p>Print these and stick one on each product. The QR code and the barcode both hold the SKU.</p>
         </div>
-        <button className="btn btn-primary" type="button" onClick={() => window.print()}>
+        <button className="btn btn-primary" disabled={!products?.length} type="button" onClick={() => window.print()}>
           <Icon name="reports" />
           <span>Print labels</span>
         </button>
@@ -55,17 +55,23 @@ export default function Labels() {
       {error && (
         <p className="alert alert-danger" role="alert">
           <Icon name="alert" />
-          We couldn't load the products. Try again.
+          <span>We couldn't load the products. Refresh the page to try again.</span>
         </p>
       )}
+      {!products && !error && <p className="empty no-print">Loading product labels…</p>}
       {products?.length === 0 && <p className="panel empty">There are no products yet.</p>}
+      {!!products?.length && (
+        <p className="panel-sub no-print" style={{ marginBottom: "1rem" }}>
+          {products.length} {products.length === 1 ? "label" : "labels"} ready to print.
+        </p>
+      )}
       <section aria-label="Product labels" className="label-grid">
         {products?.map((product) => (
           <article className="label-card" key={product.sku}>
             <QrSvg sku={product.sku} />
             <Code128Svg sku={product.sku} />
             <h2>{product.name}</h2>
-            <p className="tabular">{product.sku}</p>
+            <p className="label-sku tabular">{product.sku}</p>
           </article>
         ))}
       </section>

@@ -92,24 +92,27 @@ export default function BarcodeScanner({ onDetected }: Props) {
 
   return (
     <div className="stack">
-      <video
-        aria-label="Barcode camera preview"
-        className="camera"
-        hidden={!active}
-        muted
-        playsInline
-        ref={videoRef}
-        style={mirrored ? { transform: "scaleX(-1)" } : undefined}
-      />
+      <div className="camera-frame" hidden={!active}>
+        <video
+          aria-label="Barcode camera preview"
+          className="camera"
+          hidden={!active}
+          muted
+          playsInline
+          ref={videoRef}
+          style={mirrored ? { transform: "scaleX(-1)" } : undefined}
+        />
+        <span aria-hidden="true" className="camera-guide" />
+      </div>
       {active && (
-        <p className="alert" role="status">
+        <p className="alert alert-info" role="status">
           <Icon name="camera" />
-          Camera on. Hold a QR code or barcode steady in view.
+          <span>Camera on. Hold the QR code or barcode steady inside the frame.</span>
         </p>
       )}
       {active && cameras.length > 1 && (
         <label className="field">
-          <span className="field-label">Camera</span>
+          <span className="field-label">Switch camera</span>
           <select className="input" value={deviceId} onChange={(event) => void start(event.target.value)}>
             {cameras.map((camera) => (
               <option key={camera.deviceId} value={camera.deviceId}>
@@ -133,7 +136,7 @@ export default function BarcodeScanner({ onDetected }: Props) {
       {error && (
         <p className="alert alert-warn" role="alert">
           <Icon name="alert" />
-          {error}
+          <span>{error}</span>
         </p>
       )}
     </div>

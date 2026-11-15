@@ -73,3 +73,20 @@ test("a restricted ingredient is not added: the reason and an in-stock swap are 
   expect(screen.getByRole("alert")).toHaveTextContent(/Not added: Nut crackers.*Not for Little one: nut allergy/);
   expect(screen.getByRole("button", { name: /Add Seed crackers instead/ })).toBeInTheDocument();
 });
+
+test("Add to list says Nothing to add when the server added nothing", async () => {
+  const onAddToList = vi.fn().mockResolvedValue({ added: [], blocked: [], in_cart: 2, already_on_list: 1 });
+  render(<RecipeGroups actions={{ onAddToList }} recipes={[recipe("Bean tacos")]} />);
+  fireEvent.click(screen.getByRole("button", { name: "Add to list: Bean tacos" }));
+
+  expect(await screen.findByRole("button", { name: "Nothing to add: Bean tacos" })).toBeDisabled();
+  expect(screen.queryByRole("button", { name: /On your list/ })).not.toBeInTheDocument();
+});
+
+test("Add to list keeps On your list when at least one item was added", async () => {
+  const onAddToList = vi.fn().mockResolvedValue({ added: [{ name: "salt", location: null }], blocked: [], in_cart: 0, already_on_list: 0 });
+  render(<RecipeGroups actions={{ onAddToList }} recipes={[recipe("Bean tacos")]} />);
+  fireEvent.click(screen.getByRole("button", { name: "Add to list: Bean tacos" }));
+
+  expect(await screen.findByRole("button", { name: "On your list: Bean tacos" })).toBeDisabled();
+});
