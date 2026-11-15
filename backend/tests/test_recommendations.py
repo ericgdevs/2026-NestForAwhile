@@ -3,6 +3,18 @@ from fastapi.testclient import TestClient
 from app.auth import Role
 from app.db import get_db
 from app.main import app
+from app.models import (
+    Cart,
+    CartItem,
+    Checkout,
+    CheckoutItem,
+    Client,
+    InventoryLot,
+    Product,
+    ShoppingListItem,
+    ShoppingSession,
+)
+from app.services.recommendations import POPULAR_COUNT
 
 
 def test_recommendations_scale_to_household_and_exclude_restricted(database, logged_in_client):
@@ -57,3 +69,131 @@ def test_saved_recipe_items_come_first_with_a_reason(database, logged_in_client)
         app.dependency_overrides.clear()
     assert picks[0]["product_id"] == beans.id
     assert "recipe you saved" in picks[0]["rationale"]
+
+
+# --- picks come from the client's own history, saved recipes and list; fallback is popularity ---
+def _recommend(database, login):
+    app.dependency_overrides[get_db] = lambda: database
+    try:
+        return TestClient(app).get("/recommendations", cookies=login.cookies).json()
+    finally:
+        app.dependency_overrides.clear()
+
+
+def _product(database, sku):
+    return database.query(Product).filter_by(sku=sku).one()
+
+
+def _checkout(database, client_id, product, quantity):
+    """A completed checkout for a client (synthetic)."""
+    lot = database.query(InventoryLot).filter_by(product_id=product.id).first()
+    session = ShoppingSession(
+        Shopping_Session_Token=f"synthetic-{client_id}-{product.id}-{quantity}",
+        client_id=client_id,
+        status="completed",
+    )
+    database.add(session)
+    database.flush()
+    checkout = Checkout(
+        session_id=session.id, validated_by=client_id, status="completed", total_lb=1
+    )
+    database.add(checkout)
+    database.flush()
+    database.add(
+        CheckoutItem(
+            checkout_id=checkout.id,
+            product_id=product.id,
+            lot_id=lot.id,
+            quantity=quantity,
+            status_at_checkout="Approved",
+        )
+    )
+    database.commit()
+
+
+def _other_client_id(database, login):
+    return database.query(Client).filter(Client.user_id != login.user.id).first().user_id
+
+
+def _list_item(database, login, product, ticked=False):
+    database.add(
+        ShoppingListItem(
+            client_id=login.user.id, product_id=product.id, text=product.name, ticked=ticked
+        )
+    )
+    database.commit()
+
+
+def test_list_item_is_recommended_with_the_list_reason_and_unrelated_products_are_not(
+    database, logged_in_client
+):
+    login = logged_in_client(Role.CLIENT)
+    beans, oats = _product(database, "SYN-BEANS-001"), _product(database, "SYN-OATS-001")
+    _list_item(database, login, beans)
+    _list_item(database, login, oats, ticked=True)  # ticked items don't count
+
+    picks = _recommend(database, login)
+
+    assert [pick["product_id"] for pick in picks] == [beans.id]
+    assert "It's on your shopping list." in picks[0]["rationale"]
+
+
+def test_a_product_in_the_active_cart_is_hidden(database, logged_in_client):
+    login = logged_in_client(Role.CLIENT)
+    beans, oats = _product(database, "SYN-BEANS-001"), _product(database, "SYN-OATS-001")
+    _list_item(database, login, beans)
+    _list_item(database, login, oats)
+    session = ShoppingSession(Shopping_Session_Token="synthetic-cart", client_id=login.user.id)
+    database.add(session)
+    database.flush()
+    cart = Cart(session_id=session.id)
+    database.add(cart)
+    database.flush()
+    database.add(CartItem(cart_id=cart.id, product_id=beans.id, quantity=1))
+    database.commit()
+
+    assert [p["product_id"] for p in _recommend(database, login)] == [oats.id]
+
+
+def test_a_client_with_no_history_gets_the_most_taken_product_first(database, logged_in_client):
+    login = logged_in_client(Role.CLIENT)
+    other = _other_client_id(database, login)
+    beans, oats = _product(database, "SYN-BEANS-001"), _product(database, "SYN-OATS-001")
+    _checkout(database, other, oats, 2)
+    _checkout(database, other, beans, 3)
+    _checkout(database, other, beans, 2)
+
+    picks = _recommend(database, login)
+
+    assert picks[0]["product_id"] == beans.id  # 5 taken beats 2
+    assert "Popular at the warehouse." in picks[0]["rationale"]
+    assert picks[1]["product_id"] == oats.id
+    assert "Popular at the warehouse." not in picks[2]["rationale"]  # never taken
+
+
+def test_fallback_is_capped(database, logged_in_client):
+    login = logged_in_client(Role.CLIENT)
+    other = _other_client_id(database, login)
+    products = database.query(Product).filter(Product.sku.like("SYN-PROD-%")).limit(6).all()
+    for product in products:
+        _checkout(database, other, product, 1)
+
+    assert len(_recommend(database, login)) == POPULAR_COUNT == 4
+
+
+def test_with_no_checkouts_at_all_the_first_four_safe_in_stock_products_are_shown(
+    database, logged_in_client
+):
+    login = logged_in_client(Role.CLIENT)
+    picks = _recommend(database, login)
+
+    assert len(picks) == POPULAR_COUNT
+    assert all(pick["status"] != "Restricted" for pick in picks)
+    assert all("Popular" not in pick["rationale"] for pick in picks)
+    first_lots = (
+        database.query(InventoryLot)
+        .filter(InventoryLot.quantity > 0)
+        .order_by(InventoryLot.expiration_date, InventoryLot.id)
+        .all()
+    )
+    assert picks[0]["product_id"] == first_lots[0].product_id  # oldest stock first
