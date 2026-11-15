@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from difflib import get_close_matches
 from datetime import date
 
 from sqlalchemy import select
@@ -75,7 +76,9 @@ def match_line(line: str, stocked: dict[int, InventoryLot]) -> Product | None:
     best, best_score = None, 0.0
     for lot in stocked.values():
         product = lot.product
-        score = len(wanted & _words(f"{product.name} {product.category}")) / len(wanted)
+        have = _words(f"{product.name} {product.category}")
+        # Close spellings count too ("blak bean"), so a handwritten typo still matches.
+        score = sum(1 for w in wanted if w in have or get_close_matches(w, have, 1, 0.8)) / len(wanted)
         if score > best_score:
             best, best_score = product, score
     return best if best_score >= 0.5 else None

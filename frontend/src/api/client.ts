@@ -266,7 +266,15 @@ export function deleteListLine(id: number) {
   return apiRequest(`/shopping-list/${id}`, { method: "DELETE" });
 }
 
-export type ParsedLine = { text: string; product_id: number | null; name: string | null; status: SafetyStatus | null; location: Location | null };
+export type ParsedLine = {
+  text: string;
+  product_id: number | null;
+  name: string | null;
+  status: SafetyStatus | null;
+  location: Location | null;
+  not_for?: NotFor[];
+  swaps?: Swap[];
+};
 
 export function parseShoppingList(input: { text: string } | { image_base64: string; media_type: string }) {
   return apiRequest<{ lines: ParsedLine[] }>("/shopping-list/parse", { method: "POST", body: input });

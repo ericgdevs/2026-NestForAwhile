@@ -9,11 +9,12 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.ai.list_reader import read_list_photo
+from app.ai.list_reader import VisionNotConfigured
 from app.ai.provider import ProviderError
 from app.auth import Role, require_roles
 from app.db import get_db
 from app.models import CartItem, Client, ShoppingListItem, User
-from app.rules.classify import household_label
+from app.rules.classify import RESTRICTED, household_label
 from app.services.cart import active_session, get_or_create_cart
 from app.services.nutrition import members_for
 from app.services.shopping_list import (
@@ -26,6 +27,7 @@ from app.services.shopping_list import (
     merge_into_line,
     split_lines,
 )
+from app.services.swaps import find_swaps
 
 router = APIRouter()
 client_only = require_roles(Role.CLIENT)
@@ -148,27 +150,38 @@ def parse_list(
         except binascii.Error as exc:
             raise HTTPException(status_code=422, detail="That photo couldn't be read.") from exc
         try:
-            lines = read_list_photo(payload.image_base64, payload.media_type)
-        except ProviderError as exc:
+            items = read_list_photo(payload.image_base64, payload.media_type)
+        except VisionNotConfigured as exc:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="We can't read photos right now. Please type your list instead.",
             ) from exc
+        except ProviderError as exc:
+            raise HTTPException(
+                status_code=status.HTTP_502_BAD_GATEWAY,
+                detail="We couldn't read that photo. Try a clearer one, or type your list instead.",
+            ) from exc
+        # The shopping list has no quantity column, so a count rides along in the line text.
+        lines = [f"{i.name} ×{i.quantity}" if i.quantity > 1 else i.name for i in items]
     else:
         lines = split_lines(payload.text or "")
     stocked = first_lots(database)
     members = members_for(database.get(Client, user.id))
-    suggestions = []
-    for line in lines:
-        product = match_line(line, stocked)
-        lot = stocked.get(product.id) if product else None
-        suggestions.append(
-            {
-                "text": line,
-                "product_id": product.id if product else None,
-                "name": product.name if product else None,
-                "status": household_label(product, members)["status"] if product else None,
-                "location": location_of(lot),
-            }
-        )
-    return {"lines": suggestions}
+    return {"lines": [_suggestion(database, line, stocked, members) for line in lines]}
+
+
+def _suggestion(database: Session, line: str, stocked, members) -> dict[str, object]:
+    """One reviewable line: the catalog match, its household status from the rules engine."""
+    product = match_line(line, stocked)
+    if product is None:
+        return {"text": line, "product_id": None, "name": None, "status": None, "location": None}
+    label = household_label(product, members)
+    return {
+        "text": line,
+        "product_id": product.id,
+        "name": product.name,
+        "status": label["status"],
+        "not_for": label["not_for"],
+        "location": location_of(stocked.get(product.id)),
+        "swaps": find_swaps(database, product, members) if label["status"] == RESTRICTED else [],
+    }

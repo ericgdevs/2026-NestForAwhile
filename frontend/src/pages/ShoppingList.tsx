@@ -5,21 +5,31 @@ import {
   deleteListLine,
   getShoppingList,
   parseShoppingList,
+  scanProduct,
   tickListLine,
   type ListLine,
-  type ParsedLine,
+  type ScanResult,
 } from "../api/client";
+import BarcodeScanner from "../components/BarcodeScanner";
 import Icon from "../components/Icon";
+import ListReview, { type ReviewRow } from "../components/ListReview";
 import NotForLine from "../components/NotForLine";
+import { resizeToBase64Jpeg } from "../lib/resizeImage";
 import { StatusBadge } from "../components/StatusBadge";
 
-function readAsBase64(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result).split(",")[1] ?? "");
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
+const RED_CONFIRM = "This isn't recommended for anyone in your household. Add it anyway?";
+
+function rowFromScan(scan: ScanResult): ReviewRow {
+  return {
+    text: scan.name,
+    product_id: scan.product_id,
+    name: scan.name,
+    status: scan.status,
+    not_for: scan.not_for,
+    location: null,
+    swaps: scan.swaps,
+    keep: true,
+  };
 }
 
 function ListLineRow({ line, onChange }: { line: ListLine; onChange: (items: ListLine[]) => void }) {
@@ -79,7 +89,7 @@ function ListLineRow({ line, onChange }: { line: ListLine; onChange: (items: Lis
 export default function ShoppingList() {
   const [items, setItems] = useState<ListLine[] | null>(null);
   const [text, setText] = useState("");
-  const [suggestions, setSuggestions] = useState<(ParsedLine & { keep: boolean })[]>([]);
+  const [suggestions, setSuggestions] = useState<ReviewRow[]>([]);
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -103,9 +113,43 @@ export default function ShoppingList() {
     }
   }
 
+  async function readPhoto(file: File) {
+    setBusy(true);
+    setMessage("");
+    try {
+      await parse({ image_base64: await resizeToBase64Jpeg(file), media_type: "image/jpeg" });
+    } catch {
+      setMessage("We couldn't open that image. Try a JPG or PNG, or type your list instead.");
+      setBusy(false);
+    }
+  }
+
+  // Scan to add: same safety check as the Scan page, then the same review step.
+  async function scanToAdd(code: string) {
+    setMessage("");
+    try {
+      const scan = await scanProduct(code);
+      setSuggestions((rows) => [...rows, rowFromScan(scan)]);
+    } catch {
+      setMessage("We couldn't find that product. Try again or type it instead.");
+    }
+  }
+
+  async function recheck(index: number, value: string) {
+    if (!value) return;
+    try {
+      const { lines } = await parseShoppingList({ text: value });
+      const found = lines[0];
+      if (found) setSuggestions((rows) => rows.map((row, i) => (i === index ? { ...found, keep: row.keep } : row)));
+    } catch {
+      setMessage("We couldn't check that item. Try again.");
+    }
+  }
+
   async function addKept() {
     const kept = suggestions.filter((line) => line.keep);
     if (!kept.length) return;
+    if (kept.some((line) => line.status === "Restricted") && !window.confirm(RED_CONFIRM)) return;
     const list = await addToShoppingList(kept.map((line) => ({ text: line.text, product_id: line.product_id })));
     setItems(list.items);
     setSuggestions([]);
@@ -145,21 +189,26 @@ export default function ShoppingList() {
             <button className="btn btn-primary" disabled={busy || !text.trim()} type="button" onClick={() => void parse({ text })}>
               Find these items
             </button>
-            <label className="btn btn-secondary">
-              <Icon name="camera" />
-              Photo of a list
-              <input
-                accept="image/*"
-                capture="environment"
-                className="sr-only"
-                type="file"
-                onChange={async (event) => {
-                  const file = event.target.files?.[0];
-                  if (file) await parse({ image_base64: await readAsBase64(file), media_type: file.type || "image/jpeg" });
-                  event.target.value = "";
-                }}
-              />
-            </label>
+            {[
+              { label: "Take photo", icon: "camera", capture: "environment" },
+              { label: "Upload image", icon: "restock", capture: undefined },
+            ].map(({ label, icon, capture }) => (
+              <label className="btn btn-secondary" key={label}>
+                <Icon name={icon as "camera" | "restock"} />
+                {label}
+                <input
+                  accept="image/*"
+                  capture={capture as "environment" | undefined}
+                  className="sr-only"
+                  type="file"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (file) void readPhoto(file);
+                  }}
+                />
+              </label>
+            ))}
           </div>
           {busy && <p className="panel-sub">Reading your list…</p>}
           {message && (
@@ -168,32 +217,10 @@ export default function ShoppingList() {
               {message}
             </p>
           )}
+          <span className="field-label">Scan to add</span>
+          <BarcodeScanner onDetected={(code) => void scanToAdd(code)} />
           {suggestions.length > 0 && (
-            <div className="stack" aria-label="Matches">
-              <ul className="ingredients">
-                {suggestions.map((line, index) => (
-                  <li key={`${line.text}-${index}`}>
-                    <label className="list-tick">
-                      <input
-                        checked={line.keep}
-                        type="checkbox"
-                        onChange={() =>
-                          setSuggestions((all) => all.map((item, i) => (i === index ? { ...item, keep: !item.keep } : item)))
-                        }
-                      />
-                      <span>
-                        {line.name ?? line.text}
-                        {!line.product_id && <span className="panel-sub"> (we don't carry this)</span>}
-                      </span>
-                    </label>
-                    {line.status && <StatusBadge status={line.status} />}
-                  </li>
-                ))}
-              </ul>
-              <button className="btn btn-primary" type="button" onClick={() => void addKept()}>
-                Add {suggestions.filter((line) => line.keep).length} to my list
-              </button>
-            </div>
+            <ListReview rows={suggestions} onChange={setSuggestions} onConfirm={() => void addKept()} onRecheck={(i, v) => void recheck(i, v)} />
           )}
         </section>
 
