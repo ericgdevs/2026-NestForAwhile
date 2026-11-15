@@ -1,9 +1,34 @@
 import { useState } from "react";
 
 import { addToShoppingList, type Recipe, type RecipeListResult } from "../api/client";
-import Icon from "./Icon";
+import Icon, { type IconName } from "./Icon";
 
 const DEFAULT_GROUP = "Suggested for you";
+const ALL = "All";
+// Offered where the page can ask the API for more; other screens only show cuisines they already have.
+export const CUISINES: [string, IconName][] = [
+  ["American", "american"],
+  ["Mexican", "mexican"],
+  ["Italian", "italian"],
+  ["Chinese", "chinese"],
+  ["Japanese", "japanese"],
+  ["Korean", "korean"],
+  ["Thai", "thai"],
+  ["Vietnamese", "vietnamese"],
+  ["Indian", "indian"],
+  ["Mediterranean", "mediterranean"],
+  ["Middle Eastern", "middleEastern"],
+  ["Greek", "greek"],
+  ["French", "french"],
+  ["Southern", "southern"],
+  ["Caribbean", "caribbean"],
+  ["African", "african"],
+];
+
+function cuisineIcon(cuisine: string): IconName {
+  if (cuisine === ALL) return "all";
+  return CUISINES.find(([name]) => name.toLowerCase() === cuisine.toLowerCase())?.[1] ?? "recipes";
+}
 
 // Recipes arrive ranked by the rules-checked API, so the first in each cuisine is its top pick.
 export function groupByCuisine(recipes: Recipe[]): [string, Recipe[]][] {
@@ -180,27 +205,63 @@ function RecipeCard({ recipe, top, actions }: { recipe: Recipe; top: boolean; ac
   );
 }
 
-export default function RecipeGroups({ recipes, actions = {} }: { recipes: Recipe[]; actions?: RecipeActions }) {
-  const groups = groupByCuisine(recipes);
-  const [active, setActive] = useState(0);
-  const [, current] = groups[Math.min(active, groups.length - 1)] ?? ["", []];
+type Props = {
+  recipes: Recipe[];
+  actions?: RecipeActions;
+  /** Fetches recipes for a cuisine the list doesn't have yet; turns on the full cuisine list. */
+  loadCuisine?: (cuisine: string) => Promise<unknown>;
+};
+
+export default function RecipeGroups({ recipes, actions = {}, loadCuisine }: Props) {
+  const groups = new Map(groupByCuisine(recipes));
+  const tabs = [ALL, ...new Set([...(loadCuisine ? CUISINES.map(([name]) => name) : []), ...groups.keys()])];
+  const [active, setActive] = useState(ALL);
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const current = active === ALL ? recipes : (groups.get(active) ?? []);
+
+  async function pick(cuisine: string) {
+    setActive(cuisine);
+    setFailed(false);
+    if (cuisine === ALL || groups.has(cuisine) || !loadCuisine) return;
+    setLoading(true);
+    try {
+      await loadCuisine(cuisine);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div>
-      {groups.length > 1 && (
+      {(groups.size > 1 || loadCuisine) && (
         <div className="tabs" role="group" aria-label="Cuisines">
-          {groups.map(([cuisine], index) => (
-            <button aria-pressed={index === active} key={cuisine} type="button" onClick={() => setActive(index)}>
+          {tabs.map((cuisine) => (
+            <button aria-pressed={cuisine === active} key={cuisine} type="button" onClick={() => void pick(cuisine)}>
+              <Icon name={cuisineIcon(cuisine)} />
               {cuisine}
             </button>
           ))}
         </div>
       )}
-      <div className="grid grid-auto">
-        {current.map((recipe, index) => (
-          <RecipeCard actions={actions} key={recipe.id ?? recipe.title} recipe={recipe} top={index === 0} />
-        ))}
-      </div>
+      {loading ? (
+        <p className="empty">Finding {active} recipes for your cart…</p>
+      ) : failed ? (
+        <p className="alert alert-danger" role="alert">
+          <Icon name="alert" />
+          <span>We couldn't load {active} recipes. Try again.</span>
+        </p>
+      ) : current.length === 0 ? (
+        <p className="panel empty">No {active} recipes for your cart yet.</p>
+      ) : (
+        <div className="grid grid-auto">
+          {current.map((recipe, index) => (
+            <RecipeCard actions={actions} key={recipe.id ?? recipe.title} recipe={recipe} top={index === 0} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

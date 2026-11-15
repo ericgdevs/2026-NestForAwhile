@@ -1,7 +1,7 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 
-import RecipeGroups, { groupByCuisine } from "./RecipeGroups";
+import RecipeGroups, { CUISINES, groupByCuisine } from "./RecipeGroups";
 
 const recipe = (title: string, cuisine?: string) => ({
   title,
@@ -19,8 +19,12 @@ test("groups by cuisine in API order and falls back to one suggested group", () 
   ]);
 });
 
-test("shows cuisine tabs with a top pick per cuisine", () => {
+test("defaults to All, then shows a top pick per cuisine", () => {
   render(<RecipeGroups recipes={[recipe("Bean tacos", "Mexican"), recipe("Rice bowl", "Mexican"), recipe("Tomato pasta", "Italian")]} />);
+  expect(screen.getByRole("button", { name: "All" })).toHaveAttribute("aria-pressed", "true");
+  expect(screen.getByRole("heading", { name: "Tomato pasta" })).toBeInTheDocument();
+
+  fireEvent.click(screen.getByRole("button", { name: "Mexican" }));
   expect(screen.getByRole("heading", { name: "Bean tacos" }).closest("article")).toHaveTextContent("Top pick");
   expect(screen.queryByRole("heading", { name: "Tomato pasta" })).not.toBeInTheDocument();
 
@@ -72,4 +76,26 @@ test("a restricted ingredient is not added: the reason and an in-stock swap are 
   expect(await screen.findByText(/Nothing new to add to your list \(1 already on your list\)/)).toBeInTheDocument();
   expect(screen.getByRole("alert")).toHaveTextContent(/Not added: Nut crackers.*Not for Little one: nut allergy/);
   expect(screen.getByRole("button", { name: /Add Seed crackers instead/ })).toBeInTheDocument();
+});
+
+test("with loadCuisine, every cuisine gets a tab with an icon and empty ones are fetched", async () => {
+  const loadCuisine = vi.fn().mockResolvedValue(undefined);
+  render(<RecipeGroups loadCuisine={loadCuisine} recipes={[recipe("Bean tacos", "Mexican")]} />);
+  const tabs = within(screen.getByRole("group", { name: "Cuisines" })).getAllByRole("button");
+  expect(tabs.map((tab) => tab.textContent)).toEqual(["All", ...CUISINES.map(([name]) => name)]);
+  expect(tabs).toHaveLength(17);
+  tabs.forEach((tab) => expect(tab.querySelector("svg")).not.toBeNull());
+
+  fireEvent.click(screen.getByRole("button", { name: "Mexican" }));
+  expect(loadCuisine).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Thai" }));
+  expect(loadCuisine).toHaveBeenCalledWith("Thai");
+  expect(await screen.findByText("No Thai recipes for your cart yet.")).toBeInTheDocument();
+});
+
+test("a cuisine that fails to load says so", async () => {
+  const loadCuisine = vi.fn().mockRejectedValue(new Error("offline"));
+  render(<RecipeGroups loadCuisine={loadCuisine} recipes={[recipe("Bean tacos", "Mexican")]} />);
+  fireEvent.click(screen.getByRole("button", { name: "Greek" }));
+  expect(await screen.findByRole("alert")).toHaveTextContent("We couldn't load Greek recipes");
 });
