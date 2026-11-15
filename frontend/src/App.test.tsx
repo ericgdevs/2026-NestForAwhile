@@ -8,6 +8,8 @@ vi.mock("./api/client", () => ({
   getMe: vi.fn(),
   getRecommendations: vi.fn(),
   getVisit: vi.fn(),
+  getShoppingList: vi.fn().mockResolvedValue({ items: [] }),
+  getHousehold: vi.fn().mockResolvedValue({ members: [] }),
   login: vi.fn(),
   apiRequest: vi.fn(),
 }));
@@ -26,6 +28,6 @@ beforeEach(() => {
 test("renders the warehouse shell", async () => {
   render(<App />);
   await waitFor(() => {
-    expect(screen.getByRole("heading", { name: /mtg warehouse/i })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /epic-cure food system/i })).toBeInTheDocument();
   });
 });

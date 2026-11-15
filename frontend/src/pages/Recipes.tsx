@@ -30,6 +30,11 @@ export default function Recipes() {
       .finally(() => setLoading(false));
   }, []);
 
+  async function loadCuisine(cuisine: string) {
+    const result = await getRecipes({ cuisine });
+    setRecipes((list) => [...list, ...result.recipes.filter((recipe) => !list.some((item) => item.title === recipe.title))]);
+  }
+
   async function remove(recipe: Recipe) {
     await deleteSavedRecipe(recipe.id!);
     setSaved((list) => list?.filter((item) => item.id !== recipe.id) ?? null);
@@ -85,7 +90,7 @@ export default function Recipes() {
             <span>Add items to your cart to get recipe ideas.</span>
           </div>
         ) : (
-          <RecipeGroups actions={{ onSave: saveRecipe, onAddToList: addRecipeToList }} recipes={recipes} />
+          <RecipeGroups actions={{ onSave: saveRecipe, onAddToList: addRecipeToList }} loadCuisine={loadCuisine} recipes={recipes} />
         )}
       </section>
     </main>
