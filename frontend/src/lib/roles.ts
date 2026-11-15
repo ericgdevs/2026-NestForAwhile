@@ -4,7 +4,7 @@ import type { IconName } from "../components/Icon";
 export type AppRole = components["schemas"]["Role"];
 
 export const clientPaths = ["/profile", "/scan", "/list", "/cart", "/recipes"] as const;
-export const checkoutRoles: AppRole[] = ["Volunteer", "Warehouse Manager", "Director"];
+export const checkoutRoles: AppRole[] = ["Volunteer", "Warehouse Manager"];
 export const warehousePaths = ["/audit", "/replenishment", "/lots"] as const;
 export const managementPaths = ["/analytics"] as const;
 

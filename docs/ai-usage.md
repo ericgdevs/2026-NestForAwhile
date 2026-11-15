@@ -348,3 +348,4 @@
 | Implement (ui) | Copilot (Sonnet 5.5) | Stat cards 3 per row and larger on Overview and Analytics | Asked for by Caden via Agentation feedback | Caden |
 | Implement (ui) | Copilot (Sonnet 5.5) | Removed the heavy rule inside the Donor and Grant report cards | Asked for by Caden via Agentation feedback | Caden |
 | Implement (ui) | Copilot (Sonnet 5.5) | Removed the Reports page (route, nav link, page, downloadReport client and their tests, e2e spec); added Checkout to the Director nav (backend role change requested from Eric) | Asked for by Caden via Agentation feedback | Caden |
+| Implement (ui) | Copilot (Sonnet 5.5) | Removed Checkout from the Director nav (Director can no longer open /checkout) | Asked for by Caden via Agentation feedback | Caden |

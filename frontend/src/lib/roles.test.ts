@@ -7,7 +7,7 @@ test.each([
   ["Volunteer", ["/", "/checkout"]],
   ["Warehouse Staff", ["/", "/audit", "/replenishment", "/lots"]],
   ["Warehouse Manager", ["/", "/checkout", "/audit", "/replenishment", "/lots", "/labels", "/approvals", "/analytics"]],
-  ["Director", ["/", "/checkout", "/analytics"]],
+  ["Director", ["/", "/analytics"]],
 ] as const)("%s nav shows only screens the role can open", (role, hrefs) => {
   const links = navFor(role);
   expect(links.map((link) => link.href)).toEqual(hrefs);
