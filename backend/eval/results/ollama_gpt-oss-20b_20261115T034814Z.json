@@ -1,0 +1,2961 @@
+{
+ "provider": "ollama",
+ "model": "gpt-oss:20b",
+ "results": [
+  {
+   "id": "active-01",
+   "persona": "client.active",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 5,
+   "recipes_final": 5,
+   "ingredients_pre_guard": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "ingredients_final": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "latency_s": 6.162,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 6.156,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2810,
+      "completion_tokens": 921
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Chickpea & Brown Rice Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook the brown rice according to package instructions, using"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Brown Rice & Veggie Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Cook the brown rice according to package instructions. While"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Roasted Carrot & Chickpea Brown Rice Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Preheat the oven to 400\u00b0F (200\u00b0C). Toss quartered carrots wi"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Brown Rice & Carrot Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Heat olive oil in a pot. Add diced carrots and cook until so"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Chickpea & Brown Rice Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook the brown rice according to package instructions, using"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Brown Rice & Veggie Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Cook the brown rice according to package instructions. While"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Roasted Carrot & Chickpea Brown Rice Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Preheat the oven to 400\u00b0F (200\u00b0C). Toss quartered carrots wi"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Brown Rice & Carrot Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Heat olive oil in a pot. Add diced carrots and cook until so"
+    }
+   ]
+  },
+  {
+   "id": "active-02",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 23,
+    "total": 23
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 4.697,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.688,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2713,
+      "completion_tokens": 1066
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Chickpea & Broccoli Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 5. Season with a pinch of salt (optional) and freshly ground"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "active-03",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 6,
+   "recipes_final": 6,
+   "ingredients_pre_guard": {
+    "in_stock": 23,
+    "total": 23
+   },
+   "ingredients_final": {
+    "in_stock": 23,
+    "total": 23
+   },
+   "latency_s": 3.838,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.83,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2808,
+      "completion_tokens": 865
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli & Tuna Rice Bowl",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Rice Stuffed Peppers",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Mix rice and broccoli together with a drizzle of olive oil a"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli & Tuna Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli & Tuna Rice Bowl",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Rice Stuffed Peppers",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Mix rice and broccoli together with a drizzle of olive oil a"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli & Tuna Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    }
+   ]
+  },
+  {
+   "id": "active-04",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 14,
+    "total": 18
+   },
+   "ingredients_final": {
+    "in_stock": 3,
+    "total": 3
+   },
+   "latency_s": 3.098,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.091,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2807,
+      "completion_tokens": 676
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Simple Bean & Bell Pepper Tacos",
+     "member": null,
+     "item": "Salt",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Bean & Bell Pepper Tacos",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Bean & Bell Pepper Tacos",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with a pinch of salt if desired, then serve hot."
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Chickpea & Veggie Wrap",
+     "member": null,
+     "item": "Lime juice",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Corn Tortilla & Bean Soup",
+     "member": null,
+     "item": "Cumin powder",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Corn Tortilla & Bean Soup",
+     "member": null,
+     "item": "Salt",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Corn Tortilla & Bean Soup",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Corn Tortilla & Bean Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Pour in water to cover the vegetables by about an inch, then"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-01",
+   "persona": "client.pending",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 1,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 35,
+    "total": 42
+   },
+   "ingredients_final": {
+    "in_stock": 7,
+    "total": 7
+   },
+   "latency_s": 6.128,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 6.121,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2922,
+      "completion_tokens": 1430
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Hearty Lentil & Spinach Stew",
+     "member": null,
+     "item": "Water",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Hearty Lentil & Spinach Stew",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt to taste (optional), pepper, and a squeeze "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Hearty Lentil & Spinach Stew",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt to taste (optional), pepper, and a squeeze "
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Lentil & Chickpea Salad",
+     "member": null,
+     "item": "Lemon juice",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Chickpea Salad",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with pepper and a pinch of salt if needed."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Chickpea Salad",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with pepper and a pinch of salt if needed."
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spicy Lentil & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Soy sauce (low\u2011sodium)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spicy Lentil & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Garlic",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spicy Lentil & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "Soy sauce",
+     "detail": "Heart Healthy word in ingredient: Soy sauce (low\u2011sodium)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spicy Lentil & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Add the cooked lentils and tofu to the pan, stir in 1 tbsp l"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spicy Lentil & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "Soy sauce",
+     "detail": "Low Sodium word in ingredient: Soy sauce (low\u2011sodium)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spicy Lentil & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Add the cooked lentils and tofu to the pan, stir in 1 tbsp l"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Lentil & Spinach Quesadilla",
+     "member": null,
+     "item": "Water",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Rice Pilaf with Apples",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt and pepper, garnish with chopped apples, an"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Rice Pilaf with Apples",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt and pepper, garnish with chopped apples, an"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Lentil & Chickpea Veggie Burger",
+     "member": null,
+     "item": "Salt",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Lentil & Chickpea Veggie Burger",
+     "member": null,
+     "item": "Pepper",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Chickpea Veggie Burger",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Chickpea Veggie Burger",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Add 1 tsp salt, pepper, and 2 tbsp flour to bind; mix until "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Chickpea Veggie Burger",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Chickpea Veggie Burger",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Add 1 tsp salt, pepper, and 2 tbsp flour to bind; mix until "
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Rice Pilaf with Apples",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt and pepper, garnish with chopped apples, an"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Lentil & Rice Pilaf with Apples",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt and pepper, garnish with chopped apples, an"
+    }
+   ]
+  },
+  {
+   "id": "pending-02",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 13,
+    "total": 25
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 3.996,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.989,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2745,
+      "completion_tokens": 908
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Heart\u2011Healthy Tomato & Black Bean Spaghetti",
+     "member": null,
+     "item": "Garlic, minced (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Heart\u2011Healthy Tomato & Black Bean Spaghetti",
+     "member": null,
+     "item": "Fresh basil leaves (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Heart\u2011Healthy Tomato & Black Bean Spaghetti",
+     "member": null,
+     "item": "Sea salt (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart\u2011Healthy Tomato & Black Bean Spaghetti",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in ingredient: Sea salt (optional, not in manifest)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart\u2011Healthy Tomato & Black Bean Spaghetti",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with a pinch of salt if desired and stir in fresh bas"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart\u2011Healthy Tomato & Black Bean Spaghetti",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in ingredient: Sea salt (optional, not in manifest)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart\u2011Healthy Tomato & Black Bean Spaghetti",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with a pinch of salt if desired and stir in fresh bas"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Mexican\u2011Style Bean & Veggie Bowl",
+     "member": null,
+     "item": "Red onion, sliced (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Mexican\u2011Style Bean & Veggie Bowl",
+     "member": null,
+     "item": "Corn, frozen (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Mexican\u2011Style Bean & Veggie Bowl",
+     "member": null,
+     "item": "Lime juice (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Mexican\u2011Style Bean & Veggie Bowl",
+     "member": null,
+     "item": "Cilantro, chopped (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Mexican\u2011Style Bean & Veggie Bowl",
+     "member": null,
+     "item": "Spices: cumin, chili powder, garlic powder (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Garlic, minced (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Ginger, grated (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Soy sauce, low\u2011sodium (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Sesame seeds (optional, not in manifest)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "Soy sauce",
+     "detail": "Heart Healthy word in ingredient: Soy sauce, low\u2011sodium (optional, not in manifest)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Return tofu to the skillet. Add soy milk and a splash of low"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "Soy sauce",
+     "detail": "Low Sodium word in ingredient: Soy sauce, low\u2011sodium (optional, not in manifest)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Green Bean & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Return tofu to the skillet. Add soy milk and a splash of low"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-03",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "scanned_restricted",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 15,
+    "total": 20
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 3.346,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.337,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2746,
+      "completion_tokens": 722
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Black Bean Brown Rice Bowl",
+     "member": null,
+     "item": "Salt substitute (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Black Bean Brown Rice Bowl",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt substitute (optional)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Black Bean Brown Rice Bowl",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season lightly with pepper and a pinch of salt substitute to"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Black Bean Brown Rice Bowl",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt substitute (optional)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Black Bean Brown Rice Bowl",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season lightly with pepper and a pinch of salt substitute to"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Carrot Stir\u2011Fry with Brown Rice",
+     "member": null,
+     "item": "Garlic powder",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Carrot Stir\u2011Fry with Brown Rice",
+     "member": null,
+     "item": "Black pepper",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Vegetarian Lentil & Carrot Soup",
+     "member": null,
+     "item": "Salt substitute (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Vegetarian Lentil & Carrot Soup",
+     "member": null,
+     "item": "Cinnamon stick",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Vegetarian Lentil & Carrot Soup",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt substitute (optional)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Vegetarian Lentil & Carrot Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Let the soup simmer for 10 minutes to allow flavors to meld."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Vegetarian Lentil & Carrot Soup",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt substitute (optional)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Vegetarian Lentil & Carrot Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Let the soup simmer for 10 minutes to allow flavors to meld."
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-04",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 4,
+   "recipes_after_guard": 0,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 15,
+    "total": 35
+   },
+   "ingredients_final": {
+    "in_stock": 9,
+    "total": 9
+   },
+   "latency_s": 4.921,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.849,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2826,
+      "completion_tokens": 1066
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Roasted Carrot & Chickpea Salad",
+     "member": null,
+     "item": "Lemon juice, 100%",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Roasted Carrot & Chickpea Salad",
+     "member": null,
+     "item": "Salt, pinch",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Roasted Carrot & Chickpea Salad",
+     "member": null,
+     "item": "Black pepper, ground",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Roasted Carrot & Chickpea Salad",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt, pinch"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Roasted Carrot & Chickpea Salad",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Trim and cut carrots into 1/2\u2011inch sticks. Toss with olive o"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Roasted Carrot & Chickpea Salad",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt, pinch"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Roasted Carrot & Chickpea Salad",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Trim and cut carrots into 1/2\u2011inch sticks. Toss with olive o"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Lentil Soup",
+     "member": null,
+     "item": "Onion, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Lentil Soup",
+     "member": null,
+     "item": "Garlic, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Lentil Soup",
+     "member": null,
+     "item": "Water",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Lentil Soup",
+     "member": null,
+     "item": "Cumin, ground",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Lentil Soup",
+     "member": null,
+     "item": "Paprika",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Lentil Soup",
+     "member": null,
+     "item": "Salt, to taste",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Lentil Soup",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt, to taste"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Lentil Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Use an immersion blender to puree the soup until smooth (or "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Lentil Soup",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt, to taste"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Lentil Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Use an immersion blender to puree the soup until smooth (or "
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Soy sauce, low sodium",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Garlic, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Ginger, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": null,
+     "item": "Sesame seeds",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "Soy sauce",
+     "detail": "Heart Healthy word in ingredient: Soy sauce, low sodium"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Return tofu to the skillet, drizzle with low\u2011sodium soy sauc"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "Soy sauce",
+     "detail": "Low Sodium word in ingredient: Soy sauce, low sodium"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Tofu Stir\u2011Fry",
+     "member": "Grandparent",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Return tofu to the skillet, drizzle with low\u2011sodium soy sauc"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Bean Chili",
+     "member": null,
+     "item": "Onion, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Bean Chili",
+     "member": null,
+     "item": "Garlic, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Bean Chili",
+     "member": null,
+     "item": "Canned tomatoes, no salt added",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Bean Chili",
+     "member": null,
+     "item": "Cumin, ground",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Bean Chili",
+     "member": null,
+     "item": "Chili powder",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Bean Chili",
+     "member": null,
+     "item": "Paprika",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Carrot & Bean Chili",
+     "member": null,
+     "item": "Salt, to taste",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Bean Chili",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt, to taste"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Bean Chili",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Taste and adjust seasoning with salt if needed. Serve hot, o"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Bean Chili",
+     "member": "Grandparent",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt, to taste"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Bean Chili",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Taste and adjust seasoning with salt if needed. Serve hot, o"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Grandparent",
+     "item": "Ketchup",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Grandparent",
+     "item": "Ketchup",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Grandparent",
+     "item": "Ketchup",
+     "detail": "Capped"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-htn-01",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 2,
+   "recipes_final": 2,
+   "ingredients_pre_guard": {
+    "in_stock": 25,
+    "total": 29
+   },
+   "ingredients_final": {
+    "in_stock": 10,
+    "total": 10
+   },
+   "latency_s": 4.46,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.45,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2837,
+      "completion_tokens": 1019
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Chickpea Quinoa Bowl",
+     "member": null,
+     "item": "Lemon, fresh (not in manifest but assumed available)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Chickpea Quinoa Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Cook quinoa according to package instructions.\nSteam or blan"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Chickpea Quinoa Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook quinoa according to package instructions.\nSteam or blan"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Black Bean Yogurt Dip",
+     "member": null,
+     "item": "Garlic, fresh (not in manifest but assumed available)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Kidney Bean Salad",
+     "member": null,
+     "item": "Apple cider vinegar",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Kidney Bean Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Toss broccoli, kidney beans, and shredded cabbage in a bowl."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Kidney Bean Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Toss broccoli, kidney beans, and shredded cabbage in a bowl."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Brown Rice Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Cook brown rice according to package.\nHeat canola oil in a w"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Brown Rice Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Cook brown rice according to package.\nHeat canola oil in a w"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Lentil Soup",
+     "member": null,
+     "item": "Vegetable broth (low sodium)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Lentil Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Heat olive oil in a pot; saut\u00e9 diced onions until translucen"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Lentil Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Heat olive oil in a pot; saut\u00e9 diced onions until translucen"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Brown Rice Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Cook brown rice according to package.\nHeat canola oil in a w"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Brown Rice Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Cook brown rice according to package.\nHeat canola oil in a w"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-htn-02",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 4.195,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.19,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2750,
+      "completion_tokens": 964
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Rice Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Cook the rice according to package instructions. While the r"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Rice Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook the rice according to package instructions. While the r"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Vegetable & Chicken Baked Rice",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Preheat the oven to 375\u00b0F (190\u00b0C). Dice the chicken breast i"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Vegetable & Chicken Baked Rice",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Preheat the oven to 375\u00b0F (190\u00b0C). Dice the chicken breast i"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Popcorn & Trail Mix Snack Mix",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: In a large bowl, combine the air\u2011popped popcorn and trail mi"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Popcorn & Trail Mix Snack Mix",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: In a large bowl, combine the air\u2011popped popcorn and trail mi"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-htn-03",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 6,
+   "recipes_final": 6,
+   "ingredients_pre_guard": {
+    "in_stock": 28,
+    "total": 28
+   },
+   "ingredients_final": {
+    "in_stock": 28,
+    "total": 28
+   },
+   "latency_s": 4.985,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.979,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2839,
+      "completion_tokens": 1155
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 6. Season with a pinch of salt (optional) and serve hot."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 6. Season with a pinch of salt (optional) and serve hot."
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Carrot\u2011Apple Oat Bowl",
+     "member": "Person 1",
+     "item": "Apples, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chickpea Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 6. Season with salt to taste (optional) and serve hot."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chickpea Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 6. Season with salt to taste (optional) and serve hot."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Greek Yogurt Dip with Crackers",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 4. Season with a pinch of salt and pepper if desired."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Greek Yogurt Dip with Crackers",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 4. Season with a pinch of salt and pepper if desired."
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 6. Season with a pinch of salt (optional) and serve hot."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 6. Season with a pinch of salt (optional) and serve hot."
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Carrot\u2011Apple Oat Bowl",
+     "member": "Person 1",
+     "item": "Apples, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chickpea Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 6. Season with salt to taste (optional) and serve hot."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Chickpea Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 6. Season with salt to taste (optional) and serve hot."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Greek Yogurt Dip with Crackers",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 4. Season with a pinch of salt and pepper if desired."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Greek Yogurt Dip with Crackers",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 4. Season with a pinch of salt and pepper if desired."
+    }
+   ]
+  },
+  {
+   "id": "diabetes-htn-04",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 5,
+   "recipes_final": 5,
+   "ingredients_pre_guard": {
+    "in_stock": 25,
+    "total": 25
+   },
+   "ingredients_final": {
+    "in_stock": 25,
+    "total": 25
+   },
+   "latency_s": 4.448,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.44,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2760,
+      "completion_tokens": 1018
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Classic Tomato Spaghetti",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Heart Healthy word in step: 1. Cook the spaghetti in a large pot of lightly salted water"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Classic Tomato Spaghetti",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Low Sodium word in step: 1. Cook the spaghetti in a large pot of lightly salted water"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spaghetti Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 1. Cook spaghetti according to package directions; drain and"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spaghetti Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 1. Cook spaghetti according to package directions; drain and"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spaghetti with Bean & Veggie Medley",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Heart Healthy word in step: 1. Cook spaghetti in salted water until al dente; drain.\n2. "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spaghetti with Bean & Veggie Medley",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Low Sodium word in step: 1. Cook spaghetti in salted water until al dente; drain.\n2. "
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Classic Tomato Spaghetti",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Heart Healthy word in step: 1. Cook the spaghetti in a large pot of lightly salted water"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Classic Tomato Spaghetti",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Low Sodium word in step: 1. Cook the spaghetti in a large pot of lightly salted water"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spaghetti Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: 1. Cook spaghetti according to package directions; drain and"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spaghetti Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 1. Cook spaghetti according to package directions; drain and"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spaghetti with Bean & Veggie Medley",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Heart Healthy word in step: 1. Cook spaghetti in salted water until al dente; drain.\n2. "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spaghetti with Bean & Veggie Medley",
+     "member": "Person 1",
+     "item": "salted",
+     "detail": "Low Sodium word in step: 1. Cook spaghetti in salted water until al dente; drain.\n2. "
+    }
+   ]
+  },
+  {
+   "id": "ckd-htn-01",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 5,
+   "recipes_final": 5,
+   "ingredients_pre_guard": {
+    "in_stock": 25,
+    "total": 25
+   },
+   "ingredients_final": {
+    "in_stock": 25,
+    "total": 25
+   },
+   "latency_s": 4.103,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.088,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2836,
+      "completion_tokens": 920
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Garlic Stir\u2011Fry Rice",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Cook 1 cup rice with 2 cups water until tender. While rice c"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Garlic Stir\u2011Fry Rice",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook 1 cup rice with 2 cups water until tender. While rice c"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Garlic Stir\u2011Fry Rice",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Cook 1 cup rice with 2 cups water until tender. While rice c"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot & Garlic Stir\u2011Fry Rice",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook 1 cup rice with 2 cups water until tender. While rice c"
+    }
+   ]
+  },
+  {
+   "id": "ckd-htn-02",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 4,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 4.812,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.805,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2742,
+      "completion_tokens": 1105
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "ckd-htn-03",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 13,
+    "total": 22
+   },
+   "ingredients_final": {
+    "in_stock": 9,
+    "total": 9
+   },
+   "latency_s": 3.225,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.216,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2833,
+      "completion_tokens": 710
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Mediterranean Spinach & Chickpea Salad",
+     "member": null,
+     "item": "Salt (tiny pinch)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Mediterranean Spinach & Chickpea Salad",
+     "member": null,
+     "item": "Pepper (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spinach & Chickpea Salad",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt (tiny pinch)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spinach & Chickpea Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: In a small bowl whisk together olive oil, yogurt, lemon juic"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spinach & Chickpea Salad",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt (tiny pinch)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Spinach & Chickpea Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: In a small bowl whisk together olive oil, yogurt, lemon juic"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Chicken breast, boneless skinless, raw",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": null,
+     "item": "Soy sauce, low sodium (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": null,
+     "item": "Garlic (fresh, optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": null,
+     "item": "Salt (tiny pinch)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": null,
+     "item": "Pepper (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Soy sauce",
+     "detail": "Heart Healthy word in ingredient: Soy sauce, low sodium (optional)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt (tiny pinch)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Season with a dash of low\u2011sodium soy sauce, salt and pepper "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Soy sauce",
+     "detail": "Low Sodium word in ingredient: Soy sauce, low sodium (optional)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt (tiny pinch)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Season with a dash of low\u2011sodium soy sauce, salt and pepper "
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spinach & Black Bean Quesadillas",
+     "member": null,
+     "item": "Cheddar cheese, shredded (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spinach & Black Bean Quesadillas",
+     "member": null,
+     "item": "Salt (tiny pinch)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Spinach & Black Bean Quesadillas",
+     "member": null,
+     "item": "Pepper (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Black Bean Quesadillas",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt (tiny pinch)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Black Bean Quesadillas",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Serve hot, optionally with a sprinkle of shredded cheese and"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Black Bean Quesadillas",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt (tiny pinch)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Black Bean Quesadillas",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Serve hot, optionally with a sprinkle of shredded cheese and"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Chicken breast, boneless skinless, raw",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Chicken breast, boneless skinless, raw",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Chicken breast, boneless skinless, raw",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    }
+   ]
+  },
+  {
+   "id": "ckd-htn-04",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 17,
+    "total": 39
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 4.88,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.872,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2742,
+      "completion_tokens": 1121
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Southern Green Bean Stew",
+     "member": null,
+     "item": "Onion, diced",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Southern Green Bean Stew",
+     "member": null,
+     "item": "Garlic, minced",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Southern Green Bean Stew",
+     "member": null,
+     "item": "Tomato sauce, low sodium",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Southern Green Bean Stew",
+     "member": null,
+     "item": "Water",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Southern Green Bean Stew",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt substitute and pepper to taste. Bring to a "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Southern Green Bean Stew",
+     "member": "Person 1",
+     "item": "Tomato",
+     "detail": "Kidney Friendly word in ingredient: Tomato sauce, low sodium"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Southern Green Bean Stew",
+     "member": "Person 1",
+     "item": "tomato",
+     "detail": "Kidney Friendly word in step: Add green beans and stir for 2 minutes. Pour in low-sodium b"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Southern Green Bean Stew",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt substitute and pepper to taste. Bring to a "
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean and Rice Pilaf",
+     "member": null,
+     "item": "Onion, diced",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean and Rice Pilaf",
+     "member": null,
+     "item": "Garlic, minced",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean and Rice Pilaf",
+     "member": null,
+     "item": "Low-sodium chicken broth",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": null,
+     "item": "Red onion, thinly sliced",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": null,
+     "item": "Apple cider vinegar",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": null,
+     "item": "Honey",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": null,
+     "item": "Salt substitute",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": null,
+     "item": "Pepper",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt substitute"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: In a small bowl whisk together olive oil, apple cider vinega"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt substitute"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple Green Bean and Apple Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: In a small bowl whisk together olive oil, apple cider vinega"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": null,
+     "item": "Cilantro, chopped",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": null,
+     "item": "Lime wedges",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": null,
+     "item": "Salt substitute",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": null,
+     "item": "Pepper",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt substitute"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Add drained black beans and cook for another 2 minutes. Seas"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt substitute"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean and Black Bean Tacos",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Add drained black beans and cook for another 2 minutes. Seas"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": null,
+     "item": "Low-sodium chicken broth",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": null,
+     "item": "Onion, diced",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": null,
+     "item": "Garlic, minced",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": null,
+     "item": "Parmesan cheese, grated",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": null,
+     "item": "Salt substitute",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": null,
+     "item": "Pepper",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt substitute"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean & Rice Casserole",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt substitute"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-ckd-01",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 5,
+   "recipes_final": 5,
+   "ingredients_pre_guard": {
+    "in_stock": 26,
+    "total": 26
+   },
+   "ingredients_final": {
+    "in_stock": 26,
+    "total": 26
+   },
+   "latency_s": 4.441,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.434,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2830,
+      "completion_tokens": 1009
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot\u2011Broccoli Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Wash and slice the carrots and broccoli into bite\u2011size piece"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot\u2011Broccoli Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Wash and slice the carrots and broccoli into bite\u2011size piece"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-ckd-02",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 17,
+    "total": 18
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 2.963,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 2.956,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2648,
+      "completion_tokens": 657
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Cabbage & Bean Stew",
+     "member": null,
+     "item": "Water",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Vegetable & Tofu Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Rinse the brown rice and cook according to package instructi"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-ckd-03",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "cart_capped",
+    "potassium_conflict"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 18,
+    "total": 18
+   },
+   "ingredients_final": {
+    "in_stock": 18,
+    "total": 18
+   },
+   "latency_s": 3.483,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.476,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2826,
+      "completion_tokens": 786
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Bean Soup",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Tofu Tacos",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Zucchini & Tofu Tacos",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 1. Press the tofu to remove excess moisture, then crumble it"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Yogurt Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Bean Soup",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Tofu Tacos",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Zucchini & Tofu Tacos",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: 1. Press the tofu to remove excess moisture, then crumble it"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Yogurt Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-ckd-04",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 0,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 25,
+    "total": 36
+   },
+   "ingredients_final": {
+    "in_stock": 2,
+    "total": 2
+   },
+   "latency_s": 5.298,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 5.289,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2748,
+      "completion_tokens": 1226
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Stir\u2011Fried Tofu & Broccoli",
+     "member": null,
+     "item": "Soy sauce (low sodium)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Stir\u2011Fried Tofu & Broccoli",
+     "member": null,
+     "item": "Garlic (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Stir\u2011Fried Tofu & Broccoli",
+     "member": "Person 1",
+     "item": "Soy sauce",
+     "detail": "Low Sodium word in ingredient: Soy sauce (low sodium)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Stir\u2011Fried Tofu & Broccoli",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Return the tofu to the pan, splash with low\u2011sodium soy sauce"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Black Bean Veggie Bowl",
+     "member": null,
+     "item": "Fresh lime juice",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Black Bean Veggie Bowl",
+     "member": null,
+     "item": "Fresh cilantro (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Chickpea Curry",
+     "member": null,
+     "item": "Garlic",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Chickpea Curry",
+     "member": null,
+     "item": "Curry powder (low sodium)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Chickpea Curry",
+     "member": null,
+     "item": "Low\u2011sodium vegetable broth",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Veggie Stir\u2011Fry with Tofu Tempeh (no tempeh actually)",
+     "member": null,
+     "item": "Low-sodium soy sauce",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Veggie Stir\u2011Fry with Tofu Tempeh (no tempeh actually)",
+     "member": null,
+     "item": "Sesame seeds (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Tofu & Veggie Stir\u2011Fry with Tofu Tempeh (no tempeh actually)",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in ingredient: Low-sodium soy sauce"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Tofu & Veggie Stir\u2011Fry with Tofu Tempeh (no tempeh actually)",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Return tofu to the pan, splash with low\u2011sodium soy sauce, an"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Almond Snack Mix",
+     "member": null,
+     "item": "Smoked paprika",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Almond Snack Mix",
+     "member": null,
+     "item": "Sea salt (optional)",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Tofu & Almond Snack Mix",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in ingredient: Sea salt (optional)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Tofu & Almond Snack Mix",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Serve as a protein\u2011rich snack, optionally sprinkling a tiny "
+    }
+   ],
+   "post_guard_findings": []
+  }
+ ]
+}

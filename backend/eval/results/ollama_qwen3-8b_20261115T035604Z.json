@@ -1,0 +1,1534 @@
+{
+ "provider": "ollama",
+ "model": "qwen3:8b",
+ "results": [
+  {
+   "id": "active-01",
+   "persona": "client.active",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 12,
+    "total": 12
+   },
+   "ingredients_final": {
+    "in_stock": 12,
+    "total": 12
+   },
+   "latency_s": 29.392,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 21.972,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2903,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 7.41,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2936,
+      "completion_tokens": 1388
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Brown Rice Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt (if needed) and herbs like parsley or dill."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spicy Brown Rice and Lentil Stir-Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Season with soy sauce (low sodium) and ginger."
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Brown Rice Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt (if needed) and herbs like parsley or dill."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spicy Brown Rice and Lentil Stir-Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Season with soy sauce (low sodium) and ginger."
+    }
+   ]
+  },
+  {
+   "id": "active-02",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": false,
+   "retried": true,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: MalformedOutput: Ollama output truncated (done_reason=length)",
+   "recipes_pre_guard": 0,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 32.309,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.132,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2805,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.171,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2838,
+      "completion_tokens": 3000
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "active-03",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 6,
+   "recipes_final": 6,
+   "ingredients_pre_guard": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "ingredients_final": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "latency_s": 13.042,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 13.032,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2904,
+      "completion_tokens": 2417
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Asian Broccoli Tuna Salad",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Southern Broccoli and Chicken",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season chicken with salt and pepper, then cook in canola oil"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Asian Broccoli Tuna Salad",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Southern Broccoli and Chicken",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season chicken with salt and pepper, then cook in canola oil"
+    }
+   ]
+  },
+  {
+   "id": "active-04",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 6,
+   "recipes_final": 6,
+   "ingredients_pre_guard": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "ingredients_final": {
+    "in_stock": 24,
+    "total": 24
+   },
+   "latency_s": 29.219,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.142,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2899,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 13.068,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2932,
+      "completion_tokens": 2455
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-01",
+   "persona": "client.pending",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 13,
+    "total": 13
+   },
+   "ingredients_final": {
+    "in_stock": 13,
+    "total": 13
+   },
+   "latency_s": 24.363,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.129,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 3012,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 8.225,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 3045,
+      "completion_tokens": 1543
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart-Healthy Lentil Curry",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Simmer until lentils are tender, season with salt (if needed"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart-Healthy Lentil Curry",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Simmer until lentils are tender, season with salt (if needed"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart-Healthy Lentil Curry",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Simmer until lentils are tender, season with salt (if needed"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart-Healthy Lentil Curry",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Simmer until lentils are tender, season with salt (if needed"
+    }
+   ]
+  },
+  {
+   "id": "pending-02",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 4,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 16,
+    "total": 16
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 30.357,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.18,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2820,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 14.167,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2853,
+      "completion_tokens": 2639
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Italian Spaghetti Aglio e Olio",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Toss cooked spaghetti in the tomato sauce and season with sa"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Italian Spaghetti Aglio e Olio",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Toss cooked spaghetti in the tomato sauce and season with sa"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-03",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "scanned_restricted",
+    "cuisine"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 15,
+    "total": 15
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 28.508,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.112,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2821,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 12.382,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2854,
+      "completion_tokens": 2328
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Tofu and Vegetable Stir-Fry",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt (if needed) and serve."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Tofu and Vegetable Stir-Fry",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt (if needed) and serve."
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-04",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 18,
+    "total": 18
+   },
+   "ingredients_final": {
+    "in_stock": 18,
+    "total": 18
+   },
+   "latency_s": 23.323,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.148,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2910,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 7.163,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2943,
+      "completion_tokens": 1340
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Carrot-Green Bean Soup",
+     "member": "Grandparent",
+     "item": "Almond milk, unsweetened",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot-Green Bean Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Blend until smooth using an immersion blender, then season w"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot-Green Bean Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Blend until smooth using an immersion blender, then season w"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Carrot-Green Bean Soup",
+     "member": "Grandparent",
+     "item": "Almond milk, unsweetened",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot-Green Bean Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Blend until smooth using an immersion blender, then season w"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot-Green Bean Soup",
+     "member": "Grandparent",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Blend until smooth using an immersion blender, then season w"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-htn-01",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 5,
+   "recipes_final": 5,
+   "ingredients_pre_guard": {
+    "in_stock": 23,
+    "total": 24
+   },
+   "ingredients_final": {
+    "in_stock": 20,
+    "total": 20
+   },
+   "latency_s": 13.567,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 13.56,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2918,
+      "completion_tokens": 2522
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Broccoli Stir-Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Stir in quinoa and carrots; season with soy sauce and garlic"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Broccoli Stir-Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Stir in quinoa and carrots; season with soy sauce and garlic"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Roasted Broccoli Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with lemon juice, oregano, and salt; serve as a side "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Roasted Broccoli Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with lemon juice, oregano, and salt; serve as a side "
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Vegan Broccoli and Quinoa Stuffed Peppers",
+     "member": null,
+     "item": "Bell peppers (if available)",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Broccoli Stir-Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Stir in quinoa and carrots; season with soy sauce and garlic"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Broccoli Stir-Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Stir in quinoa and carrots; season with soy sauce and garlic"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Roasted Broccoli Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with lemon juice, oregano, and salt; serve as a side "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mediterranean Roasted Broccoli Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with lemon juice, oregano, and salt; serve as a side "
+    }
+   ]
+  },
+  {
+   "id": "diabetes-htn-02",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 20,
+    "total": 20
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 14.641,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 14.633,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2821,
+      "completion_tokens": 2730
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Grilled Chicken with Steamed Veggies",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season chicken with salt and pepper, then grill until fully "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Grilled Chicken with Steamed Veggies",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season chicken with salt and pepper, then grill until fully "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Stir-Fried Rice",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Heart Healthy word in step: Combine cooked rice with the vegetable mixture, season with "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Stir-Fried Rice",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Combine cooked rice with the vegetable mixture, season with "
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Cauliflower Rice with Broccoli",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with garlic, paprika, and a pinch of salt for a light"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Cauliflower Rice with Broccoli",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with garlic, paprika, and a pinch of salt for a light"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-htn-03",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 15,
+    "total": 15
+   },
+   "ingredients_final": {
+    "in_stock": 15,
+    "total": 15
+   },
+   "latency_s": 25.358,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.109,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2922,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 9.24,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2955,
+      "completion_tokens": 1740
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart Healthy Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt and pepper, serve warm."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart Healthy Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt and pepper, serve warm."
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart Healthy Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt and pepper, serve warm."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart Healthy Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt and pepper, serve warm."
+    }
+   ]
+  },
+  {
+   "id": "diabetes-htn-04",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 2,
+   "recipes_after_guard": 2,
+   "recipes_final": 2,
+   "ingredients_pre_guard": {
+    "in_stock": 11,
+    "total": 11
+   },
+   "ingredients_final": {
+    "in_stock": 11,
+    "total": 11
+   },
+   "latency_s": 24.826,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.089,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2831,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 8.73,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2864,
+      "completion_tokens": 1640
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "ckd-htn-01",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 4,
+   "recipes_final": 4,
+   "ingredients_pre_guard": {
+    "in_stock": 26,
+    "total": 26
+   },
+   "ingredients_final": {
+    "in_stock": 21,
+    "total": 21
+   },
+   "latency_s": 13.041,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 13.032,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2914,
+      "completion_tokens": 2423
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Rice and Tofu Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt (if needed) and serve."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Rice and Tofu Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt (if needed) and serve."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart-Healthy Brown Rice and Broccoli Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with a pinch of salt and serve."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Heart-Healthy Brown Rice and Broccoli Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with a pinch of salt and serve."
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Rice and Tofu Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt (if needed) and serve."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Rice and Tofu Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt (if needed) and serve."
+    }
+   ]
+  },
+  {
+   "id": "ckd-htn-02",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 15,
+    "total": 15
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 28.674,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.076,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2816,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 12.589,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2849,
+      "completion_tokens": 2367
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Tofu and Vegetable Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Season with salt if needed (ensure sodium stays within limit"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Tofu and Vegetable Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt if needed (ensure sodium stays within limit"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "ckd-htn-03",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 12,
+    "total": 12
+   },
+   "ingredients_final": {
+    "in_stock": 12,
+    "total": 12
+   },
+   "latency_s": 23.651,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.08,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2917,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 7.564,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2950,
+      "completion_tokens": 1413
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "ckd-htn-04",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 4,
+   "recipes_after_guard": 1,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 21,
+    "total": 24
+   },
+   "ingredients_final": {
+    "in_stock": 6,
+    "total": 6
+   },
+   "latency_s": 11.15,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 11.137,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2815,
+      "completion_tokens": 2075
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Southern Green Bean and Oat Casserole",
+     "member": null,
+     "item": "Garlic, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Southern Green Bean and Chickpea Rice Bowl",
+     "member": null,
+     "item": "Lemon, fresh",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Southern Green Bean and Apple Salad",
+     "member": null,
+     "item": "Lemon, fresh",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-ckd-01",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 12,
+    "total": 12
+   },
+   "ingredients_final": {
+    "in_stock": 12,
+    "total": 12
+   },
+   "latency_s": 28.817,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.071,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2894,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 12.737,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2927,
+      "completion_tokens": 2390
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot and Tofu Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt and pepper to taste."
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Carrot and Tofu Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with salt and pepper to taste."
+    }
+   ]
+  },
+  {
+   "id": "diabetes-ckd-02",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 4,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 20,
+    "total": 20
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 11.596,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 11.588,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2700,
+      "completion_tokens": 2167
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Mexican Black Bean and Veggie Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Combine all ingredients in a bowl, season with salt (if need"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-ckd-03",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "cart_capped",
+    "potassium_conflict"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": false,
+   "retried": true,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: MalformedOutput: Ollama output truncated (done_reason=length)",
+   "recipes_pre_guard": 0,
+   "recipes_after_guard": 0,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "ingredients_final": {
+    "in_stock": 9,
+    "total": 9
+   },
+   "latency_s": 32.158,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.137,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2894,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.014,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2927,
+      "completion_tokens": 3000
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Apples, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Apples, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Apples, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-ckd-04",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": true,
+   "retried": true,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 13,
+    "total": 13
+   },
+   "ingredients_final": {
+    "in_stock": 13,
+    "total": 13
+   },
+   "latency_s": 24.672,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "MalformedOutput: Ollama output truncated (done_reason=length)",
+     "latency_s": 16.059,
+     "finish_reason": "length",
+     "usage": {
+      "prompt_tokens": 2808,
+      "completion_tokens": 3000
+     }
+    },
+    {
+     "retry": true,
+     "valid": true,
+     "error": null,
+     "latency_s": 8.602,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2841,
+      "completion_tokens": 1621
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Tofu Veggie Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with a pinch of salt (if needed) and serve."
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Asian Tofu Veggie Stir-Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Season with a pinch of salt (if needed) and serve."
+    }
+   ]
+  }
+ ]
+}

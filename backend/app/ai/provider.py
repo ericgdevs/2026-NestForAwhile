@@ -14,7 +14,10 @@ GROQ_ATTEMPTS = 2  # one try plus a single retry on 429, never more
 MAX_RETRY_WAIT = 2.0
 MAX_COMPLETION_TOKENS = 3000  # recipe JSON is ~1-2k tokens; reasoning is kept short below
 GPT_OSS_PREFIX = "openai/gpt-oss"  # reasoning models that support structured outputs
+OLLAMA_GPT_OSS_PREFIX = "gpt-oss"  # the same open weights under Ollama's name
 OLLAMA_DEFAULT_URL = "http://127.0.0.1:11434"
+OLLAMA_TIMEOUT = 120  # self-hosted GPUs are slower than Groq; local models also load on first use
+OLLAMA_NUM_CTX = 8192  # Ollama's default window can silently truncate the manifest prompt
 
 
 class AITask(str, Enum):
@@ -84,9 +87,25 @@ def _retry_wait(response: httpx.Response) -> float:
     return min(max(wait, 0.0), MAX_RETRY_WAIT)
 
 
+def _schema_failure_code(response: httpx.Response) -> str | None:
+    """The error code of a Groq 400 that says the output failed JSON/schema validation, else None
+    (a bad request stays a hard error). Only this code is ever logged, never the body."""
+    try:
+        error = response.json()["error"]
+        code, message = str(error.get("code") or ""), str(error.get("message") or "").lower()
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return None
+    if code == "json_validate_failed" or (
+        "json" in message and ("validat" in message or "schema" in message)
+    ):
+        return code or "schema_validation"
+    return None
+
+
 class GroqProvider(AIProvider):
     name = "groq"
     last_finish_reason: str | None = None  # for logs only
+    last_usage: dict | None = None
 
     @staticmethod
     def request_body(model: str, task: AITask, content: str) -> dict:
@@ -137,6 +156,9 @@ class GroqProvider(AIProvider):
 
         if response.status_code == 429:
             raise ProviderError("Groq rate limited", 429)
+        code = _schema_failure_code(response) if response.status_code == 400 else None
+        if code:  # strict structured output failed validation: the model can answer again
+            raise MalformedOutput(f"Groq output failed schema validation (400 {code})", 400)
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:
@@ -157,6 +179,7 @@ class GroqProvider(AIProvider):
         if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
             raise ProviderError("Groq returned an invalid response")
         self.last_finish_reason = choice.get("finish_reason")
+        self.last_usage = body.get("usage")
         content = choice["message"].get("content")
         if self.last_finish_reason == "length":  # cut off: truncated JSON is never parsed
             raise MalformedOutput("Groq output truncated (finish_reason=length)")
@@ -176,6 +199,25 @@ class GroqProvider(AIProvider):
 
 class OllamaProvider(AIProvider):
     name = "ollama"
+    last_finish_reason: str | None = None  # for logs and the eval harness only
+    last_usage: dict | None = None
+
+    @staticmethod
+    def request_body(model: str, task: AITask, prompt: str) -> dict:
+        """Ollama generate request, same contract as Groq: recipes get the strict JSON schema in
+        `format`, gpt-oss gets low reasoning, and the output budget is the same."""
+        body: dict = {
+            "model": model,
+            "prompt": prompt,
+            "format": "json",
+            "stream": False,
+            "options": {"num_predict": MAX_COMPLETION_TOKENS, "num_ctx": OLLAMA_NUM_CTX},
+        }
+        if task is AITask.RECIPES:
+            body["format"] = RECIPE_JSON_SCHEMA
+        if model.startswith(OLLAMA_GPT_OSS_PREFIX):
+            body["think"] = "low"
+        return body
 
     def generate_json(
         self, task: AITask, manifest: ContextManifest, feedback: str | None = None
@@ -189,8 +231,8 @@ class OllamaProvider(AIProvider):
         try:
             response = httpx.post(
                 f"{host}/api/generate",
-                json={"model": model, "prompt": payload, "format": "json", "stream": False},
-                timeout=30,
+                json=self.request_body(model, task, payload),
+                timeout=OLLAMA_TIMEOUT,
             )
             response.raise_for_status()
         except (httpx.TimeoutException, httpx.RequestError, httpx.HTTPStatusError) as exc:
@@ -203,16 +245,23 @@ class OllamaProvider(AIProvider):
         if not isinstance(body, dict) or body.get("done") is not True:
             raise ProviderError("Ollama returned an invalid response")
 
+        self.last_finish_reason = body.get("done_reason")
+        self.last_usage = {
+            "prompt_tokens": body.get("prompt_eval_count"),
+            "completion_tokens": body.get("eval_count"),
+        }
         content = body.get("response")
+        if self.last_finish_reason == "length":  # cut off: truncated JSON is never parsed
+            raise MalformedOutput("Ollama output truncated (done_reason=length)")
         if content is None or (isinstance(content, str) and not content.strip()):
             raise ProviderError("Ollama response content is missing")
         if not isinstance(content, str):
             raise ProviderError("Ollama returned an invalid response")
 
         try:
-            output = json.loads(content)
+            output = extract_json_object(content)
         except json.JSONDecodeError as exc:
-            raise ProviderError("Ollama returned malformed JSON") from exc
+            raise MalformedOutput("Ollama returned malformed JSON") from exc
         if not isinstance(output, dict):
             raise ProviderError("Ollama returned an invalid response")
         return output

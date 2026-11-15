@@ -3,6 +3,11 @@ from __future__ import annotations
 RECIPE_INSTRUCTIONS = (
     "Create 1-6 safe recipes using only the supplied manifest items. "
     "Never use an item whose status is Restricted. "
+    "Every ingredient must use a listed product_id, except these free basics, which use "
+    "product_id null: water, ice, black pepper, ground pepper, basil, oregano, parsley, cilantro, "
+    "thyme, rosemary, dill, garlic powder, onion powder, cinnamon, cumin, paprika, chili powder, "
+    "vinegar, lemon juice, lime juice. Never use salt, sugar, honey, syrup, soy sauce, bouillon, "
+    "butter, oil, milk or any other item without a product_id. "
     "If focus_index is set, every recipe must use that item. "
     "Give each recipe a short cuisine name (e.g. Mexican, Italian, Asian, Southern) and spread "
     "recipes across different cuisines; if cuisine is set, use only that cuisine. "
