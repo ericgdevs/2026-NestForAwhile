@@ -23,18 +23,6 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   return (await response.json()) as T;
 }
 
-/** DOCX report download; goes through the API base URL like every other call (`/api` on Vercel). */
-export async function downloadReport(type: "donor" | "grant"): Promise<Blob> {
-  const response = await fetch(`${API_BASE_URL}/reports/${type}`, {
-    method: "POST",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-    body: "{}",
-  });
-  if (!response.ok) throw new Error("Report generation failed");
-  return response.blob();
-}
-
 export function apiRequest<T>(
   path: string,
   init?: RequestInit & { body?: Json },
@@ -155,6 +143,8 @@ export type ScanResult = HouseholdLabel & {
   sugar_g: number | null;
   sat_fat_g: number | null;
   potassium_mg: number | null;
+  calories?: number | null;
+  carbs_g?: number | null;
   explanation: string;
   swaps?: Swap[];
 };

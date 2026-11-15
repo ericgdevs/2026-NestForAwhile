@@ -40,12 +40,3 @@ test("adding a recipe asks the server to diff it, skipping the scanned item", as
   expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ recipe, skip_product_id: 1 });
   vi.unstubAllGlobals();
 });
-
-test("report downloads go through the API base URL", async () => {
-  const { downloadReport } = await import("./client");
-  const fetchMock = vi.fn().mockResolvedValue(new Response(new Blob(["docx"]), { status: 200 }));
-  vi.stubGlobal("fetch", fetchMock);
-  await downloadReport("donor");
-  expect(fetchMock).toHaveBeenCalledWith("/reports/donor", expect.objectContaining({ method: "POST", credentials: "include" }));
-  vi.unstubAllGlobals();
-});

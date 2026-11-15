@@ -4,9 +4,9 @@ import type { IconName } from "../components/Icon";
 export type AppRole = components["schemas"]["Role"];
 
 export const clientPaths = ["/profile", "/scan", "/list", "/cart", "/recipes"] as const;
-export const checkoutRoles: AppRole[] = ["Volunteer", "Warehouse Manager"];
+export const checkoutRoles: AppRole[] = ["Volunteer", "Warehouse Manager", "Director"];
 export const warehousePaths = ["/audit", "/replenishment", "/lots"] as const;
-export const managementPaths = ["/analytics", "/reports"] as const;
+export const managementPaths = ["/analytics"] as const;
 
 export function canVisit(role: AppRole, path: string): boolean {
   if (clientPaths.includes(path as (typeof clientPaths)[number])) return role === "Client";
@@ -37,7 +37,6 @@ const allLinks: NavLink[] = [
   { href: "/labels", label: "Labels", icon: "scan" },
   { href: "/approvals", label: "Approvals", icon: "profile" },
   { href: "/analytics", label: "Analytics", icon: "analytics" },
-  { href: "/reports", label: "Reports", icon: "reports" },
 ];
 
 // Nav comes from canVisit so a role never sees a link it cannot open.

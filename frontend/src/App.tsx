@@ -18,7 +18,6 @@ import Overview from "./pages/Overview";
 import Profile from "./pages/Profile";
 import Recipes from "./pages/Recipes";
 import Replenishment from "./pages/Replenishment";
-import Reports from "./pages/Reports";
 import Scan from "./pages/Scan";
 import ShoppingList from "./pages/ShoppingList";
 import Signup from "./pages/Signup";
@@ -34,7 +33,6 @@ const screens: Record<string, () => ReactElement> = {
   "/replenishment": () => <Replenishment />,
   "/lots": () => <Lots />,
   "/analytics": () => <Analytics />,
-  "/reports": () => <Reports />,
   "/approvals": () => <Approvals />,
   "/labels": () => <Labels />,
 };
