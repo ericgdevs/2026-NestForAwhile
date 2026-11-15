@@ -1,0 +1,1140 @@
+{
+ "provider": "ollama",
+ "model": "gpt-oss:20b",
+ "results": [
+  {
+   "id": "active-01",
+   "persona": "client.active",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 2,
+   "recipes_after_guard": 0,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 6,
+    "total": 8
+   },
+   "ingredients_final": {
+    "in_stock": 9,
+    "total": 9
+   },
+   "latency_s": 3.724,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.719,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2907,
+      "completion_tokens": 305
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Crispy Chickpea & Carrot Bowl",
+     "member": null,
+     "item": "Coriander powder",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Rice & Veggie Frittata",
+     "member": null,
+     "item": "Parmesan",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "active-02",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 8,
+    "total": 8
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 4.316,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.31,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2810,
+      "completion_tokens": 978
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "active-03",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 10,
+    "total": 10
+   },
+   "ingredients_final": {
+    "in_stock": 10,
+    "total": 10
+   },
+   "latency_s": 3.466,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.459,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2905,
+      "completion_tokens": 763
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli & Tuna Rice Bowl",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli & Tuna Rice Bowl",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    }
+   ]
+  },
+  {
+   "id": "active-04",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 1,
+   "recipes_after_guard": 1,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 4,
+    "total": 4
+   },
+   "ingredients_final": {
+    "in_stock": 4,
+    "total": 4
+   },
+   "latency_s": 1.052,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 1.045,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2904,
+      "completion_tokens": 177
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-01",
+   "persona": "client.pending",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 14,
+    "total": 14
+   },
+   "ingredients_final": {
+    "in_stock": 14,
+    "total": 14
+   },
+   "latency_s": 3.349,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.342,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 3019,
+      "completion_tokens": 733
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-02",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 10,
+    "total": 11
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 3.675,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.669,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2842,
+      "completion_tokens": 811
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Asian Lentil & Green Bean Mix",
+     "member": null,
+     "item": "Curry powder",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-03",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "scanned_restricted",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 9,
+    "total": 10
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 3.27,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.264,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2843,
+      "completion_tokens": 723
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Brown Rice & Beans Bowl",
+     "member": null,
+     "item": "Coriander (cilantro)",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "pending-04",
+   "persona": "client.pending",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 1,
+   "recipes_after_guard": 1,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 3,
+    "total": 3
+   },
+   "ingredients_final": {
+    "in_stock": 3,
+    "total": 3
+   },
+   "latency_s": 1.325,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 1.318,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2923,
+      "completion_tokens": 227
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-htn-01",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 12,
+    "total": 19
+   },
+   "ingredients_final": {
+    "in_stock": 9,
+    "total": 9
+   },
+   "latency_s": 4.021,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.014,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2934,
+      "completion_tokens": 900
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Lentil Stew",
+     "member": null,
+     "item": "Coriander",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Quinoa Salad",
+     "member": null,
+     "item": "Apple cider vinegar",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Quinoa Salad",
+     "member": null,
+     "item": "Salt",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Quinoa Salad",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Heart Healthy word in ingredient: Salt"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Quinoa Salad",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Chickpea Curry",
+     "member": null,
+     "item": "Coconut milk, light",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Chickpea Curry",
+     "member": null,
+     "item": "Curry powder",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Chickpea Curry",
+     "member": null,
+     "item": "Ground turmeric",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli & Chickpea Curry",
+     "member": null,
+     "item": "Ground ginger",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-htn-02",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 8,
+    "total": 8
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 5.869,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 5.864,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2847,
+      "completion_tokens": 1351
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-htn-03",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 7,
+    "total": 7
+   },
+   "ingredients_final": {
+    "in_stock": 7,
+    "total": 7
+   },
+   "latency_s": 4.25,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.243,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2936,
+      "completion_tokens": 963
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Carrot & Apple Creamy Soup",
+     "member": "Person 1",
+     "item": "Apples, fresh",
+     "detail": "Capped"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Carrot & Apple Creamy Soup",
+     "member": "Person 1",
+     "item": "Apples, fresh",
+     "detail": "Capped"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-htn-04",
+   "persona": "client.diabetes.htn",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 1,
+   "recipes_after_guard": 1,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 4,
+    "total": 4
+   },
+   "ingredients_final": {
+    "in_stock": 4,
+    "total": 4
+   },
+   "latency_s": 1.73,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 1.724,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2857,
+      "completion_tokens": 348
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "ckd-htn-01",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 5,
+   "recipes_final": 5,
+   "ingredients_pre_guard": {
+    "in_stock": 23,
+    "total": 23
+   },
+   "ingredients_final": {
+    "in_stock": 23,
+    "total": 23
+   },
+   "latency_s": 5.049,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 5.043,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2933,
+      "completion_tokens": 1161
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "ckd-htn-02",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 7,
+    "total": 8
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 3.425,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.419,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2839,
+      "completion_tokens": 769
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Creamy Yogurt & Apple Dessert",
+     "member": null,
+     "item": "Vanilla extract",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "ckd-htn-03",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 11,
+    "total": 11
+   },
+   "ingredients_final": {
+    "in_stock": 11,
+    "total": 11
+   },
+   "latency_s": 4.656,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.648,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2930,
+      "completion_tokens": 1069
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Piccata",
+     "member": "Person 1",
+     "item": "Chicken breast, boneless skinless, raw",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "bananas",
+     "detail": "Kidney Friendly word in step: 1. Dice the apples and slice the bananas into bite\u2011size piec"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "banana",
+     "detail": "Kidney Friendly word in step: 2. In a large bowl, combine the fresh spinach, apple pieces,"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Spinach & Chicken Piccata",
+     "member": "Person 1",
+     "item": "Chicken breast, boneless skinless, raw",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "Bananas, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "Bananas",
+     "detail": "Kidney Friendly word in ingredient: Bananas, fresh"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "bananas",
+     "detail": "Kidney Friendly word in step: 1. Dice the apples and slice the bananas into bite\u2011size piec"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Spinach & Greek Yogurt Fruit Salad",
+     "member": "Person 1",
+     "item": "banana",
+     "detail": "Kidney Friendly word in step: 2. In a large bowl, combine the fresh spinach, apple pieces,"
+    }
+   ]
+  },
+  {
+   "id": "ckd-htn-04",
+   "persona": "client.ckd.htn",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 6,
+   "recipes_final": 6,
+   "ingredients_pre_guard": {
+    "in_stock": 20,
+    "total": 20
+   },
+   "ingredients_final": {
+    "in_stock": 20,
+    "total": 20
+   },
+   "latency_s": 5.786,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 5.778,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2839,
+      "completion_tokens": 1346
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean & Carrot Veggie Wrap",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Cook the rice according to package instructions, using water"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean & Carrot Veggie Wrap",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook the rice according to package instructions, using water"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean & Carrot Veggie Wrap",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Heart Healthy word in step: Cook the rice according to package instructions, using water"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Green Bean & Carrot Veggie Wrap",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook the rice according to package instructions, using water"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-ckd-01",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 11,
+    "total": 11
+   },
+   "ingredients_final": {
+    "in_stock": 11,
+    "total": 11
+   },
+   "latency_s": 4.44,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.436,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2927,
+      "completion_tokens": 1017
+     }
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-ckd-02",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 14,
+    "total": 14
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 3.139,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.131,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2745,
+      "completion_tokens": 697
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Chickpea & Cabbage Soup",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Taste and adjust seasoning if needed (avoid adding salt)."
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "diabetes-ckd-03",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "cart_capped",
+    "potassium_conflict"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 3,
+   "recipes_after_guard": 3,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 13,
+    "total": 13
+   },
+   "ingredients_final": {
+    "in_stock": 13,
+    "total": 13
+   },
+   "latency_s": 3.434,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 3.423,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2923,
+      "completion_tokens": 758
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Chickpea Salad",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Black Bean Tacos",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Vegetable Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Chickpea Salad",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Black Bean Tacos",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Zucchini & Vegetable Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Zucchini, fresh",
+     "detail": "Capped"
+    }
+   ]
+  },
+  {
+   "id": "diabetes-ckd-04",
+   "persona": "client.diabetes.ckd",
+   "tags": [
+    "adversarial",
+    "cuisine"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": false,
+   "fallback_reason": null,
+   "recipes_pre_guard": 5,
+   "recipes_after_guard": 1,
+   "recipes_final": 1,
+   "ingredients_pre_guard": {
+    "in_stock": 24,
+    "total": 25
+   },
+   "ingredients_final": {
+    "in_stock": 4,
+    "total": 4
+   },
+   "latency_s": 4.549,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 4.543,
+     "finish_reason": "stop",
+     "usage": {
+      "prompt_tokens": 2845,
+      "completion_tokens": 1047
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Tofu & Popcorn Snack Bowl",
+     "member": null,
+     "item": "Cayenne pepper",
+     "detail": "not in manifest (null product_id)"
+    }
+   ],
+   "post_guard_findings": []
+  }
+ ]
+}
