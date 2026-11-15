@@ -31,6 +31,6 @@ test("renders inventory warning and replenishment item", async () => {
 
 test("renders aggregate analytics", async () => {
   render(<Analytics />);
-  expect(await screen.findByText("families served")).toBeInTheDocument();
+  expect(await screen.findByText("Families served")).toBeInTheDocument();
   expect(screen.queryByText(/client|email/i)).not.toBeInTheDocument();
 });
