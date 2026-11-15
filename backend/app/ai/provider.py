@@ -87,6 +87,21 @@ def _retry_wait(response: httpx.Response) -> float:
     return min(max(wait, 0.0), MAX_RETRY_WAIT)
 
 
+def _schema_failure_code(response: httpx.Response) -> str | None:
+    """The error code of a Groq 400 that says the output failed JSON/schema validation, else None
+    (a bad request stays a hard error). Only this code is ever logged, never the body."""
+    try:
+        error = response.json()["error"]
+        code, message = str(error.get("code") or ""), str(error.get("message") or "").lower()
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return None
+    if code == "json_validate_failed" or (
+        "json" in message and ("validat" in message or "schema" in message)
+    ):
+        return code or "schema_validation"
+    return None
+
+
 class GroqProvider(AIProvider):
     name = "groq"
     last_finish_reason: str | None = None  # for logs only
@@ -141,6 +156,9 @@ class GroqProvider(AIProvider):
 
         if response.status_code == 429:
             raise ProviderError("Groq rate limited", 429)
+        code = _schema_failure_code(response) if response.status_code == 400 else None
+        if code:  # strict structured output failed validation: the model can answer again
+            raise MalformedOutput(f"Groq output failed schema validation (400 {code})", 400)
         try:
             response.raise_for_status()
         except httpx.HTTPStatusError as exc:

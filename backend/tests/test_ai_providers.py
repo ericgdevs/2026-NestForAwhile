@@ -1,3 +1,5 @@
+import json
+
 import httpx
 import pytest
 
@@ -118,3 +120,63 @@ def test_groq_request_is_unchanged_by_ollama_parity():
     body = GroqProvider.request_body("openai/gpt-oss-20b", AITask.RECIPES, "x")
     assert body["reasoning_effort"] == "low"
     assert body["response_format"]["json_schema"]["schema"] == RECIPE_JSON_SCHEMA
+
+
+def _groq_400(code="json_validate_failed", message="Failed to generate JSON"):
+    return {"error": {"code": code, "message": message}}
+
+
+def _run_groq_recipes(monkeypatch, replies):
+    """run_ai_task with Groq HTTP replies [(status, body)]; returns (result or error, calls)."""
+    from types import SimpleNamespace
+
+    monkeypatch.setenv("GROQ_API_KEY", "synthetic")
+    calls = []
+
+    def post(url, **kwargs):
+        status, body = replies[len(calls)]
+        calls.append(kwargs)
+        return httpx.Response(status, json=body, request=httpx.Request("POST", url))
+
+    monkeypatch.setattr("app.ai.provider.httpx.post", post)
+    product = SimpleNamespace(
+        id=1, sku="SYN-X-777", barcode="2999999999991", image_url=None,
+        name="Rice", category="Grains",
+        allergens=[], diet_flags=[], calories=1, sodium_mg=1, sugar_g=1, sat_fat_g=1,
+        potassium_mg=1, protein_g=1,
+    )  # fmt: skip
+    from app.ai.orchestrator import AIOrchestrationError, run_ai_task
+
+    try:
+        return run_ai_task(AITask.RECIPES, [product], [], provider=GroqProvider()), len(calls)
+    except AIOrchestrationError as exc:
+        return exc, len(calls)
+
+
+GOOD = {
+    "choices": [{"message": {"content": json.dumps({"recipes": [
+        {"title": "Bowl", "cuisine": "American",
+         "ingredients": [{"name": "Rice", "product_id": 0}], "steps": ["Cook."]}
+    ]})}}]
+}  # fmt: skip
+
+
+def test_groq_schema_400_is_retried_once_then_succeeds(monkeypatch):
+    result, calls = _run_groq_recipes(monkeypatch, [(400, _groq_400()), (200, GOOD)])
+    assert calls == 2 and result.output.recipes[0].title == "Bowl"
+
+
+def test_groq_schema_400_twice_gives_up_after_one_retry(monkeypatch):
+    result, calls = _run_groq_recipes(monkeypatch, [(400, _groq_400())] * 2)
+    assert calls == 2 and "MalformedOutput" in str(result)
+
+
+def test_groq_schema_message_without_code_is_also_retried(monkeypatch):
+    body = _groq_400(code="", message="response failed JSON schema validation")
+    assert _run_groq_recipes(monkeypatch, [(400, body), (200, GOOD)])[1] == 2
+
+
+@pytest.mark.parametrize("body", [_groq_400("invalid_request_error", "bad model"), {}, "oops"])
+def test_other_groq_400_is_a_hard_error_with_no_retry(monkeypatch, body):
+    result, calls = _run_groq_recipes(monkeypatch, [(400, body), (200, GOOD)])
+    assert calls == 1 and "ProviderError" in str(result) and "MalformedOutput" not in str(result)

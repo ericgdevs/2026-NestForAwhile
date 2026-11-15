@@ -15,6 +15,7 @@ import re
 
 from app.rules.classify import CAPPED, classify, household_label
 from app.services.external_common import TEXT_WORDS
+from app.services.recipe_guard import is_free_basic
 
 try:
     from rapidfuzz.fuzz import ratio as _ratio
@@ -69,6 +70,12 @@ def rules_findings(recipe: dict, members: list[dict], products: dict[int, object
     found = []
     for ingredient in recipe["ingredients"]:
         product = products.get(ingredient["product_id"])
+        if (
+            product is None
+            and ingredient["product_id"] is None
+            and is_free_basic(ingredient["name"])
+        ):
+            continue  # an allowlisted free basic needs no product_id
         if product is None:
             found.append(
                 _finding(

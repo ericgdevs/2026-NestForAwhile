@@ -118,7 +118,9 @@ def latest_runs(results_dir: Path = RESULTS_DIR) -> list[dict]:
     for path in sorted(results_dir.glob("*.json")):  # names end in a sortable UTC timestamp
         data = json.loads(path.read_text())
         data["file"], data["stamp"] = path.name, path.stem.rsplit("_", 1)[-1]
-        newest[(data["provider"], data["model"])] = data
+        key = (data["provider"], data["model"])
+        data["before"] = newest.get(key)  # the run before it, if any (eval found it -> fixed)
+        newest[key] = data
     return sorted(newest.values(), key=lambda d: (d["provider"] != "ollama", d["model"]))
 
 
@@ -189,6 +191,67 @@ def _examples(runs: list[dict], limit: int = 8) -> str:
             "each layer must catch. "
         )
     return (head + shown + "\n\n" if rows else "") + note.strip()
+
+
+def _before_after(runs: list[dict]) -> str:
+    """Re-measured models: the earlier run next to the newest one."""
+    out = []
+    for run in runs:
+        before = run.get("before")
+        if not before:
+            continue
+        b, a = aggregate(before["results"]), aggregate(run["results"])
+        rows = [
+            ("Used the fallback, all cases", f"{b['fallback_pct']}%", f"{a['fallback_pct']}%"),
+            ("Used the fallback, excluding scanned-Restricted cases",
+             f"{b['fallback_other_pct']}%", f"{a['fallback_other_pct']}%"),
+            ("Valid JSON first try / after retry",
+             f"{b['json_first_pct']}% / {b['json_retry_pct']}%",
+             f"{a['json_first_pct']}% / {a['json_retry_pct']}%"),
+            ("Recipes returned / kept by the guard",
+             f"{b['recipes_pre']} / {b['recipes_after_guard']}",
+             f"{a['recipes_pre']} / {a['recipes_after_guard']}"),
+            ("Pre-guard violations: rules / unlisted id / keyword",
+             " / ".join(map(str, b["violations"]["pre"].values())),
+             " / ".join(map(str, a["violations"]["pre"].values()))),
+            ("Post-guard violations: rules / unlisted id / keyword",
+             " / ".join(map(str, b["violations"]["post"].values())),
+             " / ".join(map(str, a["violations"]["post"].values()))),
+            ("Latency p50 / p95",
+             f"{b['p50_s']} / {b['p95_s']} s", f"{a['p50_s']} / {a['p95_s']} s"),
+        ]  # fmt: skip
+        body = "\n".join(f"| {n} | {x} | {y} |" for n, x, y in rows)
+        out.append(
+            f"### {run['provider']} `{run['model']}`\n\n"
+            f"Before: `{before['file']}`. After: `{run['file']}`.\n\n"
+            f"| Metric | Before | After |\n|---|---|---|\n{body}\n"
+        )
+    if not out:
+        return ""
+    return (
+        "\n## Eval found it, fixed, re-measured\n\n"
+        "The first run showed that `guard_recipes` dropped a whole recipe whenever an ingredient "
+        "had no "
+        "`product_id`, and the model often listed basics such as water or pepper that way. The fix "
+        "allows a short list of free basics (water, ice, black pepper, ground pepper, basil, "
+        "oregano, "
+        "parsley, cilantro, thyme, rosemary, dill, garlic powder, onion powder, cinnamon, cumin, "
+        "paprika, chili powder, vinegar, lemon juice, lime juice) to have a null `product_id`, and "
+        "tells the model to use a listed `product_id` for everything else. Salt, sugar, honey, "
+        "syrup, "
+        "soy sauce, bouillon, butter, oil, milk and any other null-id ingredient still drop the "
+        "recipe. "
+        "The safety layers treat only those basics as listed. The same change also made Groq's "
+        "HTTP 400 "
+        "structured-output failures (`json_validate_failed`) retry once like any malformed "
+        "answer.\n\n"
+        + "\n".join(out)
+        + "\nOnly the models shown here were re-run; the other results above were measured before "
+        "the "
+        "fix. Both changes (instructions and guard) were made together, so the table does not "
+        "separate "
+        "their effects.\n"
+    )
 
 
 def _post_guard_failures(runs: list[dict]) -> str:
@@ -361,7 +424,8 @@ def build_doc(runs: list[dict]) -> str:
         + tables
         + "\nPost-guard safety violations (must be none): "
         + _post_guard_failures(runs)
-        + "\n\n## Violations caught before the guard\n\n"
+        + _before_after(runs)
+        + "\n## Violations caught before the guard\n\n"
         + _examples(runs)
         + "\n\n## Model selection\n\n"
         + _conclusion(runs, stats)

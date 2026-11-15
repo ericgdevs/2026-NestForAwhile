@@ -45,6 +45,7 @@ from app.db import Base
 from app.models import Client, Product, User
 from app.routes.recipes import _ai_suggestions, _allowed_stock, manifest_products
 from app.services.nutrition import household_choices, members_for
+from app.services.recipe_guard import is_free_basic
 from eval.safety import check_recipes
 from seed.load import seed_catalog, seed_users
 
@@ -134,7 +135,9 @@ def raw_recipes(raw: object, index_map: dict[int, int]) -> list[dict]:
 
 
 def _in_stock(recipes: list[dict], stock: dict[int, Product]) -> tuple[int, int]:
-    ingredients = [i for r in recipes for i in r["ingredients"]]
+    ingredients = [  # free basics have no product_id by design
+        i for r in recipes for i in r["ingredients"] if not is_free_basic(i["name"])
+    ]
     return sum(i["product_id"] in stock for i in ingredients), len(ingredients)
 
 

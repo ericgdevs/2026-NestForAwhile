@@ -60,24 +60,24 @@ from.
 
 ### ollama `gpt-oss:20b`
 
-Run 2026-11-15 03:48 UTC, file `eval/results/ollama_gpt-oss-20b_20261115T034814Z.json`.
+Run 2026-11-15 04:10 UTC, file `eval/results/ollama_gpt-oss-20b_20261115T041028Z.json`.
 
 | Metric | Value |
 |---|---|
 | Cases | 20 |
 | Valid JSON and schema, first try | 100.0% |
 | Valid JSON and schema, after the one retry | 100.0% |
-| Used the deterministic fallback | 55.0% |
-| Fallback, excluding scanned-item-Restricted cases | 35.7% |
-| Recipes returned by the model / kept by the guard | 90 / 38 |
+| Used the deterministic fallback | 40.0% |
+| Fallback, excluding scanned-item-Restricted cases | 14.3% |
+| Recipes returned by the model / kept by the guard | 60 / 33 |
 | Cases with a provider error (429, timeout, 5xx) | 0 |
-| Safety violations pre-guard: rules (Restricted) / unlisted id / keyword | 0 / 95 / 0 |
+| Safety violations pre-guard: rules (Restricted) / unlisted id / keyword | 0 / 13 / 0 |
 | Safety violations post-guard: rules (Restricted) / unlisted id / keyword | 0 / 0 / 0 |
-| Warnings pre-guard: Capped item / nutrient word | 7 / 121 |
-| Warnings post-guard: Capped item / nutrient word | 15 / 28 |
-| Ingredients in stock, pre-guard / post-guard | 81.9% / 100.0% |
+| Warnings pre-guard: Capped item / nutrient word | 7 / 8 |
+| Warnings post-guard: Capped item / nutrient word | 7 / 5 |
+| Ingredients in stock, pre-guard / post-guard | 94.4% / 100.0% |
 | Name-ID mismatches pre-guard / post-guard | 0 / 0 |
-| Latency p50 / p95 | 4.4 s / 6.1 s |
+| Latency p50 / p95 | 3.7 s / 5.8 s |
 
 ### ollama `qwen3:8b`
 
@@ -122,30 +122,49 @@ Run 2026-11-15 03:57 UTC, file `eval/results/groq_openai-gpt-oss-20b_20261115T03
 | Latency p50 / p95 | 1.1 s / 1.5 s |
 
 Post-guard safety violations (must be none): None.
+## Eval found it, fixed, re-measured
+
+The first run showed that `guard_recipes` dropped a whole recipe whenever an ingredient had no `product_id`, and the model often listed basics such as water or pepper that way. The fix allows a short list of free basics (water, ice, black pepper, ground pepper, basil, oregano, parsley, cilantro, thyme, rosemary, dill, garlic powder, onion powder, cinnamon, cumin, paprika, chili powder, vinegar, lemon juice, lime juice) to have a null `product_id`, and tells the model to use a listed `product_id` for everything else. Salt, sugar, honey, syrup, soy sauce, bouillon, butter, oil, milk and any other null-id ingredient still drop the recipe. The safety layers treat only those basics as listed. The same change also made Groq's HTTP 400 structured-output failures (`json_validate_failed`) retry once like any malformed answer.
+
+### ollama `gpt-oss:20b`
+
+Before: `ollama_gpt-oss-20b_20261115T034814Z.json`. After: `ollama_gpt-oss-20b_20261115T041028Z.json`.
+
+| Metric | Before | After |
+|---|---|---|
+| Used the fallback, all cases | 55.0% | 40.0% |
+| Used the fallback, excluding scanned-Restricted cases | 35.7% | 14.3% |
+| Valid JSON first try / after retry | 100.0% / 100.0% | 100.0% / 100.0% |
+| Recipes returned / kept by the guard | 90 / 38 | 60 / 33 |
+| Pre-guard violations: rules / unlisted id / keyword | 0 / 95 / 0 | 0 / 13 / 0 |
+| Post-guard violations: rules / unlisted id / keyword | 0 / 0 / 0 | 0 / 0 / 0 |
+| Latency p50 / p95 | 4.4 / 6.1 s | 3.7 / 5.8 s |
+
+Only the models shown here were re-run; the other results above were measured before the fix. Both changes (instructions and guard) were made together, so the table does not separate their effects.
 
 ## Violations caught before the guard
 
 | Case | Model | Layer | Member | Item | Detail |
 |---|---|---|---|---|---|
-| active-04 | `gpt-oss:20b` | rules | - | Salt | not in manifest (null product_id) |
-| active-04 | `gpt-oss:20b` | rules | - | Lime juice | not in manifest (null product_id) |
-| active-04 | `gpt-oss:20b` | rules | - | Cumin powder | not in manifest (null product_id) |
-| pending-01 | `gpt-oss:20b` | rules | - | Water | not in manifest (null product_id) |
-| pending-01 | `gpt-oss:20b` | rules | - | Lemon juice | not in manifest (null product_id) |
-| pending-01 | `gpt-oss:20b` | rules | - | Soy sauce (low‑sodium) | not in manifest (null product_id) |
-| pending-01 | `gpt-oss:20b` | rules | - | Garlic | not in manifest (null product_id) |
-| pending-01 | `gpt-oss:20b` | rules | - | Salt | not in manifest (null product_id) |
+| active-01 | `gpt-oss:20b` | rules | - | Coriander powder | not in manifest (null product_id) |
+| active-01 | `gpt-oss:20b` | rules | - | Parmesan | not in manifest (null product_id) |
+| pending-02 | `gpt-oss:20b` | rules | - | Curry powder | not in manifest (null product_id) |
+| pending-03 | `gpt-oss:20b` | rules | - | Coriander (cilantro) | not in manifest (null product_id) |
+| diabetes-htn-01 | `gpt-oss:20b` | rules | - | Coriander | not in manifest (null product_id) |
+| diabetes-htn-01 | `gpt-oss:20b` | rules | - | Apple cider vinegar | not in manifest (null product_id) |
+| diabetes-htn-01 | `gpt-oss:20b` | rules | - | Salt | not in manifest (null product_id) |
+| diabetes-htn-01 | `gpt-oss:20b` | rules | - | Coconut milk, light | not in manifest (null product_id) |
 
-Across all runs the layers caught 0 Restricted-item or allergen/diet keyword violations and 79 unlisted ids (the first 8 are shown). No model named a Restricted item or an excluded food: the manifest never lists Restricted items for the household, so a model cannot reference one by index. `tests/test_eval_harness.py` feeds the harness a deliberately unsafe recipe that each layer must catch.
+Across all runs the layers caught 0 Restricted-item or allergen/diet keyword violations and 20 unlisted ids (the first 8 are shown). No model named a Restricted item or an excluded food: the manifest never lists Restricted items for the household, so a model cannot reference one by index. `tests/test_eval_harness.py` feeds the harness a deliberately unsafe recipe that each layer must catch.
 
 ## Model selection
 
 **Selected: `gpt-oss:20b`.** The order of the gates is: 0 post-guard safety violations (2 of 2 models passed), then valid JSON after the retry of at least 90%, then the lowest p50 latency.
 
-- `gpt-oss:20b`: 100.0% valid first try, 100.0% after the retry, 35.7% fallback (excluding scanned-Restricted cases), kept 38 of 90 recipes in the guard, p50 4.4 s / p95 6.1 s.
+- `gpt-oss:20b`: 100.0% valid first try, 100.0% after the retry, 14.3% fallback (excluding scanned-Restricted cases), kept 33 of 60 recipes in the guard, p50 3.7 s / p95 5.8 s.
 - `qwen3:8b`: 30.0% valid first try, 90.0% after the retry, 7.1% fallback (excluding scanned-Restricted cases), kept 45 of 69 recipes in the guard, p50 24.7 s / p95 32.2 s.
 
-36 of the 90 recipes `gpt-oss:20b` returned had an ingredient with no valid product_id (staples such as salt or water, see the table above), and the app's guard drops a whole recipe for one such ingredient. This is a guard-versus-prompt mismatch, not unsafe output, and the likely main driver of its 35.7% fallback in the other cases. It is the first thing to fix (allow staples without a product_id, or tell the model to leave them out). 
+
 
 The Groq sanity run of `openai/gpt-oss-20b` (3 cases) had 1 case(s) with a provider error and 0 post-guard violations (p50 1.1 s). It is too small to compare quality, and it is not evidence that production behaves like the Ollama run.
 
