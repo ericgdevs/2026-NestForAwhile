@@ -8,29 +8,15 @@ import {
   scanProduct,
   tickListLine,
   type ListLine,
-  type ScanResult,
 } from "../api/client";
 import BarcodeScanner from "../components/BarcodeScanner";
 import Icon from "../components/Icon";
-import ListReview, { type ReviewRow } from "../components/ListReview";
+import ListReview, { listEntry, mergeByProduct, type ReviewRow } from "../components/ListReview";
 import NotForLine from "../components/NotForLine";
 import { resizeToBase64Jpeg } from "../lib/resizeImage";
 import { StatusBadge } from "../components/StatusBadge";
 
 const RED_CONFIRM = "This isn't recommended for anyone in your household. Add it anyway?";
-
-function rowFromScan(scan: ScanResult): ReviewRow {
-  return {
-    text: scan.name,
-    product_id: scan.product_id,
-    name: scan.name,
-    status: scan.status,
-    not_for: scan.not_for,
-    location: null,
-    swaps: scan.swaps,
-    keep: true,
-  };
-}
 
 function ListLineRow({ line, onChange }: { line: ListLine; onChange: (items: ListLine[]) => void }) {
   async function tick(ticked: boolean) {
@@ -104,7 +90,7 @@ export default function ShoppingList() {
     setMessage("");
     try {
       const { lines } = await parseShoppingList(input);
-      setSuggestions(lines.map((line) => ({ ...line, keep: true })));
+      setSuggestions(mergeByProduct(lines.map((line) => ({ ...line, keep: true }))));
       if (!lines.length) setMessage("We didn't find any items. Try typing one per line.");
     } catch (reason) {
       setMessage(reason instanceof Error ? reason.message : "We couldn't read that list.");
@@ -129,7 +115,11 @@ export default function ShoppingList() {
     setMessage("");
     try {
       const scan = await scanProduct(code);
-      setSuggestions((rows) => [...rows, rowFromScan(scan)]);
+      // Stock and swaps come from the same matching as a typed list; unmatched means a plain note.
+      const { lines } = scan.product_id ? await parseShoppingList({ text: scan.name }) : { lines: [] };
+      const found = lines.find((line) => line.product_id === scan.product_id);
+      const row = found ?? { text: scan.name, product_id: null, name: null, status: null, location: null };
+      setSuggestions((rows) => mergeByProduct([...rows, { ...row, keep: true }]));
     } catch {
       setMessage("We couldn't find that product. Try again or type it instead.");
     }
@@ -140,7 +130,7 @@ export default function ShoppingList() {
     try {
       const { lines } = await parseShoppingList({ text: value });
       const found = lines[0];
-      if (found) setSuggestions((rows) => rows.map((row, i) => (i === index ? { ...found, keep: row.keep } : row)));
+      if (found) setSuggestions((rows) => mergeByProduct(rows.map((row, i) => (i === index ? { ...found, keep: row.keep } : row))));
     } catch {
       setMessage("We couldn't check that item. Try again.");
     }
@@ -150,7 +140,7 @@ export default function ShoppingList() {
     const kept = suggestions.filter((line) => line.keep);
     if (!kept.length) return;
     if (kept.some((line) => line.status === "Restricted") && !window.confirm(RED_CONFIRM)) return;
-    const list = await addToShoppingList(kept.map((line) => ({ text: line.text, product_id: line.product_id })));
+    const list = await addToShoppingList(kept.map(listEntry));
     setItems(list.items);
     setSuggestions([]);
     setText("");

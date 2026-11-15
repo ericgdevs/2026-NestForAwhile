@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import type { Recipe } from "../api/client";
+import { addToShoppingList, type Recipe, type RecipeListResult } from "../api/client";
 import Icon from "./Icon";
 
 const DEFAULT_GROUP = "Suggested for you";
@@ -16,8 +16,8 @@ export function groupByCuisine(recipes: Recipe[]): [string, Recipe[]][] {
 }
 
 export type RecipeActions = {
-  onSave?: (recipe: Recipe) => Promise<unknown>;
-  onAddToList?: (recipe: Recipe) => Promise<unknown>;
+  onSave?: (recipe: Recipe) => Promise<RecipeListResult | unknown>;
+  onAddToList?: (recipe: Recipe) => Promise<RecipeListResult | unknown>;
   onDelete?: (recipe: Recipe) => Promise<unknown>;
 };
 
@@ -27,16 +27,83 @@ const ACTION_LABELS = {
   onDelete: ["Delete", "Deleted"],
 } as const;
 
+const isListResult = (value: unknown): value is RecipeListResult =>
+  typeof value === "object" && value !== null && "added" in value && "blocked" in value;
+
+export function listSummary({ added, in_cart, already_on_list }: RecipeListResult): string {
+  const skipped = [in_cart && `${in_cart} already in your cart`, already_on_list && `${already_on_list} already on your list`]
+    .filter(Boolean)
+    .join(", ");
+  const head = added.length
+    ? `Added ${added.length} item${added.length === 1 ? "" : "s"} to your list`
+    : "Nothing new to add to your list";
+  return skipped ? `${head} (${skipped})` : head;
+}
+
+function ListConfirmation({ result, recipe }: { result: RecipeListResult; recipe: Recipe }) {
+  const [swapped, setSwapped] = useState<string[]>([]);
+  return (
+    <div className="stack" style={{ gap: "0.5rem" }}>
+      <p className="alert alert-info" role="status">
+        <Icon name="check" />
+        <span>
+          {listSummary(result)}. <a href="/list">View your list</a>
+        </span>
+      </p>
+      {result.added.length > 0 && (
+        <ul className="ingredients">
+          {result.added.map((item) => (
+            <li key={item.name}>
+              <span>{item.name}</span>
+              {item.location && (
+                <span className="location">
+                  <Icon name="pin" />
+                  Aisle {item.location.aisle} · {item.location.shelf} · {item.location.bin}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      {result.blocked.map((blocked) => (
+        <div className="alert alert-warn stack" key={blocked.name} role="alert" style={{ gap: "0.5rem" }}>
+          <span>
+            <Icon name="stop" /> Not added: {blocked.name} isn't recommended for everyone at home.{" "}
+            {blocked.not_for.map((who) => `Not for ${who.nickname}: ${who.reason}.`).join(" ")}
+          </span>
+          {blocked.swaps.map((swap) => (
+            <button
+              className="btn btn-secondary"
+              disabled={swapped.includes(swap.name)}
+              key={swap.product_id}
+              type="button"
+              onClick={() =>
+                void addToShoppingList([{ text: swap.name, product_id: swap.product_id }], recipe).then(() =>
+                  setSwapped((names) => [...names, swap.name]),
+                )
+              }
+            >
+              {swapped.includes(swap.name) ? `Added ${swap.name}` : `Add ${swap.name} instead`} · Aisle {swap.aisle} · {swap.shelf} · {swap.bin}
+            </button>
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeActions }) {
   const [done, setDone] = useState<string[]>([]);
   const [failed, setFailed] = useState(false);
+  const [result, setResult] = useState<RecipeListResult | null>(null);
   const keys = (Object.keys(ACTION_LABELS) as (keyof RecipeActions)[]).filter((key) => actions[key]);
   if (!keys.length) return null;
 
   async function run(key: keyof RecipeActions) {
     setFailed(false);
     try {
-      await actions[key]!(recipe);
+      const outcome = await actions[key]!(recipe);
+      if (isListResult(outcome)) setResult(outcome);
       setDone((list) => [...list, key]);
     } catch {
       setFailed(true);
@@ -64,6 +131,7 @@ function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeAct
           );
         })}
       </div>
+      {result && <ListConfirmation recipe={recipe} result={result} />}
       {failed && (
         <p className="alert alert-danger" role="alert">
           <Icon name="alert" />

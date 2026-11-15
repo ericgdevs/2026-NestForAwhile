@@ -18,6 +18,7 @@ from app.rules.classify import RESTRICTED, household_label
 from app.services.cart import active_session, get_or_create_cart
 from app.services.nutrition import members_for
 from app.services.shopping_list import (
+    add_recipe_to_list,
     aisle_order,
     find_same_line,
     first_lots,
@@ -37,11 +38,17 @@ MAX_PHOTO_BYTES = 6_000_000
 class ListLine(BaseModel):
     text: str = Field(min_length=1, max_length=120)
     product_id: int | None = None
+    note: bool = False  # a plain note (e.g. not stocked): never matched to a product
 
 
 class AddRequest(BaseModel):
     items: list[ListLine] = Field(min_length=1, max_length=50)
     recipe: dict | None = None  # set when adding a recipe's ingredients; shown as "For: <title>"
+
+
+class RecipeAddRequest(BaseModel):
+    recipe: dict
+    skip_product_id: int | None = None
 
 
 class TickRequest(BaseModel):
@@ -93,7 +100,7 @@ def add_items(
     existing = _items(database, user)
     for line in payload.items:
         product_id = line.product_id
-        if product_id is None and (match := match_line(line.text, stocked)) is not None:
+        if product_id is None and not line.note and (match := match_line(line.text, stocked)) is not None:
             product_id = match.id
         item = find_same_line(existing, product_id, line.text)
         if item is None:
@@ -104,6 +111,13 @@ def add_items(
         merge_into_line(item, payload.recipe)
     database.commit()
     return _list_view(database, user)
+
+
+@router.post("/shopping-list/from-recipe")
+def add_from_recipe(
+    payload: RecipeAddRequest, user: User = Depends(client_only), database: Session = Depends(get_db)
+):
+    return add_recipe_to_list(database, user, payload.recipe, payload.skip_product_id)
 
 
 @router.patch("/shopping-list/{item_id}")

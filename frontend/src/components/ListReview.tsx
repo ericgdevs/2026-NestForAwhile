@@ -13,6 +13,26 @@ type Props = {
   onConfirm: () => void;
 };
 
+/** One row per catalog product: when two lines matched the same one, keep the first and keep it if either was kept. */
+export function mergeByProduct(rows: ReviewRow[]): ReviewRow[] {
+  const merged: ReviewRow[] = [];
+  for (const row of rows) {
+    const twin = row.product_id === null ? undefined : merged.find((other) => other.product_id === row.product_id);
+    if (twin) twin.keep = twin.keep || row.keep;
+    else merged.push({ ...row });
+  }
+  return merged;
+}
+
+export const NOT_STOCKED = " — not stocked today";
+
+/** What goes on the list: a stocked product as itself, anything else as a plain note with no safety status. */
+export function listEntry(row: ReviewRow) {
+  if (row.product_id !== null) return { text: row.text, product_id: row.product_id };
+  const text = row.text.endsWith(NOT_STOCKED) ? row.text : row.text.slice(0, 120 - NOT_STOCKED.length) + NOT_STOCKED;
+  return { text, product_id: null, note: true };
+}
+
 // Review step: nothing reaches the shopping list until the client confirms these rows.
 export default function ListReview({ rows, onChange, onRecheck, onConfirm }: Props) {
   const update = (index: number, patch: Partial<ReviewRow>) =>
@@ -53,7 +73,7 @@ export default function ListReview({ rows, onChange, onRecheck, onConfirm }: Pro
             ) : (
               <span className="alert alert-info">
                 <Icon name="alert" />
-                We don't carry this. You can still keep it on your list.
+                We don't carry this today. It will go on your list as a note.
               </span>
             )}
             <NotForLine notFor={row.not_for} />
