@@ -1,58 +1,106 @@
-# NestForAwhile MTG Warehouse
+a# NestForAwhile MTG Warehouse
 
-Synthetic-data grocery support warehouse for client check-in, dietary matching,
-barcode safety scans, carts, recipes, and volunteer checkout.
+## 1. Project Overview
 
-## Local development
+Epic Cure's Medically Tailored Groceries (MTG) warehouse hands out food to clients with health conditions such as diabetes, high blood pressure and kidney disease. Staff must make sure each item is safe for every person in a household. This app checks each product against the household's dietary needs, shows a clear status (Approved, Capped or Restricted), and runs the client queue and checkout. AI helps with recipes and photo shopping lists, but **safety is decided by a rules engine, never by the AI**.
 
+**Live app:** https://nestforawhile-mtg.vercel.app
+
+Key features:
+- Barcode or SKU scan with a safety status per household member
+- Household profiles with encrypted ICD-10 codes mapped to a dietary tier
+- Cart with nutrition totals
+- Recipe ideas from the cart, with a rules-only fallback if the AI fails
+- Shopping list, including reading a photo of a handwritten list
+- Safer swaps for items that are not Approved
+- Volunteer checkout and queue, plus warehouse inventory and replenishment
+- Director overview and analytics (anonymized)
+
+Demo accounts (synthetic data only). Password for all: `demo-password`
+
+| Role | Email |
+|---|---|
+| Client (Low Sodium, child with nut allergy) | client.active@example.test |
+| Client (pending approval, 6 people) | client.pending@example.test |
+| Client (inactive) | client.inactive@example.test |
+| Client (diabetes + high blood pressure) | client.diabetes.htn@example.test |
+| Client (kidney disease + high blood pressure) | client.ckd.htn@example.test |
+| Client (diabetes + kidney disease) | client.diabetes.ckd@example.test |
+| Volunteer | volunteer@example.test |
+| Warehouse staff | warehouse.staff@example.test |
+| Warehouse manager | warehouse.manager@example.test |
+| Director | director@example.test |
+
+## 2. Setup Instructions
+
+Needs Python 3 and Node.js. Run from the repo root.
+
+**Backend**
 ```sh
-cp .env.example .env
+python -m venv .venv && source .venv/bin/activate
+pip install -r backend/requirements.txt
+cp .env.example .env      # then fill in JWT_SECRET and FIELD_ENCRYPTION_KEY (a Fernet key)
 cd backend
-../.venv/bin/alembic upgrade head
-../.venv/bin/python -m seed.load
-../.venv/bin/uvicorn app.main:app --reload
+alembic upgrade head
+python -m seed.load
+uvicorn app.main:app --reload
 ```
 
-In another terminal:
-
+**Frontend** (second terminal)
 ```sh
 cd frontend
-npm ci
+npm install
 npm run dev
 ```
 
-The local AI default is Ollama. Azure deployment is configured for Groq through
-App Service settings; API keys remain outside the repository. All seeded accounts
-and products are synthetic and use `@example.test`.
-
-## Deploy (Vercel + Supabase)
-
-Configure the Vercel function region to `pdx1` and set the following environment variables:
-- `DATABASE_URL`
-- `JWT_SECRET`
-- `FIELD_ENCRYPTION_KEY`
-- `AI_PROVIDER=groq`
-- `GROQ_API_KEY`
-- `GROQ_MODEL`
-- `ALLOWED_ORIGINS`
-- `COOKIE_SECURE=true`
-- `SEED_DEMO_DATA=false`
-
-One-time database migration and seed from your laptop (use the same `FIELD_ENCRYPTION_KEY` and `DATABASE_URL` as Vercel):
-
+**Tests**
 ```sh
-cd backend
-python -m alembic upgrade head
-python -m seed.load
+cd backend && pytest
+cd frontend && npm test
 ```
 
-## Validation
+Notes:
+- Local AI defaults to Ollama. Production uses Groq (`AI_PROVIDER=groq`, `GROQ_API_KEY`). Keys stay in `.env` (gitignored), never in code.
+- End-to-end Playwright tests are in `e2e/` (`npx playwright test`).
+- Deploy: Vercel (frontend + FastAPI) with Supabase Postgres. Env vars are listed in `.env.example`; run the migration and seed once against the Supabase `DATABASE_URL`.
 
-```sh
-.venv/bin/pytest -q backend
-cd frontend && npm test -- --run && npm run build
-cd ../e2e && npx playwright test
-```
+## 3. Tool Usage Summary
 
-See `specs/001-mtg-warehouse-system/` for the specification, plan, contracts,
-and task list. See `docs/demo-runbook.md` for a synthetic judging flow.
+Full log: [docs/ai-usage.md](docs/ai-usage.md)
+
+| Component                                      | AI tool(s)                                                                 | What for                                   |
+| ---------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------ |
+| Planning                                       | Gemini (notebook)                                                          | Planning the project                       |
+| Spec (constitution, specify, plan, tasks)      | Spec Kit in Copilot (Sonnet 5.5, GPT-5.6 Terra)                            | Spec, plan and task list in `specs/`       |
+| Backend (API, rules, seed, scan, deploy fixes) | Copilot (Sonnet 5.5, GPT-5.6 Terra)                                        | Writing routes, rules engine and seed data |
+| Frontend                                       | Copilot (Sonnet 5.5, GPT-5.6 Terra) with Impeccable, Agentation, Ponytail  | UI build, design pass, feedback fixes      |
+| Testing, CI, AI evaluation                     | Gemini, Copilot                                                            | Tests, CI, recipe model evaluation         |
+| Deploy                                         | Gemini, Copilot (Sonnet 5.5)                                               | Vercel and Supabase setup                  |
+| Review                                         | Ponytail review, Copilot code review                                       | Reviewing changes                          |
+| In the app                                     | Groq `openai/gpt-oss-20b` (recipes), Groq `qwen/qwen3.8-27b` (photo lists) | Recipe ideas and reading list photos       |
+
+In-app model: we ran 20 synthetic cases against `gpt-oss:20b` and `qwen3:8b`. Both had 0 unsafe items after the rules guard. `gpt-oss` was picked for better valid-JSON rate and speed. Production runs the same model on Groq. Details: [docs/ai-eval-results.md](docs/ai-eval-results.md).
+
+## 4. Team Collaboration
+
+- **Eric Good:** backend, AI, testing, deploy.
+- **Caden Wondell:** frontend, slides.
+- **How we worked:** one branch per task or stream, pull requests into `main`, one person merges, and decisions go in [docs/decisions.md](docs/decisions.md).
+- **Approved team and tool changes:** TODO (not recorded in the repo).
+
+## 5. Software Engineering Strategy
+
+- **Design:** Spec Kit spec, plan and tasks in `specs/001-mtg-warehouse-system/`, with an API contract (OpenAPI).
+- **Build:** AI agents write the code in small tasks and small pull requests; each step is logged.
+- **Test:** automated tests (backend pytest, frontend Vitest, Playwright), live tests on phones, and an AI evaluation with 0 unsafe items.
+- **Fix:** bugs found from logs and the evaluation (for example, recipes dropped for free basics like water, and Groq 400 errors now retry).
+- **Deploy:** Vercel (frontend and FastAPI) with Supabase Postgres.
+
+## More docs
+
+- docs/prompts.md (TODO: file does not exist yet)
+- docs/assumptions.md (TODO: file does not exist yet)
+- docs/reflection.md (TODO: file does not exist yet)
+- [docs/decisions.md](docs/decisions.md)
+- [docs/ai-usage.md](docs/ai-usage.md)
+- [docs/ai-eval-results.md](docs/ai-eval-results.md)
