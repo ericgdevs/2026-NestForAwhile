@@ -24,7 +24,7 @@ test.describe("client on a phone", () => {
     const tabs = page.getByRole("navigation", { name: "Mobile navigation" });
     await expect(tabs).toBeVisible();
     await expect(tabs.getByRole("link")).toHaveText(["Home", "Scan", "List", "Cart", "Recipes"]);
-    await expect(page.getByRole("link", { name: "Household" })).toHaveAttribute("href", "/profile");
+    await expect(page.getByRole("link", { name: "Household", exact: true })).toHaveAttribute("href", "/profile");
 
     // Clients are identified by role and household, never by name.
     await expect(page.getByText("Active Client")).toHaveCount(0);

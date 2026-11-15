@@ -1,9 +1,34 @@
 import { useState } from "react";
 
 import { addToShoppingList, type Recipe, type RecipeListResult } from "../api/client";
-import Icon from "./Icon";
+import Icon, { type IconName } from "./Icon";
 
 const DEFAULT_GROUP = "Suggested for you";
+const ALL = "All";
+// Offered where the page can ask the API for more; other screens only show cuisines they already have.
+export const CUISINES: [string, IconName][] = [
+  ["American", "american"],
+  ["Mexican", "mexican"],
+  ["Italian", "italian"],
+  ["Chinese", "chinese"],
+  ["Japanese", "japanese"],
+  ["Korean", "korean"],
+  ["Thai", "thai"],
+  ["Vietnamese", "vietnamese"],
+  ["Indian", "indian"],
+  ["Mediterranean", "mediterranean"],
+  ["Middle Eastern", "middleEastern"],
+  ["Greek", "greek"],
+  ["French", "french"],
+  ["Southern", "southern"],
+  ["Caribbean", "caribbean"],
+  ["African", "african"],
+];
+
+function cuisineIcon(cuisine: string): IconName {
+  if (cuisine === ALL) return "all";
+  return CUISINES.find(([name]) => name.toLowerCase() === cuisine.toLowerCase())?.[1] ?? "recipes";
+}
 
 // Recipes arrive ranked by the rules-checked API, so the first in each cuisine is its top pick.
 export function groupByCuisine(recipes: Recipe[]): [string, Recipe[]][] {
@@ -27,6 +52,9 @@ const ACTION_LABELS = {
   onDelete: ["Delete", "Deleted"],
 } as const;
 
+// When the server had nothing to add, "On your list" would overstate what happened.
+const NOTHING_TO_ADD = "Nothing to add";
+
 const isListResult = (value: unknown): value is RecipeListResult =>
   typeof value === "object" && value !== null && "added" in value && "blocked" in value;
 
@@ -44,8 +72,8 @@ function ListConfirmation({ result, recipe }: { result: RecipeListResult; recipe
   const [swapped, setSwapped] = useState<string[]>([]);
   return (
     <div className="stack" style={{ gap: "0.5rem" }}>
-      <p className="alert alert-info" role="status">
-        <Icon name="check" />
+      <p className={`alert ${result.added.length ? "alert-ok" : "alert-info"}`} role="status">
+        <Icon name={result.added.length ? "check" : "list"} />
         <span>
           {listSummary(result)}. <a href="/list">View your list</a>
         </span>
@@ -66,26 +94,30 @@ function ListConfirmation({ result, recipe }: { result: RecipeListResult; recipe
         </ul>
       )}
       {result.blocked.map((blocked) => (
-        <div className="alert alert-warn stack" key={blocked.name} role="alert" style={{ gap: "0.5rem" }}>
-          <span>
-            <Icon name="stop" /> Not added: {blocked.name} isn't recommended for everyone at home.{" "}
-            {blocked.not_for.map((who) => `Not for ${who.nickname}: ${who.reason}.`).join(" ")}
-          </span>
-          {blocked.swaps.map((swap) => (
-            <button
-              className="btn btn-secondary"
-              disabled={swapped.includes(swap.name)}
-              key={swap.product_id}
-              type="button"
-              onClick={() =>
-                void addToShoppingList([{ text: swap.name, product_id: swap.product_id }], recipe).then(() =>
-                  setSwapped((names) => [...names, swap.name]),
-                )
-              }
-            >
-              {swapped.includes(swap.name) ? `Added ${swap.name}` : `Add ${swap.name} instead`} · Aisle {swap.aisle} · {swap.shelf} · {swap.bin}
-            </button>
-          ))}
+        <div className="alert alert-warn" key={blocked.name} role="alert">
+          <Icon name="stop" />
+          <div className="stack" style={{ gap: "0.5rem", flex: 1 }}>
+            <span>Not added: {blocked.name} isn't recommended for everyone at home.</span>
+            {blocked.not_for.length > 0 && (
+              <span className="blocked-who">{blocked.not_for.map((who) => `Not for ${who.nickname}: ${who.reason}.`).join(" ")}</span>
+            )}
+            {blocked.swaps.map((swap) => (
+              <button
+                className="btn btn-secondary swap-btn"
+                disabled={swapped.includes(swap.name)}
+                key={swap.product_id}
+                type="button"
+                onClick={() =>
+                  void addToShoppingList([{ text: swap.name, product_id: swap.product_id }], recipe).then(() =>
+                    setSwapped((names) => [...names, swap.name]),
+                  )
+                }
+              >
+                {swapped.includes(swap.name) && <Icon name="check" />}
+                {swapped.includes(swap.name) ? `Added ${swap.name}` : `Add ${swap.name} instead`} · Aisle {swap.aisle} · {swap.shelf} · {swap.bin}
+              </button>
+            ))}
+          </div>
         </div>
       ))}
     </div>
@@ -96,6 +128,7 @@ function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeAct
   const [done, setDone] = useState<string[]>([]);
   const [failed, setFailed] = useState(false);
   const [result, setResult] = useState<RecipeListResult | null>(null);
+  const [nothingAdded, setNothingAdded] = useState(false);
   const keys = (Object.keys(ACTION_LABELS) as (keyof RecipeActions)[]).filter((key) => actions[key]);
   if (!keys.length) return null;
 
@@ -104,6 +137,7 @@ function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeAct
     try {
       const outcome = await actions[key]!(recipe);
       if (isListResult(outcome)) setResult(outcome);
+      if (key === "onAddToList") setNothingAdded(isListResult(outcome) && outcome.added.length === 0);
       setDone((list) => [...list, key]);
     } catch {
       setFailed(true);
@@ -114,7 +148,8 @@ function RecipeButtons({ recipe, actions }: { recipe: Recipe; actions: RecipeAct
     <div className="stack" style={{ marginTop: "0.75rem", gap: "0.5rem" }}>
       <div className="row" style={{ justifyContent: "flex-start", flexWrap: "wrap" }}>
         {keys.map((key) => {
-          const [label, doneLabel] = ACTION_LABELS[key];
+          const [label, finished] = ACTION_LABELS[key];
+          const doneLabel = key === "onAddToList" && nothingAdded ? NOTHING_TO_ADD : finished;
           const isDone = done.includes(key);
           return (
             <button
@@ -180,27 +215,63 @@ function RecipeCard({ recipe, top, actions }: { recipe: Recipe; top: boolean; ac
   );
 }
 
-export default function RecipeGroups({ recipes, actions = {} }: { recipes: Recipe[]; actions?: RecipeActions }) {
-  const groups = groupByCuisine(recipes);
-  const [active, setActive] = useState(0);
-  const [, current] = groups[Math.min(active, groups.length - 1)] ?? ["", []];
+type Props = {
+  recipes: Recipe[];
+  actions?: RecipeActions;
+  /** Fetches recipes for a cuisine the list doesn't have yet; turns on the full cuisine list. */
+  loadCuisine?: (cuisine: string) => Promise<unknown>;
+};
+
+export default function RecipeGroups({ recipes, actions = {}, loadCuisine }: Props) {
+  const groups = new Map(groupByCuisine(recipes));
+  const tabs = [ALL, ...new Set([...(loadCuisine ? CUISINES.map(([name]) => name) : []), ...groups.keys()])];
+  const [active, setActive] = useState(ALL);
+  const [loading, setLoading] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const current = active === ALL ? recipes : (groups.get(active) ?? []);
+
+  async function pick(cuisine: string) {
+    setActive(cuisine);
+    setFailed(false);
+    if (cuisine === ALL || groups.has(cuisine) || !loadCuisine) return;
+    setLoading(true);
+    try {
+      await loadCuisine(cuisine);
+    } catch {
+      setFailed(true);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div>
-      {groups.length > 1 && (
+      {(groups.size > 1 || loadCuisine) && (
         <div className="tabs" role="group" aria-label="Cuisines">
-          {groups.map(([cuisine], index) => (
-            <button aria-pressed={index === active} key={cuisine} type="button" onClick={() => setActive(index)}>
+          {tabs.map((cuisine) => (
+            <button aria-pressed={cuisine === active} key={cuisine} type="button" onClick={() => void pick(cuisine)}>
+              <Icon name={cuisineIcon(cuisine)} />
               {cuisine}
             </button>
           ))}
         </div>
       )}
-      <div className="grid grid-auto">
-        {current.map((recipe, index) => (
-          <RecipeCard actions={actions} key={recipe.id ?? recipe.title} recipe={recipe} top={index === 0} />
-        ))}
-      </div>
+      {loading ? (
+        <p className="empty">Finding {active} recipes for your cart…</p>
+      ) : failed ? (
+        <p className="alert alert-danger" role="alert">
+          <Icon name="alert" />
+          <span>We couldn't load {active} recipes. Try again.</span>
+        </p>
+      ) : current.length === 0 ? (
+        <p className="panel empty">No {active} recipes for your cart yet.</p>
+      ) : (
+        <div className="grid grid-auto">
+          {current.map((recipe, index) => (
+            <RecipeCard actions={actions} key={recipe.id ?? recipe.title} recipe={recipe} top={index === 0} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

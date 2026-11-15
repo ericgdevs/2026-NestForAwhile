@@ -43,17 +43,18 @@ export default function ListReview({ rows, onChange, onRecheck, onConfirm }: Pro
     <div className="stack" aria-label="Review your list">
       <ul className="ingredients">
         {rows.map((row, index) => (
-          <li className="stack" key={index} style={{ gap: "0.5rem" }}>
-            <div className="row">
+          <li className={`review-row ${row.keep ? "" : "review-row-off"}`} key={index}>
+            <div className="review-line">
               <input
                 aria-label={`Keep ${row.text}`}
+                className="review-check"
                 checked={row.keep}
                 type="checkbox"
                 onChange={() => update(index, { keep: !row.keep })}
               />
               <input
                 aria-label={`Item ${index + 1}`}
-                className="input"
+                className="input review-text"
                 defaultValue={row.text}
                 key={row.text}
                 onBlur={(event) => event.target.value.trim() !== row.text && onRecheck(index, event.target.value.trim())}
@@ -71,22 +72,22 @@ export default function ListReview({ rows, onChange, onRecheck, onConfirm }: Pro
             {row.status ? (
               <StatusBadge status={row.status} />
             ) : (
-              <span className="alert alert-info">
+              <p className="alert alert-info">
                 <Icon name="alert" />
-                We don't carry this today. It will go on your list as a note.
-              </span>
+                <span>We don't carry this today. It will go on your list as a note.</span>
+              </p>
             )}
             <NotForLine notFor={row.not_for} />
             {row.status === "Restricted" && (
               <div className="stack" style={{ gap: "0.5rem" }}>
                 <p className="alert alert-warn" role="alert">
                   <Icon name="stop" />
-                  This isn't recommended for anyone in your household.
+                  <span>This isn't recommended for anyone in your household.</span>
                 </p>
                 {row.swaps?.length ? (
                   row.swaps.map((swap) => (
                     <button
-                      className="btn btn-secondary"
+                      className="btn btn-secondary swap-btn"
                       key={swap.product_id}
                       type="button"
                       onClick={() =>

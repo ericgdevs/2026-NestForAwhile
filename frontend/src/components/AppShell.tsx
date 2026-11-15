@@ -36,6 +36,24 @@ export default function AppShell({ children }: { children: ReactNode }) {
     }
   }
 
+  // Bottom of the sidebar on desktop; the top bar on phones and tablets, where there's no sidebar.
+  const account = (
+    <>
+      {isClient ? (
+        <a className="signout" href="/profile">
+          <Icon name="profile" />
+          <span>Household</span>
+        </a>
+      ) : (
+        <span className="role-tag">{user.role}</span>
+      )}
+      <button className="signout" type="button" onClick={() => void handleSignOut()}>
+        <Icon name="logout" />
+        <span>Sign out</span>
+      </button>
+    </>
+  );
+
   const wordmark = (
     <a className="wordmark" href="/">
       <strong>Epic-Cure</strong>
@@ -50,23 +68,11 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <nav aria-label="Primary navigation">
           <Links links={links} />
         </nav>
+        <div className="sidebar-account">{account}</div>
       </aside>
       <header className="topbar">
         {wordmark}
-        <div className="topbar-meta">
-          {isClient ? (
-            <a className="signout" href="/profile">
-              <Icon name="profile" />
-              <span>Household</span>
-            </a>
-          ) : (
-            <span className="role-tag">{user.role}</span>
-          )}
-          <button className="signout" type="button" onClick={() => void handleSignOut()}>
-            <Icon name="logout" />
-            <span>Sign out</span>
-          </button>
-        </div>
+        <div className="topbar-meta">{account}</div>
       </header>
       {!isClient && (
         <nav aria-label="Section navigation" className="navrow">
