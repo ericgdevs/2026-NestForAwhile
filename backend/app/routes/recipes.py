@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 
 from fastapi import APIRouter, Body, Depends
@@ -10,17 +11,20 @@ from sqlalchemy.orm import Session
 from app.ai.context_manifest import build_manifest as build_ai_manifest
 from app.ai.fallback import build_fallback_recipes
 from app.ai.orchestrator import AIOrchestrationError, run_ai_task
-from app.ai.provider import AITask
+from app.ai.provider import AITask, MalformedOutput
 from app.ai.rules_guard import apply_rules_guard
+from app.ai.validators import AIValidationError
 from app.auth import Role, require_roles
 from app.db import get_db
 from app.models import AIRequest, Client, InventoryLot, Product, User
-from app.rules.classify import RESTRICTED, classify
+from app.rules.classify import APPROVED, RESTRICTED, classify
 from app.services.cart import active_session, build_manifest, get_or_create_cart
 from app.services.nutrition import household_choices
 from app.services.recipe_guard import guard_recipes
 
 router = APIRouter()
+logger = logging.getLogger(__name__)
+MANIFEST_EXTRAS = 25  # in-stock products sent to the AI besides the scanned item and cart
 
 
 def _allowed_stock(database: Session, profile_data: dict):
@@ -38,6 +42,31 @@ def _allowed_stock(database: Session, profile_data: dict):
         select(Product).where(Product.id.in_(locations)).order_by(Product.id)
     )
     return {p.id: p for p in candidates if classify(p, profile_data)[0] != RESTRICTED}, locations
+
+
+def manifest_products(products: dict, cart: list[dict], profile_data: dict, focus_id: int | None):
+    """Scanned item + cart items + up to MANIFEST_EXTRAS others, so the request stays small.
+
+    Others are picked round-robin across categories, the scanned item's category first and
+    Approved before Capped, so recipes still get a varied, closest-fitting shortlist.
+    """
+    must = list(
+        dict.fromkeys(i for i in (focus_id, *(r["product_id"] for r in cart)) if i in products)
+    )
+    focus = products.get(focus_id)
+    groups: dict[str, list] = {}
+    for product in products.values():
+        if product.id not in must:
+            groups.setdefault(product.category, []).append(product)
+    for group in groups.values():
+        group.sort(key=lambda p: classify(p, profile_data)[0] != APPROVED)  # stable
+    order = sorted(groups, key=lambda c: (not focus or c != focus.category, c))
+    picked: list = []
+    while len(picked) < MANIFEST_EXTRAS and any(groups.values()):
+        for category in order:
+            if groups[category] and len(picked) < MANIFEST_EXTRAS:
+                picked.append(groups[category].pop(0))
+    return [products[i] for i in must] + picked
 
 
 class RecipeRequest(BaseModel):
@@ -72,26 +101,27 @@ def _with_locations(recipes: list[dict], locations: dict, stocked: set[int]) -> 
 def _ai_suggestions(
     products, locations, cart, profile_data, household_size, focus=None, cuisine=None
 ):
-    """Recipes plus missing-ingredient suggestions; raises if the AI cannot give a safe recipe."""
-    items = list(products.values())
+    """Guarded recipes from one AI call; raises if the AI cannot give a safe recipe.
+
+    The old second "missing ingredients" call had no instructions and no "JSON" in its prompt, so
+    Groq answered 400 after every 200. It was optional and swallowed, so it is gone.
+    """
+    items = manifest_products(products, cart, profile_data, focus)
     restrictions = [*profile_data["restrictions"], *profile_data["allergies"]]
     quantities = {row["product_id"]: row["quantity"] for row in cart}
     manifest, index_map = build_ai_manifest(items, restrictions, quantities, household_size)
     in_stock = set(products)
 
-    def run(task):
-        result = run_ai_task(
-            task,
-            items,
-            restrictions,
-            quantities,
-            household_size,
-            focus_product_id=focus,
-            cuisine=cuisine,
-        )
-        return result, apply_rules_guard(result, manifest, items, restrictions, in_stock).output
-
-    result, output = run(AITask.RECIPES)
+    result = run_ai_task(
+        AITask.RECIPES,
+        items,
+        restrictions,
+        quantities,
+        household_size,
+        focus_product_id=focus,
+        cuisine=cuisine,
+    )
+    output = apply_rules_guard(result, manifest, items, restrictions, in_stock).output
     recipes = guard_recipes(
         [
             {
@@ -112,20 +142,7 @@ def _ai_suggestions(
     recipes = [recipe for recipe in recipes if _matches(recipe, focus, cuisine)]
     if not recipes:
         raise AIOrchestrationError("no safe recipes")
-    try:
-        _, missing_output = run(AITask.MISSING_INGREDIENTS)
-    except Exception:
-        missing_output = None  # missing-ingredient hints are optional; recipes still ship
-    missing = [
-        {
-            "product_id": index_map[item.product_id],
-            "name": items[item.product_id].name,
-            "reason": item.reason,
-            "location": locations[index_map[item.product_id]],
-        }
-        for item in (missing_output.items if missing_output else [])
-    ]
-    return result.provider, recipes, missing
+    return result.provider, recipes, []
 
 
 @router.post("/recipes")
@@ -156,8 +173,11 @@ def recipes(
             request.scanned_product_id,
             request.cuisine,
         )
-    except Exception:
-        pass  # any AI failure falls through to the deterministic fallback below
+    except Exception as exc:  # any AI failure falls through to the deterministic fallback
+        cause = exc.__cause__ or exc
+        status = getattr(cause, "status_code", None)  # type and status only: no prompt, no PHI
+        reason = str(cause) if isinstance(cause, AIValidationError | MalformedOutput) else ""
+        logger.warning("Recipe AI fell back: %s status=%s %s", type(cause).__name__, status, reason)
     used_fallback = payload is None
     if used_fallback:
         inventory = [{"product_id": p.id, "name": p.name} for p in products.values()]

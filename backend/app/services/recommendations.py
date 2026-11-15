@@ -2,14 +2,27 @@ from __future__ import annotations
 
 import math
 from datetime import date
+from itertools import islice
 
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session, joinedload
 
-from app.models import Checkout, CheckoutItem, Client, InventoryLot, SavedRecipe, ShoppingSession
+from app.models import (
+    Cart,
+    CartItem,
+    Checkout,
+    CheckoutItem,
+    Client,
+    InventoryLot,
+    SavedRecipe,
+    ShoppingListItem,
+    ShoppingSession,
+)
 from app.rules.classify import RESTRICTED, household_label
+from app.services.cart import active_session
 from app.services.nutrition import members_for
 
+POPULAR_COUNT = 4  # fallback size when the client has no qualifying picks
 CHILD_AGE = 12  # under this age counts as half a portion (design §5 #6)
 
 
@@ -43,47 +56,94 @@ def _saved_recipe_products(database: Session, client: Client) -> set[int]:
     }
 
 
+def _list_products(database: Session, client: Client) -> set[int]:
+    return set(
+        database.scalars(
+            select(ShoppingListItem.product_id).where(
+                ShoppingListItem.client_id == client.user_id,
+                ShoppingListItem.product_id.is_not(None),
+                ShoppingListItem.ticked.is_(False),
+            )
+        )
+    )
+
+
+def _cart_products(database: Session, client: Client) -> set[int]:
+    session = active_session(database, client)
+    if session is None:
+        return set()
+    return set(
+        database.scalars(
+            select(CartItem.product_id).join(Cart).where(Cart.session_id == session.id)
+        )
+    )
+
+
+def _popularity(database: Session) -> dict[int, int]:
+    """Total quantity taken per product over all completed checkouts (aggregate, no clients)."""
+    rows = database.execute(
+        select(CheckoutItem.product_id, func.sum(CheckoutItem.quantity))
+        .join(Checkout, Checkout.id == CheckoutItem.checkout_id)
+        .where(Checkout.status == "completed")
+        .group_by(CheckoutItem.product_id)
+    )
+    return {product_id: int(total) for product_id, total in rows}
+
+
 def build_recommendations(database: Session, client: Client) -> list[dict[str, object]]:
-    """In-stock picks sized to the household; past visits and saved recipes come first."""
+    """In-stock picks from the client's history, saved recipes and shopping list.
+
+    Items already in the active cart are hidden. With no qualifying pick, the warehouse's most
+    taken products are shown instead.
+    """
     members = members_for(client)
     quantity = household_portions(members, client.Household_Size)
-    taken_before = _past_products(database, client)
-    in_saved = _saved_recipe_products(database, client)
+    reasons_for = {
+        "You took this on a past visit.": _past_products(database, client),
+        "It's in a recipe you saved.": _saved_recipe_products(database, client),
+        "It's on your shopping list.": _list_products(database, client),
+    }
+    in_cart = _cart_products(database, client)
     lots = database.scalars(
         select(InventoryLot)
         .options(joinedload(InventoryLot.product))
         .where(InventoryLot.quantity > 0, InventoryLot.expiration_date >= date.today())
         .order_by(InventoryLot.expiration_date, InventoryLot.id)
     ).all()
-    recommendations = []
-    seen_products: set[int] = set()
+    first_lot: dict[int, InventoryLot] = {}
     for lot in lots:
-        product = lot.product
-        if product.id in seen_products:
-            continue
-        seen_products.add(product.id)
-        label = household_label(product, members)
+        first_lot.setdefault(lot.product_id, lot)  # oldest stock per product
+
+    def pick(lot: InventoryLot, extra_reasons: list[str]) -> dict[str, object] | None:
+        label = household_label(lot.product, members)
         if label["status"] == RESTRICTED:
-            continue
-        reasons = [label["explanation"]]
-        if product.id in taken_before:
-            reasons.append("You took this on a past visit.")
-        if product.id in in_saved:
-            reasons.append("It's in a recipe you saved.")
-        recommendations.append(
-            {
-                "product_id": product.id,
-                "name": product.name,
-                "quantity": quantity,
-                "status": label["status"],
-                "rationale": " ".join(reasons),
-                "not_for": label["not_for"],
-                "allergy_match": label["allergy_match"],
-                "aisle": lot.aisle,
-                "shelf": lot.shelf,
-                "bin": lot.bin,
-                "_rank": (product.id not in taken_before and product.id not in in_saved),
-            }
-        )
-    recommendations.sort(key=lambda pick: pick["_rank"])  # stable: keeps oldest-stock order
-    return [{k: v for k, v in pick.items() if k != "_rank"} for pick in recommendations]
+            return None
+        return {
+            "product_id": lot.product.id,
+            "name": lot.product.name,
+            "quantity": quantity,
+            "status": label["status"],
+            "rationale": " ".join([label["explanation"], *extra_reasons]),
+            "not_for": label["not_for"],
+            "allergy_match": label["allergy_match"],
+            "aisle": lot.aisle,
+            "shelf": lot.shelf,
+            "bin": lot.bin,
+        }
+
+    available = {pid: lot for pid, lot in first_lot.items() if pid not in in_cart}
+    picks = [
+        pick(lot, [text for text, ids in reasons_for.items() if pid in ids])
+        for pid, lot in available.items()
+        if any(pid in ids for ids in reasons_for.values())
+    ]
+    picks = [p for p in picks if p]
+    if picks:
+        return picks
+
+    taken = _popularity(database)
+    ranked = sorted(available.items(), key=lambda entry: -taken.get(entry[0], 0))  # stable
+    fallback = (
+        pick(lot, ["Popular at the warehouse."] if pid in taken else []) for pid, lot in ranked
+    )
+    return list(islice(filter(None, fallback), POPULAR_COUNT))

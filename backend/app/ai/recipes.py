@@ -11,6 +11,41 @@ RECIPE_INSTRUCTIONS = (
 )
 
 
+# Groq structured outputs (strict): every key required, nothing extra, no length keywords.
+RECIPE_JSON_SCHEMA = {
+    "type": "object",
+    "properties": {
+        "recipes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "cuisine": {"type": "string"},
+                    "ingredients": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "name": {"type": "string"},
+                                "product_id": {"type": ["integer", "null"]},
+                            },
+                            "required": ["name", "product_id"],
+                            "additionalProperties": False,
+                        },
+                    },
+                    "steps": {"type": "array", "items": {"type": "string"}},
+                },
+                "required": ["title", "cuisine", "ingredients", "steps"],
+                "additionalProperties": False,
+            },
+        }
+    },
+    "required": ["recipes"],
+    "additionalProperties": False,
+}
+
+
 def build_recipe_prompt(
     cart_manifest: list[dict],
     scanned_item: dict | None,

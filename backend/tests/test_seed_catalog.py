@@ -22,9 +22,8 @@ def test_seed_catalog_creates_synthetic_products_lots_donors_and_grants(monkeypa
         donors = database.scalars(select(Donor)).all()
         grants = database.scalars(select(Grant)).all()
 
-    assert len(products) == 4
-    assert all(product.barcode.startswith("000000") for product in products)
-    assert len(lots) == 8
+    assert len(products) >= 100
+    assert len(lots) == 2 * len(products)
     assert len({lot.expiration_date for lot in lots}) > 1
     assert any(lot.expiration_date <= date.today() + timedelta(days=5) for lot in lots)
     assert all(lot.reorder_threshold == 4 for lot in lots)

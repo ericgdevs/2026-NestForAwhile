@@ -60,7 +60,7 @@ def test_no_recipes_for_an_item_that_is_unsafe_for_any_member(database, shopping
 class CuisineProvider(AIProvider):
     name = "fake-cuisines"
 
-    def generate_json(self, task, manifest):
+    def generate_json(self, task, manifest, feedback=None):
         if task is not AITask.RECIPES:
             return {"items": []}
         focus = manifest.focus_index
@@ -110,7 +110,7 @@ class SixRecipeProvider(AIProvider):
     name = "fake-six"
     seen: list = []
 
-    def generate_json(self, task, manifest):
+    def generate_json(self, task, manifest, feedback=None):
         SixRecipeProvider.seen.append(manifest)
         if task is not AITask.RECIPES:
             return {"items": []}

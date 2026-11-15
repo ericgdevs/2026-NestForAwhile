@@ -1,9 +1,13 @@
+import json
+import logging
 from collections.abc import Iterable
 from dataclasses import dataclass
 
 from app.ai.context_manifest import build_manifest, manifest_hash
-from app.ai.provider import AIProvider, AITask, get_provider
-from app.ai.validators import validate_ai_output
+from app.ai.provider import AIProvider, AITask, MalformedOutput, get_provider
+from app.ai.validators import AIValidationError, validate_ai_output
+
+logger = logging.getLogger(__name__)
 
 
 class AIOrchestrationError(RuntimeError):
@@ -41,8 +45,19 @@ def run_ai_task(
         manifest, index_map = build_manifest(
             products, restrictions, cart_quantities, household_size, focus_product_id, cuisine
         )
-        raw = provider.generate_json(task, manifest)
-        output = validate_ai_output(task.value, raw, manifest)
+        logger.debug("AI manifest size: %d bytes", len(json.dumps(manifest.model_dump())))
+        try:
+            raw = provider.generate_json(task, manifest)
+            output = validate_ai_output(task.value, raw, manifest)
+        except (AIValidationError, MalformedOutput) as first:
+            # Log field names and finish_reason only: never the prompt or the model's text.
+            logger.warning(
+                "AI output rejected, retrying once: %s (finish_reason=%s)",
+                first,
+                getattr(provider, "last_finish_reason", None),
+            )
+            raw = provider.generate_json(task, manifest, feedback=str(first))
+            output = validate_ai_output(task.value, raw, manifest)
     except Exception as exc:
         raise AIOrchestrationError(f"{type(exc).__name__}: {exc}") from exc
     return AIResult(output, manifest_hash(manifest), index_map, provider.name)

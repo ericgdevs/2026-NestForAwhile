@@ -36,7 +36,7 @@ def test_recipe_route_falls_back_when_provider_is_unavailable(database, logged_i
 class FakeProvider(AIProvider):
     name = "fake"
 
-    def generate_json(self, task, manifest):
+    def generate_json(self, task, manifest, feedback=None):
         first, second = manifest.items[0], manifest.items[1]
         if task is AITask.RECIPES:
             ingredient = {"name": first.name, "product_id": first.index}
@@ -90,7 +90,7 @@ def test_recipe_route_fallback_is_logged_and_never_uses_restricted_items(
     assert (request.kind, request.used_fallback, request.valid) == ("recipes", True, False)
 
 
-def test_recipe_route_returns_guarded_recipes_and_missing_ingredient_locations(
+def test_recipe_route_returns_guarded_recipes_from_one_ai_call(
     database, logged_in_client, nut_allergy_cart, monkeypatch
 ):
     restricted_id, _ = nut_allergy_cart
@@ -99,9 +99,7 @@ def test_recipe_route_returns_guarded_recipes_and_missing_ingredient_locations(
 
     assert body["used_fallback"] is False
     assert restricted_id not in ingredient_ids(body)
-    [missing] = body["missing_ingredients"]
-    assert missing["product_id"] != restricted_id
-    assert set(missing["location"]) == {"aisle", "shelf", "bin"}
+    assert body["missing_ingredients"] == []  # the extra AI call that caused 400s is gone
     assert database.query(AIRequest).one().model == "fake"
 
 
@@ -109,7 +107,7 @@ def test_recipe_route_falls_back_when_ai_recipe_has_unlisted_ingredient(
     database, logged_in_client, nut_allergy_cart, monkeypatch
 ):
     class PantryOnly(FakeProvider):
-        def generate_json(self, task, manifest):
+        def generate_json(self, task, manifest, feedback=None):
             salt = {"name": "Salt", "product_id": None}
             return {"recipes": [{"title": "Pantry", "ingredients": [salt], "steps": ["Mix."]}]}
 

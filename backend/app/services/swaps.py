@@ -8,21 +8,29 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session, joinedload
 
 from app.models import InventoryLot, Product
-from app.rules.classify import APPROVED, CAPPED, household_label
+from app.rules.classify import APPROVED, household_label
 
 MAX_SWAPS = 2
 
 
 def find_swaps(
-    database: Session, product: Product, members: list[dict[str, object]]
+    database: Session,
+    product: Product,
+    members: list[dict[str, object]],
+    limit: int = MAX_SWAPS,
 ) -> list[dict[str, object]]:
-    """Same category, in stock, Green first then Yellow; one entry per product with its location."""
+    """Same category, in stock, Approved for everyone in the household (never Capped or Restricted).
+
+    One entry per product with its location, oldest stock first; fewer swaps beat unsafe ones.
+
+    `product` only needs `.id` and `.category`; a None category searches every category.
+    """
     lots = database.scalars(
         select(InventoryLot)
         .options(joinedload(InventoryLot.product))
         .join(Product)
         .where(
-            Product.category == product.category,
+            *([Product.category == product.category] if product.category else []),
             Product.id != product.id,
             InventoryLot.quantity > 0,
             InventoryLot.expiration_date >= date.today(),
@@ -36,9 +44,8 @@ def find_swaps(
     ranked = []
     for lot in first_lot.values():
         label = household_label(lot.product, members)
-        if label["status"] in (APPROVED, CAPPED):
-            ranked.append((label["status"] != APPROVED, lot, label))
-    ranked.sort(key=lambda entry: entry[0])
+        if label["status"] == APPROVED:
+            ranked.append((lot, label))
     return [
         {
             "product_id": lot.product.id,
@@ -49,5 +56,5 @@ def find_swaps(
             "shelf": lot.shelf,
             "bin": lot.bin,
         }
-        for _, lot, label in ranked[:MAX_SWAPS]
+        for lot, label in ranked[:limit]
     ]

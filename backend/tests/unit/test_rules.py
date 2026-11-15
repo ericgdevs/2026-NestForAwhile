@@ -21,7 +21,7 @@ def product(**overrides):
     ("restriction", "field", "capped", "restricted"),
     [
         ("Low Sugar", "sugar_g", 13, 25),
-        ("Low Sodium", "sodium_mg", 481, 961),
+        ("Low Sodium", "sodium_mg", 141, 480),
         ("Heart Healthy", "sat_fat_g", 5, 9),
         ("Kidney Friendly", "potassium_mg", 301, 601),
     ],
@@ -97,7 +97,7 @@ def test_household_red_when_every_member_is_restricted():
 
 
 def test_household_capped_guideline_makes_it_at_least_yellow():
-    salty = {**NUT_CRACKER, "allergens": [], "sodium_mg": 600}
+    salty = {**NUT_CRACKER, "allergens": [], "sodium_mg": 300}
     member = {"nickname": "P1", "restrictions": ["Low Sodium"], "allergies": []}
     label = household_label(salty, [member])
     assert label["status"] == "Capped" and label["not_for"] == []
@@ -122,3 +122,12 @@ def test_conditions_map_to_choices_and_reject_unknown():
     ]
     with pytest.raises(ValueError):
         conditions_to_choices(["Diabetes"])  # names are not codes
+
+
+@pytest.mark.parametrize(
+    ("sodium_mg", "status"),
+    [(120, "Approved"), (140, "Approved"), (148, "Capped"), (479, "Capped"), (480, "Restricted")],
+)
+def test_low_sodium_uses_the_fda_low_and_high_definitions(sodium_mg, status):
+    chips = product(sodium_mg=sodium_mg)  # "Potato chips, salted" is 148 mg per serving
+    assert classify(chips, {"restrictions": ["Low Sodium"]})[0] == status

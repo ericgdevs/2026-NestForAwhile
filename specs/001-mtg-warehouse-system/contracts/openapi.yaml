@@ -106,6 +106,7 @@ components:
         sat_fat_g: { type: number, nullable: true }
         fiber_g: { type: number, nullable: true }
         protein_g: { type: number, nullable: true }
+        carbs_g: { type: number, nullable: true }
     NotFor:
       type: object
       description: A household member a product is restricted for, by nickname (never a real name).

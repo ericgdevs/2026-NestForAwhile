@@ -6,18 +6,8 @@ from app.ai.schemas import ContextManifest, ManifestItem
 from app.ai.validators import AIValidationError, assert_no_identifiers
 from app.rules.classify import classify
 
-NUTRIENTS = (
-    "calories",
-    "sodium_mg",
-    "sugar_g",
-    "added_sugar_g",
-    "sat_fat_g",
-    "fiber_g",
-    "protein_g",
-    "potassium_mg",
-    "phosphorus_mg",
-    "carbs_g",
-)
+# Only what recipe suggestions need: keeps the request under the provider's size limit.
+NUTRIENTS = ("calories", "sodium_mg", "sugar_g", "sat_fat_g", "potassium_mg", "protein_g")
 
 
 def _assert_no_product_identifiers(manifest: ContextManifest, products: list) -> None:
