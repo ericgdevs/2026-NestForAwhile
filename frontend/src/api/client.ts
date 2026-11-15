@@ -312,6 +312,10 @@ export function completeCheckout(token: string): Promise<{ checkout_id: number; 
   return apiRequest(`/checkout/${encodeURIComponent(token)}/complete`, { method: "POST" });
 }
 
+export function getProductLabels() {
+  return apiRequest<Array<{ sku: string; name: string }>>("/products/labels");
+}
+
 export function getInventoryLots() {
   return apiRequest<Array<{ lot_id: number; product_id: number; quantity: number; expiration_date: string; expiring_soon: boolean }>>("/inventory/lots");
 }

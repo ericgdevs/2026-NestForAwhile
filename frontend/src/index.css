@@ -1244,3 +1244,52 @@ select.input {
   font-weight: 900;
   margin-left: 0.375rem;
 }
+
+/* Printable product labels: a 5 cm QR and a Code 128 bar per card, one card never split across pages. */
+.label-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8cm, 1fr));
+  gap: 1rem;
+}
+.label-card {
+  display: grid;
+  justify-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+  background: #fff;
+  color: #000;
+  border: 1px solid var(--ink);
+  border-radius: var(--r-md);
+  break-inside: avoid;
+}
+.label-card h2 {
+  font-size: 1.125rem;
+}
+.label-qr {
+  width: 5cm;
+  height: 5cm;
+}
+.label-code128 {
+  width: 100%;
+  max-width: 7cm;
+  height: 2cm;
+}
+@media print {
+  .sidebar,
+  .topbar,
+  .navrow,
+  .tabbar,
+  .no-print {
+    display: none !important;
+  }
+  .shell,
+  .main {
+    display: block;
+    margin: 0;
+    padding: 0;
+  }
+  .label-card {
+    border-color: #000;
+  }
+}

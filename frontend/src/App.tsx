@@ -11,6 +11,7 @@ import Audit from "./pages/Audit";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import Home from "./pages/Home";
+import Labels from "./pages/Labels";
 import Login from "./pages/Login";
 import Lots from "./pages/Lots";
 import Overview from "./pages/Overview";
@@ -35,6 +36,7 @@ const screens: Record<string, () => ReactElement> = {
   "/analytics": () => <Analytics />,
   "/reports": () => <Reports />,
   "/approvals": () => <Approvals />,
+  "/labels": () => <Labels />,
 };
 
 function Router() {
