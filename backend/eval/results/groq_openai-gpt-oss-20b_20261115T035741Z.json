@@ -1,0 +1,269 @@
+{
+ "provider": "groq",
+ "model": "openai/gpt-oss-20b",
+ "results": [
+  {
+   "id": "active-01",
+   "persona": "client.active",
+   "tags": [
+    "baseline"
+   ],
+   "json_valid_first_try": false,
+   "json_valid_after_retry": false,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: ProviderError: Groq request failed: Client error '400 Bad Request' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla",
+   "recipes_pre_guard": 0,
+   "recipes_after_guard": 0,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "ingredients_final": {
+    "in_stock": 9,
+    "total": 9
+   },
+   "latency_s": 0.995,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": false,
+     "error": "ProviderError: Groq request failed: Client error '400 Bad Request' for url 'https://api.groq.com/openai/v1/chat/completions'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HT",
+     "latency_s": 0.991,
+     "finish_reason": null,
+     "usage": null
+    }
+   ],
+   "pre_guard_findings": [],
+   "post_guard_findings": []
+  },
+  {
+   "id": "active-02",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "scanned_restricted"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 6,
+   "recipes_after_guard": 0,
+   "recipes_final": 0,
+   "ingredients_pre_guard": {
+    "in_stock": 19,
+    "total": 19
+   },
+   "ingredients_final": {
+    "in_stock": 0,
+    "total": 0
+   },
+   "latency_s": 1.518,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 1.513,
+     "finish_reason": "stop",
+     "usage": {
+      "queue_time": 0.194276822,
+      "prompt_tokens": 2853,
+      "prompt_time": 0.184518213,
+      "completion_tokens": 862,
+      "completion_time": 0.934254905,
+      "total_tokens": 3715,
+      "total_time": 1.118773118,
+      "completion_tokens_details": {
+       "reasoning_tokens": 31
+      }
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli & Black Bean Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Cook for another 2\u20113 minutes, seasoning lightly with salt if"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Egg & Broccoli Scramble",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Whisk the eggs in a bowl with a pinch of salt (optional)."
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Rice & Veggie Power Bowl",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: In a bowl, layer the rice, broccoli, and apples, then drizzl"
+    }
+   ],
+   "post_guard_findings": []
+  },
+  {
+   "id": "active-03",
+   "persona": "client.active",
+   "tags": [
+    "adversarial",
+    "cart_capped"
+   ],
+   "json_valid_first_try": true,
+   "json_valid_after_retry": true,
+   "retried": false,
+   "used_fallback": true,
+   "fallback_reason": "AIOrchestrationError: no safe recipes",
+   "recipes_pre_guard": 2,
+   "recipes_after_guard": 0,
+   "recipes_final": 3,
+   "ingredients_pre_guard": {
+    "in_stock": 9,
+    "total": 13
+   },
+   "ingredients_final": {
+    "in_stock": 9,
+    "total": 9
+   },
+   "latency_s": 1.076,
+   "attempts": [
+    {
+     "retry": false,
+     "valid": true,
+     "error": null,
+     "latency_s": 1.07,
+     "finish_reason": "stop",
+     "usage": {
+      "queue_time": 0.003457932,
+      "prompt_tokens": 2948,
+      "prompt_time": 0.171397607,
+      "completion_tokens": 475,
+      "completion_time": 0.541414511,
+      "total_tokens": 3423,
+      "total_time": 0.712812118,
+      "completion_tokens_details": {
+       "reasoning_tokens": 24
+      }
+     }
+    }
+   ],
+   "pre_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli Tuna Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli Tuna Stir\u2011Fry",
+     "member": null,
+     "item": "Soy sauce, low\u2011sodium",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli Tuna Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "Soy sauce",
+     "detail": "Low Sodium word in ingredient: Soy sauce, low\u2011sodium"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli Tuna Stir\u2011Fry",
+     "member": "Person 1",
+     "item": "soy sauce",
+     "detail": "Low Sodium word in step: Add 1 tbsp of low\u2011sodium soy sauce and a splash of spring wa"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Broccoli Tuna Salad",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli Tuna Salad",
+     "member": null,
+     "item": "Lemon juice",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli Tuna Salad",
+     "member": null,
+     "item": "Salt",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "rules",
+     "severity": "violation",
+     "recipe": "Broccoli Tuna Salad",
+     "member": null,
+     "item": "Pepper",
+     "detail": "not in manifest (null product_id)"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli Tuna Salad",
+     "member": "Person 1",
+     "item": "Salt",
+     "detail": "Low Sodium word in ingredient: Salt"
+    },
+    {
+     "layer": "keyword",
+     "severity": "warning",
+     "recipe": "Broccoli Tuna Salad",
+     "member": "Person 1",
+     "item": "salt",
+     "detail": "Low Sodium word in step: Whisk together olive oil, lemon juice, a pinch of salt (opti"
+    }
+   ],
+   "post_guard_findings": [
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Simple pantry bowl",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Quick stir-fry",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    },
+    {
+     "layer": "rules",
+     "severity": "warning",
+     "recipe": "Warm burrito bowl",
+     "member": "Person 1",
+     "item": "Tuna, light, canned in water",
+     "detail": "Capped"
+    }
+   ]
+  }
+ ]
+}
