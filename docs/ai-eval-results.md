@@ -177,7 +177,7 @@ The Groq sanity run of `openai/gpt-oss-20b` (3 cases) had 1 case(s) with a provi
   points as noise.
 - **Ollama vs Groq serving.** The same open weights are served differently: Ollama runs quantised
   GGUF builds (`gpt-oss:20b` MXFP4, `qwen3:8b` Q4_K_M) with grammar-constrained `format`; Groq uses
-  its own kernels and strict `json_schema`. Latency on a shared HPC GPU through an SSH tunnel says
+  its own kernels and strict `json_schema`. Latency on a self-hosted GPU server says
   nothing about Groq latency.
 - **Groq was not stable in the sanity run.** One of the three cases got a 429 or 400 from Groq
   (the app does not retry those), so Groq numbers here are not a measurement of the model.
@@ -194,7 +194,7 @@ The Groq sanity run of `openai/gpt-oss-20b` (3 cases) had 1 case(s) with a provi
 
 ## How to re-run
 
-From `backend/`, with the SSH tunnel to Ollama up (`OLLAMA_BASE_URL`) and a synthetic-only shell:
+From `backend/`, with a reachable Ollama server (`OLLAMA_BASE_URL`) and a synthetic-only shell:
 
 ```
 python -m eval.run_eval --provider ollama --model gpt-oss:20b
