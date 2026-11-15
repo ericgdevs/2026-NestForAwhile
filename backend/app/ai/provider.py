@@ -6,12 +6,14 @@ from enum import Enum
 
 import httpx
 
-from app.ai.recipes import RECIPE_INSTRUCTIONS
+from app.ai.recipes import RECIPE_INSTRUCTIONS, RECIPE_JSON_SCHEMA
 from app.ai.schemas import ContextManifest
 
 GROQ_DEFAULT_MODEL = "openai/gpt-oss-20b"
 GROQ_ATTEMPTS = 2  # one try plus a single retry on 429, never more
 MAX_RETRY_WAIT = 2.0
+MAX_COMPLETION_TOKENS = 3000  # recipe JSON is ~1-2k tokens; reasoning is kept short below
+GPT_OSS_PREFIX = "openai/gpt-oss"  # reasoning models that support structured outputs
 OLLAMA_DEFAULT_URL = "http://127.0.0.1:11434"
 
 
@@ -34,19 +36,43 @@ class ProviderError(RuntimeError):
         self.status_code = status_code  # logged on fallback; never the prompt or response body
 
 
+class MalformedOutput(ProviderError):
+    """The model's text was cut off or is not a JSON object; worth one retry with feedback."""
+
+
 class AIProvider(ABC):
     name: str
 
     @abstractmethod
-    def generate_json(self, task: AITask, manifest: ContextManifest) -> dict:
-        """Return raw JSON output for a task; callers must pass it through validate_ai_output()."""
+    def generate_json(
+        self, task: AITask, manifest: ContextManifest, feedback: str | None = None
+    ) -> dict:
+        """Return raw JSON output for a task; callers must pass it through validate_ai_output().
+
+        `feedback` is the reason the previous answer was rejected (retry once)."""
 
 
-def _payload(task: AITask, manifest: ContextManifest) -> str:
+def _payload(task: AITask, manifest: ContextManifest, feedback: str | None = None) -> str:
     body = {"task": task.value, "manifest": manifest.model_dump(mode="json")}
     if task is AITask.RECIPES:
         body["instructions"] = RECIPE_INSTRUCTIONS
+    if feedback:
+        body["correction"] = (
+            f"Your previous JSON answer was rejected: {feedback}. "
+            "Reply again with only the corrected JSON object, kept short."
+        )
     return json.dumps(body, separators=(",", ":"))
+
+
+def extract_json_object(text: str) -> object:
+    """json.loads, tolerating code fences or text around the first JSON object."""
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        start = text.find("{")
+        if start < 0:
+            raise
+        return json.JSONDecoder().raw_decode(text[start:])[0]
 
 
 def _retry_wait(response: httpx.Response) -> float:
@@ -60,24 +86,47 @@ def _retry_wait(response: httpx.Response) -> float:
 
 class GroqProvider(AIProvider):
     name = "groq"
+    last_finish_reason: str | None = None  # for logs only
 
-    def generate_json(self, task: AITask, manifest: ContextManifest) -> dict:
+    @staticmethod
+    def request_body(model: str, task: AITask, content: str) -> dict:
+        """Groq chat request. gpt-oss gets low, hidden reasoning (so it cannot eat max tokens)
+        and strict structured outputs; other models keep plain json_object mode."""
+        body: dict = {
+            "model": model,
+            "messages": [{"role": "user", "content": content}],
+            "max_completion_tokens": MAX_COMPLETION_TOKENS,
+            "response_format": {"type": "json_object"},
+        }
+        if model.startswith(GPT_OSS_PREFIX):
+            body["reasoning_effort"] = "low"
+            body["include_reasoning"] = False
+            if task is AITask.RECIPES:
+                body["response_format"] = {
+                    "type": "json_schema",
+                    "json_schema": {
+                        "name": "recipes",
+                        "strict": True,
+                        "schema": RECIPE_JSON_SCHEMA,
+                    },
+                }
+        return body
+
+    def generate_json(
+        self, task: AITask, manifest: ContextManifest, feedback: str | None = None
+    ) -> dict:
         api_key = (os.getenv("GROQ_API_KEY") or "").strip()
         model = (os.getenv("GROQ_MODEL") or "").strip() or GROQ_DEFAULT_MODEL
         if not api_key:
             raise ProviderError("GROQ_API_KEY must be configured")
 
-        payload = _payload(task, manifest)
+        body = self.request_body(model, task, _payload(task, manifest, feedback))
         try:
             for attempt in range(GROQ_ATTEMPTS):
                 response = httpx.post(
                     "https://api.groq.com/openai/v1/chat/completions",
                     headers={"Authorization": f"Bearer {api_key}"},
-                    json={
-                        "model": model,
-                        "messages": [{"role": "user", "content": payload}],
-                        "response_format": {"type": "json_object"},
-                    },
+                    json=body,
                     timeout=30,
                 )
                 if response.status_code != 429 or attempt == GROQ_ATTEMPTS - 1:
@@ -107,16 +156,19 @@ class GroqProvider(AIProvider):
         choice = body["choices"][0]
         if not isinstance(choice, dict) or not isinstance(choice.get("message"), dict):
             raise ProviderError("Groq returned an invalid response")
+        self.last_finish_reason = choice.get("finish_reason")
         content = choice["message"].get("content")
+        if self.last_finish_reason == "length":  # cut off: truncated JSON is never parsed
+            raise MalformedOutput("Groq output truncated (finish_reason=length)")
         if content is None or (isinstance(content, str) and not content.strip()):
             raise ProviderError("Groq response content is missing")
         if not isinstance(content, str):
             raise ProviderError("Groq returned an invalid response")
 
         try:
-            output = json.loads(content)
+            output = extract_json_object(content)
         except json.JSONDecodeError as exc:
-            raise ProviderError("Groq returned malformed JSON") from exc
+            raise MalformedOutput("Groq returned malformed JSON") from exc
         if not isinstance(output, dict):
             raise ProviderError("Groq returned an invalid response")
         return output
@@ -125,13 +177,15 @@ class GroqProvider(AIProvider):
 class OllamaProvider(AIProvider):
     name = "ollama"
 
-    def generate_json(self, task: AITask, manifest: ContextManifest) -> dict:
+    def generate_json(
+        self, task: AITask, manifest: ContextManifest, feedback: str | None = None
+    ) -> dict:
         host = (os.getenv("OLLAMA_BASE_URL") or OLLAMA_DEFAULT_URL).strip().rstrip("/")
         model = (os.getenv("OLLAMA_MODEL") or "").strip()
         if not model:
             raise ProviderError("OLLAMA_MODEL must be configured")
 
-        payload = _payload(task, manifest)
+        payload = _payload(task, manifest, feedback)
         try:
             response = httpx.post(
                 f"{host}/api/generate",

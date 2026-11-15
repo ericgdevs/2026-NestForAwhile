@@ -36,7 +36,7 @@ class FakeProvider(AIProvider):
     def __init__(self, response=None, error=None):
         self.response, self.error, self.seen = response, error, None
 
-    def generate_json(self, task, manifest):
+    def generate_json(self, task, manifest, feedback=None):
         self.seen = manifest
         if self.error:
             raise self.error

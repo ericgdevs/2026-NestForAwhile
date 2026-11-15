@@ -31,7 +31,7 @@ class RecordingProvider(AIProvider):
     def __init__(self):
         self.calls: list[tuple[AITask, ContextManifest]] = []
 
-    def generate_json(self, task, manifest):
+    def generate_json(self, task, manifest, feedback=None):
         self.calls.append((task, manifest))
         item = manifest.items[0]
         ingredient = {"name": item.name, "product_id": item.index}

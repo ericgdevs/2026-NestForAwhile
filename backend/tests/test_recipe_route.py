@@ -36,7 +36,7 @@ def test_recipe_route_falls_back_when_provider_is_unavailable(database, logged_i
 class FakeProvider(AIProvider):
     name = "fake"
 
-    def generate_json(self, task, manifest):
+    def generate_json(self, task, manifest, feedback=None):
         first, second = manifest.items[0], manifest.items[1]
         if task is AITask.RECIPES:
             ingredient = {"name": first.name, "product_id": first.index}
@@ -107,7 +107,7 @@ def test_recipe_route_falls_back_when_ai_recipe_has_unlisted_ingredient(
     database, logged_in_client, nut_allergy_cart, monkeypatch
 ):
     class PantryOnly(FakeProvider):
-        def generate_json(self, task, manifest):
+        def generate_json(self, task, manifest, feedback=None):
             salt = {"name": "Salt", "product_id": None}
             return {"recipes": [{"title": "Pantry", "ingredients": [salt], "steps": ["Mix."]}]}
 

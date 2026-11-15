@@ -11,8 +11,9 @@ from sqlalchemy.orm import Session
 from app.ai.context_manifest import build_manifest as build_ai_manifest
 from app.ai.fallback import build_fallback_recipes
 from app.ai.orchestrator import AIOrchestrationError, run_ai_task
-from app.ai.provider import AITask
+from app.ai.provider import AITask, MalformedOutput
 from app.ai.rules_guard import apply_rules_guard
+from app.ai.validators import AIValidationError
 from app.auth import Role, require_roles
 from app.db import get_db
 from app.models import AIRequest, Client, InventoryLot, Product, User
@@ -175,7 +176,8 @@ def recipes(
     except Exception as exc:  # any AI failure falls through to the deterministic fallback
         cause = exc.__cause__ or exc
         status = getattr(cause, "status_code", None)  # type and status only: no prompt, no PHI
-        logger.warning("Recipe AI fell back: %s status=%s", type(cause).__name__, status)
+        reason = str(cause) if isinstance(cause, AIValidationError | MalformedOutput) else ""
+        logger.warning("Recipe AI fell back: %s status=%s %s", type(cause).__name__, status, reason)
     used_fallback = payload is None
     if used_fallback:
         inventory = [{"product_id": p.id, "name": p.name} for p in products.values()]

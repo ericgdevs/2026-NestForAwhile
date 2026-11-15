@@ -124,7 +124,11 @@ def validate_ai_output(task: str, raw: str | dict, manifest: ContextManifest):
     try:
         output = TASK_MODELS[task].model_validate(data)
     except ValidationError as exc:
-        raise AIValidationError(f"schema violation: {exc.error_count()} error(s)") from exc
+        fields = sorted({".".join(map(str, e["loc"])) + f" ({e['type']})" for e in exc.errors()})
+        # field names and error types only: never the model's text
+        raise AIValidationError(
+            f"schema violation: {exc.error_count()} error(s) at {', '.join(fields)[:300]}"
+        ) from exc
     assert_no_identifiers(data)
     status_by_index = {item.index: item.status for item in manifest.items}
     for index, may_be_restricted in _referenced_indexes(output):

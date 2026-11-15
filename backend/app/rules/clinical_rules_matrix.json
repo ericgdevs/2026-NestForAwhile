@@ -12,10 +12,10 @@
     },
     "Low Sodium": {
       "nutrient": "sodium_mg",
-      "capped_above": 480,
-      "restricted_above": 960,
+      "capped_above": 140,
+      "restricted_above": 479,
       "exclusions": [],
-      "source": "AHA/DASH: under 2,300 mg/day, ideal 1,500 mg/day. Capped above 480 mg is about 20% of 2,300 mg (FDA 'high' is 20% DV or more); restricted above 960 mg is about 40%."
+      "source": "FDA labelling definitions: 'low sodium' is 140 mg or less per serving, so Capped above 140 mg; 'high' is 20% DV (about 480 mg) or more per serving, so Restricted at 480 mg and above. AHA/DASH daily targets: under 2,300 mg/day, ideal 1,500 mg/day."
     },
     "Heart Healthy": {
       "nutrient": "sat_fat_g",
