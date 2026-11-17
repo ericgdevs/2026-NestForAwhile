@@ -56,3 +56,26 @@ def test_cart_items_carry_nutrition_and_rules_status(database, logged_in_client)
     assert item["sodium_mg"] == product.sodium_mg
     assert item["status"] in {"Approved", "Capped", "Restricted"}
     assert item["explanation"]
+
+
+def test_a_parallel_request_creating_the_cart_first_does_not_fail(database, logged_in_client):
+    from app.services.cart import get_or_create_cart
+
+    user = logged_in_client(Role.CLIENT).user
+    session = ShoppingSession(Shopping_Session_Token="synthetic-cart-race", client_id=user.id)
+    database.add(session)
+    database.commit()
+    existing = get_or_create_cart(database, session)
+    database.commit()
+
+    real_scalar, calls = database.scalar, []
+
+    def stale_first_lookup(*args, **kwargs):
+        calls.append(1)  # the first lookup misses, as when another request has not committed yet
+        return None if len(calls) == 1 else real_scalar(*args, **kwargs)
+
+    database.scalar = stale_first_lookup
+    try:
+        assert get_or_create_cart(database, session).id == existing.id
+    finally:
+        del database.scalar

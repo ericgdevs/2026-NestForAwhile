@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from sqlalchemy import select
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, joinedload
 
 from app.models import Cart, CartItem, Client, Product, Recommendation, ShoppingSession
@@ -19,7 +20,11 @@ def get_or_create_cart(database: Session, session: ShoppingSession) -> Cart:
     if cart is None:
         cart = Cart(session_id=session.id)
         database.add(cart)
-        database.flush()
+        try:
+            database.flush()
+        except IntegrityError:  # a parallel request created this session's cart first
+            database.rollback()
+            cart = database.scalar(select(Cart).where(Cart.session_id == session.id))
     return cart
 
 
