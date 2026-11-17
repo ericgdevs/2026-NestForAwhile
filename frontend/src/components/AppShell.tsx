@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useAuth } from "../lib/auth";
+import { demoRoles, useAuth } from "../lib/auth";
 import { navFor, type NavLink } from "../lib/roles";
 import Icon from "./Icon";
 
@@ -22,35 +22,40 @@ function Links({ links }: { links: NavLink[] }) {
 }
 
 export default function AppShell({ children }: { children: ReactNode }) {
-  const { user, signOut } = useAuth();
+  const { user, switchRole } = useAuth();
   if (!user) return <>{children}</>;
   const links = navFor(user.role);
   const isClient = user.role === "Client";
 
-  async function handleSignOut() {
+  async function handleSwitch(role: typeof demoRoles[number]) {
     try {
-      await signOut();
-      window.history.replaceState({}, "", "/login");
+      await switchRole(role);
     } catch {
-      window.alert("We couldn't sign you out. Please try again.");
+      window.alert("We couldn't switch views. Please try again.");
     }
   }
 
   // Bottom of the sidebar on desktop; the top bar on phones and tablets, where there's no sidebar.
   const account = (
     <>
-      {isClient ? (
+      {isClient && (
         <a className="signout" href="/profile">
           <Icon name="profile" />
           <span>Household</span>
         </a>
-      ) : (
-        <span className="role-tag">{user.role}</span>
       )}
-      <button className="signout" type="button" onClick={() => void handleSignOut()}>
-        <Icon name="logout" />
-        <span>Sign out</span>
-      </button>
+      <select
+        aria-label="Demo role"
+        className="signout"
+        value={user.role}
+        onChange={(event) => void handleSwitch(event.target.value as typeof demoRoles[number])}
+      >
+        {demoRoles.map((role) => (
+          <option key={role} value={role}>
+            {role === "Client" ? "Customer" : role}
+          </option>
+        ))}
+      </select>
     </>
   );
 
@@ -68,7 +73,21 @@ export default function AppShell({ children }: { children: ReactNode }) {
         <nav aria-label="Primary navigation">
           <Links links={links} />
         </nav>
-        <div className="sidebar-account">{account}</div>
+        <div className="sidebar-account">
+          {account}
+          <p className="role-hint">
+            <svg aria-hidden="true" fill="none" height="30" viewBox="0 0 34 30" width="34">
+              <path
+                d="M32 24 Q9 24 9 8 M3 13 L9 6 L15 13"
+                stroke="currentColor"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2.5"
+              />
+            </svg>
+            Change Roles Here
+          </p>
+        </div>
       </aside>
       <header className="topbar">
         {wordmark}

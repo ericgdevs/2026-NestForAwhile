@@ -12,8 +12,24 @@ type AuthContextValue = {
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  switchRole: (role: UserSession["role"]) => Promise<void>;
   refresh: () => Promise<void>;
 };
+
+// Public demo: one synthetic account per role so visitors switch views without a login.
+const DEMO_PASSWORD = "demo-password";
+const DEMO_EMAIL: Partial<Record<UserSession["role"], string>> = {
+  Client: "client.active@example.test",
+  Volunteer: "volunteer@example.test",
+  "Warehouse Manager": "warehouse.manager@example.test",
+  Director: "director@example.test",
+};
+export const demoRoles = Object.keys(DEMO_EMAIL) as UserSession["role"][];
+
+async function signInDemo(role: UserSession["role"]): Promise<UserSession> {
+  const session = await login({ email: DEMO_EMAIL[role]!, password: DEMO_PASSWORD });
+  return { ...(await getMe()), role: session.role };
+}
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -29,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           role: profile.role ?? "Client",
         }),
       )
+      .catch(() => signInDemo("Client").then(setUser)) // first visit: land on the customer view
       .catch(() => setUser(null))
       .finally(() => setLoading(false));
   }, []);
@@ -45,6 +62,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async refresh() {
         const profile = await getMe();
         setUser({ ...profile, role: profile.role ?? "Client" });
+      },
+      async switchRole(role) {
+        await apiRequest("/auth/logout", { method: "POST" }).catch(() => undefined);
+        window.history.replaceState({}, "", "/"); // the old path may be off-limits for the new role
+        setUser(await signInDemo(role));
       },
       async signOut() {
         await apiRequest("/auth/logout", { method: "POST" });

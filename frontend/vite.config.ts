@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 
 // Screens like /cart share a path with the API: browser page loads (Accept: text/html) get the app, fetches go to FastAPI.
 const api: ProxyOptions = {
-  target: "http://127.0.0.1:8000",
+  target: process.env.API_URL ?? "http://127.0.0.1:8000",
   bypass: (req) => (req.headers.accept?.includes("text/html") ? "/index.html" : undefined),
 };
 

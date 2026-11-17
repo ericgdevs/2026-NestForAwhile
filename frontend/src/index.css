@@ -187,6 +187,10 @@ select {
   cursor: pointer;
 }
 
+.signout option {
+  color: #000;
+}
+
 .signout:hover {
   background: var(--ink-2);
 }
@@ -236,6 +240,17 @@ select {
   gap: 0.5rem;
   padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.role-hint {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--ink-soft);
 }
 
 .sidebar-account .signout {
@@ -372,7 +387,7 @@ select {
   padding: 1.75rem;
   border-radius: var(--r-lg);
   background: var(--panel);
-  box-shadow: var(--shadow-1);
+  box-shadow: var(--shadow-2);
 }
 
 .stat-card dt {
@@ -1257,6 +1272,7 @@ select.input {
   border: 2px solid var(--ink);
   border-radius: calc(var(--r-md) + 2px);
   overflow: hidden;
+  box-shadow: var(--shadow-1);
 }
 
 .camera-frame[hidden] {
