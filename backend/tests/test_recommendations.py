@@ -174,14 +174,14 @@ def test_a_client_with_no_history_gets_the_most_taken_product_first(database, lo
 def test_fallback_is_capped(database, logged_in_client):
     login = logged_in_client(Role.CLIENT)
     other = _other_client_id(database, login)
-    products = database.query(Product).filter(Product.sku.like("SYN-PROD-%")).limit(6).all()
+    products = database.query(Product).filter(Product.sku.like("SYN-PROD-%")).limit(POPULAR_COUNT + 2).all()
     for product in products:
         _checkout(database, other, product, 1)
 
-    assert len(_recommend(database, login)) == POPULAR_COUNT == 4
+    assert len(_recommend(database, login)) == POPULAR_COUNT == 10
 
 
-def test_with_no_checkouts_at_all_the_first_four_safe_in_stock_products_are_shown(
+def test_with_no_checkouts_at_all_the_first_ten_safe_in_stock_products_are_shown(
     database, logged_in_client
 ):
     login = logged_in_client(Role.CLIENT)
@@ -197,3 +197,15 @@ def test_with_no_checkouts_at_all_the_first_four_safe_in_stock_products_are_show
         .all()
     )
     assert picks[0]["product_id"] == first_lots[0].product_id  # oldest stock first
+
+
+def test_an_item_one_household_member_is_allergic_to_is_never_suggested(database, logged_in_client):
+    login = logged_in_client(Role.CLIENT)  # "Little one" has a nut allergy
+    crackers = _product(database, "SYN-CRACK-001")
+    database.add(ShoppingListItem(client_id=login.user.id, product_id=crackers.id, text="crackers"))
+    database.commit()
+
+    picks = _recommend(database, login)
+
+    assert picks  # the other household picks still show
+    assert crackers.id not in [pick["product_id"] for pick in picks]

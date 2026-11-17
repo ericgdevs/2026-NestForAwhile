@@ -22,7 +22,7 @@ from app.rules.classify import RESTRICTED, household_label
 from app.services.cart import active_session
 from app.services.nutrition import members_for
 
-POPULAR_COUNT = 4  # fallback size when the client has no qualifying picks
+POPULAR_COUNT = 10  # fallback size when the client has no qualifying picks
 CHILD_AGE = 12  # under this age counts as half a portion (design §5 #6)
 
 
@@ -116,7 +116,7 @@ def build_recommendations(database: Session, client: Client) -> list[dict[str, o
 
     def pick(lot: InventoryLot, extra_reasons: list[str]) -> dict[str, object] | None:
         label = household_label(lot.product, members)
-        if label["status"] == RESTRICTED:
+        if label["status"] == RESTRICTED or label["allergy_match"]:  # never suggest an allergen
             return None
         return {
             "product_id": lot.product.id,
