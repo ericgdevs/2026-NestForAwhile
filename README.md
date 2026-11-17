@@ -1,4 +1,6 @@
-a# NestForAwhile MTG Warehouse
+# NestForAwhile MTG Warehouse
+
+### 🏆 1st place @ 2026NestforaWhile
 
 ## 1. Project Overview
 
