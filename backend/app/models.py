@@ -247,7 +247,7 @@ class CapacitySetting(Base):
     __tablename__ = "capacity_settings"
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, default=1)
-    Max_Floor_Capacity: Mapped[int] = mapped_column(Integer, nullable=False, default=10)
+    Max_Floor_Capacity: Mapped[int] = mapped_column(Integer, nullable=False, default=1000)
     claim_window_minutes: Mapped[int] = mapped_column(Integer, nullable=False, default=5)
     updated_by: Mapped[int | None] = mapped_column(ForeignKey("users.id"))
     updated_at: Mapped[datetime] = mapped_column(DateTime, default=utc_now, onupdate=utc_now)

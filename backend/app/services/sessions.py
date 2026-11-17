@@ -22,7 +22,7 @@ def start_session(database: Session, client: Client) -> str | None:
         return current.Shopping_Session_Token
 
     capacity = database.scalar(select(CapacitySetting).order_by(CapacitySetting.id))
-    max_capacity = capacity.Max_Floor_Capacity if capacity else 10
+    max_capacity = capacity.Max_Floor_Capacity if capacity else 1000
     if active_count(database) >= max_capacity:
         enqueue(database, client)
         return None

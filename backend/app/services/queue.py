@@ -12,7 +12,7 @@ from app.models import CapacitySetting, Client, QueueEntry, ShoppingSession
 def _capacity(database: Session) -> CapacitySetting:
     setting = database.scalar(select(CapacitySetting).order_by(CapacitySetting.id))
     if setting is None:
-        setting = CapacitySetting(Max_Floor_Capacity=10, claim_window_minutes=5)
+        setting = CapacitySetting(Max_Floor_Capacity=1000, claim_window_minutes=5)
         database.add(setting)
         database.flush()
     return setting

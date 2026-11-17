@@ -48,6 +48,6 @@ def test_capacity_is_visible_to_volunteer(database, logged_in_client):
     assert response.status_code == 200
     assert response.json() == {
         "Active_Floor_Shoppers": 0,
-        "Max_Floor_Capacity": 10,
+        "Max_Floor_Capacity": 1000,
         "Queue_Waiting": 0,
     }

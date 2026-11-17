@@ -27,7 +27,7 @@ def capacity(
     ) or 0
     return {
         "Active_Floor_Shoppers": active,
-        "Max_Floor_Capacity": setting.Max_Floor_Capacity if setting else 10,
+        "Max_Floor_Capacity": setting.Max_Floor_Capacity if setting else 1000,
         "Queue_Waiting": waiting,
     }
 
