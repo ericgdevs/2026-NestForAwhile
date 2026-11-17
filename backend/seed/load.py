@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+import random
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
@@ -10,6 +11,10 @@ from sqlalchemy.orm import Session
 
 from app.auth import Role, email_lookup_hash, hash_password
 from app.models import (
+    Cart,
+    CartItem,
+    Checkout,
+    CheckoutItem,
     Client,
     ClientMedicalProfile,
     DietaryProfile,
@@ -17,8 +22,11 @@ from app.models import (
     Grant,
     HouseholdMember,
     InventoryLot,
+    InventoryMovement,
     Product,
+    ShoppingSession,
     User,
+    Visit,
 )
 from app.rules.tiers import dietary_tier_id
 from app.services.household import effective_choices
@@ -178,46 +186,48 @@ def _sync_household(client: Client, profile: DietaryProfile) -> None:
     profile.allergies = json.dumps(sorted(allergies))
 
 
-def seed_users(database: Session) -> dict[str, User]:
-    seeded: dict[str, User] = {}
-    for email, role, name, enrollment, household_size, restrictions in USER_SEEDS:
-        user = database.scalar(select(User).where(User.email_hash == email_lookup_hash(email)))
-        if user is None:
-            user = User(
-                email=email,
-                email_hash=email_lookup_hash(email),
-                password_hash=hash_password(SYNTHETIC_PASSWORD),
-                role=role.value,
-                is_active=True,
-            )
-            database.add(user)
-            database.flush()
-        seeded[email] = user
+def _upsert_user(database: Session, email, role, name, enrollment, household_size, restrictions):
+    user = database.scalar(select(User).where(User.email_hash == email_lookup_hash(email)))
+    if user is None:
+        user = User(
+            email=email,
+            email_hash=email_lookup_hash(email),
+            password_hash=hash_password(SYNTHETIC_PASSWORD),
+            role=role.value,
+            is_active=True,
+        )
+        database.add(user)
+        database.flush()
 
-        if role is Role.CLIENT:
-            client = database.get(Client, user.id)
-            if client is None:
-                client = Client(
-                    user_id=user.id,
-                    name=name,
-                    Household_Size=household_size,
-                    Client_Enrollment_Status=enrollment,
-                    Dietary_Tier_ID=dietary_tier_id(restrictions or []),
-                )
-                database.add(client)
-                database.flush()
-            profile = database.get(DietaryProfile, client.user_id)
-            if profile is None:
-                profile = DietaryProfile(
-                    client_id=client.user_id,
-                    restrictions=json.dumps(restrictions or []),
-                    allergies="[]",
-                    preferences="[]",
-                )
-                database.add(profile)
-            members = MEMBER_SEEDS.get(email, (("Person 1", None, restrictions or [], [], []),))
-            _ensure_members(client, members)
-            _sync_household(client, profile)
+    if role is Role.CLIENT:
+        client = database.get(Client, user.id)
+        if client is None:
+            client = Client(
+                user_id=user.id,
+                name=name,
+                Household_Size=household_size,
+                Client_Enrollment_Status=enrollment,
+                Dietary_Tier_ID=dietary_tier_id(restrictions or []),
+            )
+            database.add(client)
+            database.flush()
+        profile = database.get(DietaryProfile, client.user_id)
+        if profile is None:
+            profile = DietaryProfile(
+                client_id=client.user_id,
+                restrictions=json.dumps(restrictions or []),
+                allergies="[]",
+                preferences="[]",
+            )
+            database.add(profile)
+        members = MEMBER_SEEDS.get(email, (("Person 1", None, restrictions or [], [], []),))
+        _ensure_members(client, members)
+        _sync_household(client, profile)
+    return user
+
+
+def seed_users(database: Session) -> dict[str, User]:
+    seeded = {entry[0]: _upsert_user(database, *entry) for entry in USER_SEEDS}
     database.commit()
     return seeded
 
@@ -352,6 +362,114 @@ def seed_catalog(database: Session) -> None:
     database.commit()
 
 
+DEMO_RESTRICTIONS = ([], ["Low Sodium"], ["Low Sugar"], ["Heart Healthy"], ["Vegetarian"], ["Kidney Friendly"])
+
+
+def _demo_visit(database, rng, client_id, volunteer_id, products, days_ago, token):
+    """One completed past visit: session, cart, checkout, stock taken from the oldest lot."""
+    ended = datetime.now(UTC) - timedelta(days=days_ago, hours=rng.randint(0, 5))
+    session = ShoppingSession(
+        Shopping_Session_Token=token,
+        client_id=client_id,
+        status="completed",
+        started_at=ended - timedelta(minutes=rng.randint(20, 50)),
+        ended_at=ended,
+    )
+    database.add(session)
+    database.flush()
+    cart = Cart(session_id=session.id)
+    checkout = Checkout(
+        session_id=session.id, validated_by=volunteer_id, status="completed", completed_at=ended
+    )
+    database.add_all([cart, checkout])
+    database.flush()
+    pounds = 0.0
+    for product in rng.sample(products, rng.randint(3, 6)):
+        quantity = rng.randint(1, 3)
+        lot = database.scalar(
+            select(InventoryLot)
+            .where(InventoryLot.product_id == product.id, InventoryLot.quantity >= quantity + 6)
+            .order_by(InventoryLot.expiration_date, InventoryLot.id)
+        )
+        if lot is None:
+            continue
+        lot.quantity -= quantity
+        pounds += (product.weight_lb or 0) * quantity
+        database.add_all(
+            [
+                CartItem(
+                    cart_id=cart.id,
+                    product_id=product.id,
+                    quantity=quantity,
+                    added_at=ended,
+                    from_recommendation=rng.random() < 0.6,
+                ),
+                CheckoutItem(
+                    checkout_id=checkout.id,
+                    product_id=product.id,
+                    lot_id=lot.id,
+                    quantity=quantity,
+                    status_at_checkout="Approved",
+                ),
+                InventoryMovement(
+                    lot_id=lot.id,
+                    change=-quantity,
+                    reason="checkout",
+                    ref_id=checkout.id,
+                    created_at=ended,
+                ),
+            ]
+        )
+    checkout.total_lb = pounds
+    database.add(
+        Visit(
+            client_id=client_id,
+            session_id=session.id,
+            started_at=session.started_at,
+            completed_at=ended,
+            pounds_distributed=pounds,
+        )
+    )
+
+
+def seed_demo_history(database: Session) -> None:
+    """Synthetic past visits, sign-ups waiting for approval and low shelves, so the manager and
+    director screens have something to show. Runs once; the marker is the first demo family."""
+    marker = "family.01@example.test"
+    if database.scalar(select(User).where(User.email_hash == email_lookup_hash(marker))):
+        return
+    rng = random.Random(7)  # fixed seed: every demo database looks the same
+    volunteer = database.scalar(select(User).where(User.role == Role.VOLUNTEER.value))
+    products = database.scalars(select(Product).where(Product.source == "seed")).all()
+
+    for number in range(1, 13):
+        restrictions = DEMO_RESTRICTIONS[number % len(DEMO_RESTRICTIONS)]
+        family = _upsert_user(
+            database, f"family.{number:02d}@example.test", Role.CLIENT,
+            f"Demo Family {number:02d}", "Active", 1, restrictions,
+        )  # fmt: skip
+        for visit in range(rng.randint(1, 4)):
+            token = f"demo-history-{number:02d}-{visit}"
+            _demo_visit(database, rng, family.id, volunteer.id, products, rng.randint(1, 55), token)
+    for number in range(1, 4):
+        newcomer = _upsert_user(
+            database, f"newcomer.{number:02d}@example.test", Role.CLIENT,
+            f"Demo Newcomer {number:02d}", "Pending", 1, [],
+        )  # fmt: skip
+        database.get(Client, newcomer.id).created_at = datetime.now(UTC) - timedelta(
+            hours=number * 7
+        )
+
+    for product in rng.sample(products, 8):  # run one lot of each low so Restock has rows
+        lot = database.scalar(
+            select(InventoryLot).where(InventoryLot.product_id == product.id).order_by(InventoryLot.id)
+        )
+        left = rng.randint(0, 3)
+        database.add(InventoryMovement(lot_id=lot.id, change=left - lot.quantity, reason="audit"))
+        lot.quantity = left
+    database.commit()
+
+
 def main() -> None:
     from app.db import SessionLocal
 
@@ -359,6 +477,7 @@ def main() -> None:
     try:
         seed_users(database)
         seed_catalog(database)
+        seed_demo_history(database)
     finally:
         database.close()
 

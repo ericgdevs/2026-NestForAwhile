@@ -15,6 +15,7 @@ from app.models import (
     InventoryLot,
     Product,
     User,
+    Visit,
 )
 from app.rules.classify import APPROVED, CAPPED, CONDITIONS, RESTRICTED, RULES, classify
 from app.rules.tiers import DIETARY_TIER_IDS
@@ -164,3 +165,23 @@ def test_seed_heals_a_database_with_the_old_four_product_seed(database):
     profile = database.get(DietaryProfile, active.user_id)
     assert json.loads(profile.allergies) == ["Nut Allergy"]
     assert database.scalar(select(func.count()).select_from(Product)) >= 100
+
+
+def test_demo_history_fills_the_manager_and_director_screens_once(database):
+    from app.services.analytics import metrics
+    from seed.load import seed_demo_history
+
+    seed_demo_history(database)
+    totals = metrics(database)
+    pending = database.query(Client).filter_by(Client_Enrollment_Status="Pending").count()
+    low = database.query(InventoryLot).filter(InventoryLot.quantity < InventoryLot.reorder_threshold).count()
+
+    assert totals["families_served"] >= 10 and totals["visits_completed"] >= 20
+    assert totals["pounds_distributed"] > 0 and totals["inventory_usage"] > 0
+    assert 0 < totals["recommendation_adoption_rate"] < 1
+    assert pending == 4  # the original pending persona plus three newcomers
+    assert low >= 8  # the Restock list has rows
+
+    again = [database.scalar(select(func.count()).select_from(Visit))]
+    seed_demo_history(database)
+    assert [database.scalar(select(func.count()).select_from(Visit))] == again
