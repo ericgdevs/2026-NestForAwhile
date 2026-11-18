@@ -85,8 +85,9 @@ In-app model: we ran 20 synthetic cases against `gpt-oss:20b` and `qwen3:8b`. Bo
 
 ## 4. Team Collaboration
 
-- **Eric Good:** backend, AI, testing, deploy.
-- **Caden Wondell:** frontend, slides.
+* **Eric Good:** backend and AI layer, deployment.
+* **Caden Wondell:** frontend and AI features, slides.
+* **Both:** testing and QA.
 - **How we worked:** one branch per task or stream, pull requests into `main`, one person merges, and decisions go in [docs/decisions.md](docs/decisions.md).
 - **Approved team and tool changes:** TODO (not recorded in the repo).
 
