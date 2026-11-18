@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 
 import type { components } from "../api/generated";
 import { apiRequest, getMe, login, type Me } from "../api/client";
+import { navigate } from "./navigate";
 
 type UserSession = Me & {
   role: components["schemas"]["Role"];
@@ -65,7 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
       async switchRole(role) {
         await apiRequest("/auth/logout", { method: "POST" }).catch(() => undefined);
-        window.history.replaceState({}, "", "/"); // the old path may be off-limits for the new role
+        navigate("/", true); // the old path may be off-limits for the new role
         setUser(await signInDemo(role));
       },
       async signOut() {

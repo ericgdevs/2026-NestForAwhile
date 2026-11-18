@@ -1,15 +1,17 @@
 import type { ReactNode } from "react";
 
 import { demoRoles, useAuth } from "../lib/auth";
+import { usePath } from "../lib/navigate";
 import { navFor, type NavLink } from "../lib/roles";
 import Icon from "./Icon";
 
 function Links({ links }: { links: NavLink[] }) {
+  const path = usePath();
   return (
     <>
       {links.map((link) => (
         <a
-          aria-current={window.location.pathname === link.href ? "page" : undefined}
+          aria-current={path === link.href ? "page" : undefined}
           href={link.href}
           key={link.href}
         >

@@ -9,11 +9,11 @@ from argon2 import PasswordHasher
 from argon2.exceptions import VerificationError
 from fastapi import Depends, HTTPException, Request, Response, status
 from sqlalchemy import select
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.config import Settings
 from app.db import get_db
-from app.models import User
+from app.models import Client, HouseholdMember, User
 
 password_hasher = PasswordHasher()
 AUTH_COOKIE = "session"
@@ -91,7 +91,18 @@ def get_current_user(request: Request, database: Session = Depends(get_db)) -> U
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Authentication required",
         ) from error
-    user = database.get(User, user_id)
+    # One query pulls the user with their household, so later lookups hit the session's cache
+    # instead of paying a database round trip each (about 100 ms apiece on a remote database).
+    user = database.scalars(
+        select(User)
+        .options(
+            joinedload(User.client).joinedload(Client.dietary_profile),
+            joinedload(User.client)
+            .joinedload(Client.members)
+            .joinedload(HouseholdMember.medical_profile),
+        )
+        .where(User.id == user_id)
+    ).unique().one_or_none()
     if user is None or not user.is_active:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

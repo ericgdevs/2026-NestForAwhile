@@ -39,9 +39,20 @@ export default function VisitGate({ children }: { children: ReactNode }) {
     return next.status === "shopping" || next.status === "queued";
   }
 
-  if (unavailable) return <>{children}</>; // older backend without /me/visit: don't lock clients out
-  if (!visit) return <p className="empty">Checking your visit…</p>;
+  // Children stay mounted (hidden) while the visit loads, so their data requests run alongside
+  // the visit check instead of waiting for it.
+  const blocker = unavailable ? null : visit ? screenFor(visit, start, refresh) : <p className="empty">Checking your visit…</p>;
+  const showChildren = unavailable || !visit || !blocker;
+  return (
+    <>
+      {blocker}
+      {showChildren && <div style={{ display: blocker ? "none" : "contents" }}>{children}</div>}
+    </>
+  );
+}
 
+/** The screen that replaces the shopping screens for this visit state, or null while shopping. */
+function screenFor(visit: VisitState, start: () => Promise<boolean>, refresh: () => Promise<void>) {
   switch (visit.status) {
     case "awaiting_approval":
       return <AwaitingApproval onCheckAgain={start} />;
@@ -65,6 +76,6 @@ export default function VisitGate({ children }: { children: ReactNode }) {
         </p>
       );
     default:
-      return <>{children}</>;
+      return null;
   }
 }

@@ -4,7 +4,6 @@ from collections.abc import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, Session, sessionmaker
-from sqlalchemy.pool import NullPool
 
 from app.config import settings
 
@@ -27,11 +26,11 @@ def build_engine(database_url: str | None = None):
         connect_args = {"prepare_threshold": None}
     else:
         connect_args = {}
-    poolclass = NullPool if url.startswith("postgresql") else None
-
     kwargs = {"connect_args": connect_args, "future": True}
-    if poolclass:
-        kwargs["poolclass"] = poolclass
+    if url.startswith("postgresql"):
+        # Opening a connection to the remote database costs ~0.5 s, so keep a few open and reuse
+        # them across requests. pre_ping drops one the pooler closed while idle (one cheap check).
+        kwargs |= {"pool_size": 5, "max_overflow": 5, "pool_pre_ping": True, "pool_recycle": 240}
 
     return create_engine(url, **kwargs)
 

@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { useEffect } from "react";
 import { expect, test, vi } from "vitest";
 
 import VisitGate from "./VisitGate";
@@ -53,4 +54,32 @@ test("falls back to the normal screens if the visit service is unavailable", asy
   api.getVisit.mockRejectedValue(new Error("404"));
   render(<VisitGate>{shop}</VisitGate>);
   expect(await screen.findByText("Shopping screen")).toBeInTheDocument();
+});
+
+test("the page behind the gate starts loading while the visit is still being checked, then shows without remounting", async () => {
+  let resolveVisit: (value: unknown) => void = () => undefined;
+  api.getVisit.mockReturnValue(new Promise((resolve) => (resolveVisit = resolve)));
+  let mounts = 0;
+  function Page() {
+    useEffect(() => void (mounts += 1), []);
+    return <h1>Shopping screen</h1>;
+  }
+  render(
+    <VisitGate>
+      <Page />
+    </VisitGate>,
+  );
+  expect(screen.getByText("Checking your visit…")).toBeInTheDocument();
+  expect(screen.getByText("Shopping screen")).not.toBeVisible(); // mounted (fetching) but hidden
+
+  resolveVisit({ status: "shopping", Shopping_Session_Token: "tok" });
+  await waitFor(() => expect(screen.getByText("Shopping screen")).toBeVisible());
+  expect(mounts).toBe(1);
+});
+
+test("a client who is not shopping never sees the page behind the gate", async () => {
+  api.getVisit.mockResolvedValue({ status: "none" });
+  render(<VisitGate>{shop}</VisitGate>);
+  await waitFor(() => expect(screen.queryByText("Checking your visit…")).not.toBeInTheDocument());
+  expect(screen.queryByText("Shopping screen")).not.toBeInTheDocument();
 });

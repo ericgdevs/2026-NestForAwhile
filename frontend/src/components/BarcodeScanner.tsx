@@ -1,5 +1,4 @@
-import { BrowserMultiFormatReader, type IScannerControls } from "@zxing/browser";
-import { BarcodeFormat, DecodeHintType } from "@zxing/library";
+import type { IScannerControls } from "@zxing/browser";
 import { useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
@@ -11,10 +10,9 @@ type Props = {
 
 type Camera = { deviceId: string; label: string };
 
-const HINTS = new Map<DecodeHintType, unknown>([
-  [DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128, BarcodeFormat.EAN_13, BarcodeFormat.UPC_A]],
-  [DecodeHintType.TRY_HARDER, true],
-]);
+// The decoder is a large download, so it loads as its own chunk right after the page shows, not with the page.
+let decoder: Promise<[typeof import("@zxing/browser"), typeof import("@zxing/library")]> | undefined;
+const loadDecoder = () => (decoder ??= Promise.all([import("@zxing/browser"), import("@zxing/library")]));
 
 const SIZE = { width: { ideal: 1280 }, height: { ideal: 720 } };
 
@@ -56,7 +54,12 @@ export default function BarcodeScanner({ onDetected }: Props) {
       const video: MediaTrackConstraints = chosenId
         ? { deviceId: { exact: chosenId }, ...SIZE }
         : { facingMode: { ideal: "environment" }, ...SIZE };
-      const reader = new BrowserMultiFormatReader(HINTS);
+      const [{ BrowserMultiFormatReader }, { BarcodeFormat, DecodeHintType }] = await loadDecoder();
+      const hints = new Map<DecodeHintType, unknown>([
+        [DecodeHintType.POSSIBLE_FORMATS, [BarcodeFormat.QR_CODE, BarcodeFormat.CODE_128, BarcodeFormat.EAN_13, BarcodeFormat.UPC_A]],
+        [DecodeHintType.TRY_HARDER, true],
+      ]);
+      const reader = new BrowserMultiFormatReader(hints);
       const controls = await reader.decodeFromConstraints({ audio: false, video }, videoRef.current, (result) => {
         if (!result || finished) return;
         finished = true;
@@ -83,6 +86,7 @@ export default function BarcodeScanner({ onDetected }: Props) {
   }
 
   useEffect(() => {
+    void loadDecoder();
     window.addEventListener("pagehide", stop);
     return () => {
       window.removeEventListener("pagehide", stop);

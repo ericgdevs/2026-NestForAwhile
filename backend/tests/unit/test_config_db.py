@@ -19,3 +19,8 @@ def test_settings_read_environment(monkeypatch):
 def test_sqlite_engine_can_connect():
     with build_engine("sqlite:///:memory:").connect() as connection:
         assert connection.execute(text("select 1")).scalar_one() == 1
+
+
+def test_postgres_engine_reuses_connections_instead_of_opening_one_per_request():
+    pool = build_engine("postgresql://user:pass@db.test:6543/app").pool  # builds lazily, no connect
+    assert pool.size() == 5 and pool._pre_ping and pool._recycle == 240

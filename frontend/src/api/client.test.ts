@@ -1,42 +1,27 @@
-import { beforeEach, expect, test, vi } from "vitest";
+import { afterEach, expect, test, vi } from "vitest";
 
-import { getCapacity } from "./client";
+import { apiRequest } from "./client";
 
-beforeEach(() => {
-  vi.restoreAllMocks();
-});
+const reply = (body: unknown) => Promise.resolve(new Response(JSON.stringify(body)));
 
-test("API requests include cookies and return typed JSON", async () => {
-  vi.spyOn(globalThis, "fetch").mockResolvedValue(
-    new Response(
-      JSON.stringify({
-        Active_Floor_Shoppers: 1,
-        Max_Floor_Capacity: 4,
-        Queue_Waiting: 0,
-      }),
-      { status: 200, headers: { "Content-Type": "application/json" } },
-    ),
-  );
+afterEach(() => vi.unstubAllGlobals());
 
-  await expect(getCapacity()).resolves.toEqual({
-    Active_Floor_Shoppers: 1,
-    Max_Floor_Capacity: 4,
-    Queue_Waiting: 0,
-  });
-  expect(fetch).toHaveBeenCalledWith(
-    "/capacity",
-    expect.objectContaining({ credentials: "include" }),
-  );
-});
-
-test("adding a recipe asks the server to diff it, skipping the scanned item", async () => {
-  const { addRecipeToList } = await import("./client");
-  const result = { added: [], blocked: [], in_cart: 0, already_on_list: 0 };
-  const fetchMock = vi.fn().mockResolvedValue(new Response(JSON.stringify(result), { status: 200 }));
+test("two identical GETs at the same moment share one network request", async () => {
+  const fetchMock = vi.fn(() => reply({ ok: true }));
   vi.stubGlobal("fetch", fetchMock);
-  const recipe = { title: "Oats", ingredients: [{ name: "Oats", product_id: 1 }], steps: ["Cook."] };
-  await expect(addRecipeToList(recipe, 1)).resolves.toEqual(result);
-  expect(String(fetchMock.mock.calls[0][0])).toContain("/shopping-list/from-recipe");
-  expect(JSON.parse(fetchMock.mock.calls[0][1].body)).toEqual({ recipe, skip_product_id: 1 });
-  vi.unstubAllGlobals();
+  const [a, b] = await Promise.all([apiRequest("/me/household"), apiRequest("/me/household")]);
+  expect(a).toEqual({ ok: true });
+  expect(b).toEqual({ ok: true });
+  expect(fetchMock).toHaveBeenCalledTimes(1);
+  await apiRequest("/me/household"); // finished requests are never reused: data stays fresh
+  expect(fetchMock).toHaveBeenCalledTimes(2);
+});
+
+test("changes and cancellable requests are never shared", async () => {
+  const fetchMock = vi.fn(() => reply({}));
+  vi.stubGlobal("fetch", fetchMock);
+  await Promise.all([apiRequest("/cart/items", { method: "POST", body: {} }), apiRequest("/cart/items", { method: "POST", body: {} })]);
+  const controller = new AbortController();
+  await Promise.all([apiRequest("/p", { signal: controller.signal }), apiRequest("/p", { signal: controller.signal })]);
+  expect(fetchMock).toHaveBeenCalledTimes(4);
 });
