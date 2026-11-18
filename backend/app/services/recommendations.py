@@ -18,11 +18,11 @@ from app.models import (
     ShoppingListItem,
     ShoppingSession,
 )
-from app.rules.classify import RESTRICTED, household_label
+from app.rules.classify import APPROVED, household_label
 from app.services.cart import active_session
 from app.services.nutrition import members_for
 
-POPULAR_COUNT = 10  # fallback size when the client has no qualifying picks
+POPULAR_COUNT = 12  # most picks shown: personal ones first, then popular in-stock items
 CHILD_AGE = 12  # under this age counts as half a portion (design §5 #6)
 
 
@@ -116,7 +116,8 @@ def build_recommendations(database: Session, client: Client) -> list[dict[str, o
 
     def pick(lot: InventoryLot, extra_reasons: list[str]) -> dict[str, object] | None:
         label = household_label(lot.product, members)
-        if label["status"] == RESTRICTED or label["allergy_match"]:  # never suggest an allergen
+        # Only clean "Good match" items: never one flagged for a member or hitting an allergen.
+        if label["status"] != APPROVED or label["allergy_match"] or label["not_for"]:
             return None
         return {
             "product_id": lot.product.id,
@@ -138,12 +139,14 @@ def build_recommendations(database: Session, client: Client) -> list[dict[str, o
         if any(pid in ids for ids in reasons_for.values())
     ]
     picks = [p for p in picks if p]
-    if picks:
-        return picks
+    chosen = {p["product_id"] for p in picks}
 
+    # Fill the rest with what the warehouse hands out most, so the list is never thin.
     taken = _popularity(database)
     ranked = sorted(available.items(), key=lambda entry: -taken.get(entry[0], 0))  # stable
     fallback = (
-        pick(lot, ["Popular at the warehouse."] if pid in taken else []) for pid, lot in ranked
+        pick(lot, ["Popular at the warehouse."] if pid in taken else [])
+        for pid, lot in ranked
+        if pid not in chosen
     )
-    return list(islice(filter(None, fallback), POPULAR_COUNT))
+    return list(islice([*picks, *filter(None, fallback)], POPULAR_COUNT))

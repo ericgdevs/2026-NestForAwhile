@@ -11,6 +11,7 @@ import {
 } from "../api/client";
 import BarcodeScanner from "../components/BarcodeScanner";
 import Icon from "../components/Icon";
+import { navigate } from "../lib/navigate";
 import ListAdder from "../components/ListAdder";
 import NotForLine from "../components/NotForLine";
 import { StatusBadge } from "../components/StatusBadge";
@@ -63,7 +64,13 @@ function HouseholdSummary({ members }: { members: Member[] | null }) {
 }
 
 // Home's scanner hands off to the Scan page, which owns the full result, swaps, and recipes.
-const openScan = (code: string) => window.location.assign(`/scan?code=${encodeURIComponent(code)}`);
+const openScan = (code: string) => navigate(`/scan?code=${encodeURIComponent(code)}`);
+
+const MAX_PICKS = 12;
+
+// Only clean "Good match" picks: no flagged member, no allergen.
+const goodMatches = (picks: Recommendation[]) =>
+  picks.filter((p) => p.status === "Approved" && !p.allergy_match && !p.not_for?.length).slice(0, MAX_PICKS);
 
 export default function Home({ householdSize }: { householdSize?: number }) {
   const [recommendations, setRecommendations] = useState<Recommendation[] | null>(null);
@@ -72,7 +79,7 @@ export default function Home({ householdSize }: { householdSize?: number }) {
   const [members, setMembers] = useState<Member[] | null>(null);
 
   useEffect(() => {
-    getRecommendations().then(setRecommendations).catch(() => setRecommendations([]));
+    getRecommendations().then((picks) => setRecommendations(goodMatches(picks))).catch(() => setRecommendations([]));
     getShoppingList()
       .then((list) => setListItems(list.items))
       .catch(() => setListItems(null));

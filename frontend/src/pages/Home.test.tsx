@@ -3,21 +3,27 @@ import { expect, test, vi } from "vitest";
 
 import Home from "./Home";
 
+const pick = vi.hoisted(() => (product_id: number, name: string) => ({
+  product_id,
+  name,
+  quantity: 2,
+  status: "Approved",
+  rationale: "Fits your household.",
+  not_for: [],
+  allergy_match: false,
+  aisle: "A1",
+  shelf: "S1",
+  bin: "B1",
+}));
+
 vi.mock("../components/BarcodeScanner", () => ({ default: () => <div>Camera scanner</div> }));
 vi.mock("../api/client", () => ({
   getRecommendations: vi.fn().mockResolvedValue([
-    {
-      product_id: 1,
-      name: "Synthetic Oats",
-      quantity: 2,
-      status: "Capped",
-      rationale: "This item matches the selected dietary profile.",
-      not_for: [{ nickname: "Little one", reason: "Nut Allergy" }],
-      allergy_match: true,
-      aisle: "A1",
-      shelf: "S1",
-      bin: "B1",
-    },
+    { ...pick(1, "Synthetic Oats"), rationale: "This item matches the selected dietary profile." },
+    { ...pick(2, "Capped Item"), status: "Capped" },
+    { ...pick(3, "Allergen Item"), allergy_match: true },
+    { ...pick(4, "Flagged Item"), not_for: [{ nickname: "Little one", reason: "Nut Allergy" }] },
+    ...Array.from({ length: 12 }, (_, i) => pick(10 + i, `Extra Item ${i}`)),
   ]),
   saveCartItem: vi.fn(),
   getShoppingList: vi.fn().mockResolvedValue({
@@ -45,11 +51,19 @@ test("renders recommendation rationale, quantity, safety status, and who it is n
   render(<Home householdSize={2} />);
   await waitFor(() => expect(screen.getByText("Synthetic Oats")).toBeInTheDocument());
   expect(screen.getByText(/matches the selected dietary profile/i)).toBeInTheDocument();
-  expect(screen.getByText((_, element) => element?.textContent === "Suggested quantity: 2")).toBeInTheDocument();
-  expect(screen.getByRole("status", { name: /please check/i })).toBeInTheDocument();
-  expect(screen.getByText("Little one")).toBeInTheDocument();
+  expect(screen.getAllByText((_, element) => element?.textContent === "Suggested quantity: 2")).toHaveLength(12);
+  expect(screen.getAllByRole("status", { name: /good match/i })).toHaveLength(12);
   expect(screen.getByText(/people in your household/).closest(".figure")).toHaveTextContent("2people in your household");
   expect(screen.getByRole("region", { name: "Scan a product" })).toBeInTheDocument();
+});
+
+test("recommends at most 12 items, only clean good matches", async () => {
+  render(<Home householdSize={2} />);
+  await screen.findByText("Synthetic Oats");
+  expect(screen.getAllByRole("article")).toHaveLength(12);
+  for (const name of ["Capped Item", "Allergen Item", "Flagged Item", "Extra Item 11"]) {
+    expect(screen.queryByText(name)).not.toBeInTheDocument();
+  }
 });
 
 test("grocery list widget shows what is left, links to the list, and reviews typed items", async () => {
@@ -57,7 +71,7 @@ test("grocery list widget shows what is left, links to the list, and reviews typ
   const widget = await screen.findByRole("region", { name: "Grocery list" });
   await waitFor(() => expect(widget).toHaveTextContent("2 items left to find"));
   expect(screen.getByRole("link", { name: /open full list/i })).toHaveAttribute("href", "/list");
-  expect(widget).toHaveTextContent("Scan to add");
+  expect(widget).not.toHaveTextContent("Scan to add");
 
   fireEvent.change(screen.getByLabelText("Type or paste your list"), { target: { value: "oats" } });
   fireEvent.click(screen.getByRole("button", { name: "Find these items" }));

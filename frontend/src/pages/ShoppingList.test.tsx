@@ -15,18 +15,9 @@ const api = vi.hoisted(() => ({
   deleteListLine: vi.fn(),
   parseShoppingList: vi.fn(),
   addToShoppingList: vi.fn(),
-  scanProduct: vi.fn(),
 }));
 beforeEach(() => vi.clearAllMocks());
 vi.mock("../api/client", () => api);
-vi.mock("../components/BarcodeScanner", () => ({
-  default: ({ onDetected }: { onDetected: (code: string) => void }) => (
-    <button type="button" onClick={() => onDetected("000000000009")}>
-      Fake scan
-    </button>
-  ),
-}));
-
 test("shows locations, sources, and ticks a line", async () => {
   api.getShoppingList.mockResolvedValue({ items: lines });
   api.tickListLine.mockResolvedValue({ items: [{ ...lines[0], ticked: true }, lines[1]] });
@@ -121,23 +112,6 @@ test("review: editing a row's text matches it again", async () => {
 
   expect(await screen.findByText(/We matched: Synthetic Black Beans/)).toBeInTheDocument();
   expect(api.parseShoppingList).toHaveBeenLastCalledWith({ text: "black beans" });
-});
-
-test("scan to add: a scanned product goes to the review step with its safety status", async () => {
-  api.getShoppingList.mockResolvedValue({ items: [] });
-  api.scanProduct.mockResolvedValue({ product_id: 5, name: "Salty Soup", status: "Restricted" });
-  api.parseShoppingList.mockResolvedValue({ lines: [{ ...salty, text: "Salty Soup" }] });
-  api.addToShoppingList.mockResolvedValue({ items: [] });
-  render(<ShoppingList />);
-  await screen.findByText(/your list is empty/i);
-
-  fireEvent.click(screen.getByRole("button", { name: "Fake scan" }));
-
-  expect(await screen.findByText(/isn't recommended for anyone/i)).toBeInTheDocument();
-  expect(api.scanProduct).toHaveBeenCalledWith("000000000009");
-  vi.spyOn(window, "confirm").mockReturnValue(true);
-  fireEvent.click(screen.getByRole("button", { name: "Add 1 to my list" }));
-  await waitFor(() => expect(api.addToShoppingList).toHaveBeenCalledWith([{ text: "Salty Soup", product_id: 5 }]));
 });
 
 test("a photo the model can't read shows the server's clear message", async () => {

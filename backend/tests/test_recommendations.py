@@ -49,7 +49,7 @@ def test_saved_recipe_items_come_first_with_a_reason(database, logged_in_client)
     from app.models import Product, SavedRecipe
 
     login = logged_in_client(Role.CLIENT)
-    beans = database.query(Product).filter_by(sku="SYN-BEANS-001").one()
+    beans = _good_matches(database, login, 12)[-1]  # a good match that is not already first
     database.add(
         SavedRecipe(
             client_id=login.user.id,
@@ -82,6 +82,11 @@ def _recommend(database, login):
 
 def _product(database, sku):
     return database.query(Product).filter_by(sku=sku).one()
+
+
+def _good_matches(database, login, count):
+    """The first products a history-free client is recommended: all clean Good matches."""
+    return [database.get(Product, pick["product_id"]) for pick in _recommend(database, login)[:count]]
 
 
 def _checkout(database, client_id, product, quantity):
@@ -128,22 +133,23 @@ def test_list_item_is_recommended_with_the_list_reason_and_unrelated_products_ar
     database, logged_in_client
 ):
     login = logged_in_client(Role.CLIENT)
-    beans, oats = _product(database, "SYN-BEANS-001"), _product(database, "SYN-OATS-001")
+    beans, oats = _good_matches(database, login, 12)[-2:]
     _list_item(database, login, beans)
     _list_item(database, login, oats, ticked=True)  # ticked items don't count
 
     picks = _recommend(database, login)
 
-    assert [pick["product_id"] for pick in picks] == [beans.id]
+    assert picks[0]["product_id"] == beans.id
     assert "It's on your shopping list." in picks[0]["rationale"]
+    assert not any("shopping list" in pick["rationale"] for pick in picks[1:])
 
 
 def test_a_product_in_the_active_cart_is_hidden(database, logged_in_client):
     login = logged_in_client(Role.CLIENT)
-    beans, oats = _product(database, "SYN-BEANS-001"), _product(database, "SYN-OATS-001")
+    beans, oats = _good_matches(database, login, 12)[-2:]
     _list_item(database, login, beans)
     _list_item(database, login, oats)
-    session = ShoppingSession(Shopping_Session_Token="synthetic-cart", client_id=login.user.id)
+    session =ShoppingSession(Shopping_Session_Token="synthetic-cart", client_id=login.user.id)
     database.add(session)
     database.flush()
     cart = Cart(session_id=session.id)
@@ -152,13 +158,14 @@ def test_a_product_in_the_active_cart_is_hidden(database, logged_in_client):
     database.add(CartItem(cart_id=cart.id, product_id=beans.id, quantity=1))
     database.commit()
 
-    assert [p["product_id"] for p in _recommend(database, login)] == [oats.id]
+    ids = [p["product_id"] for p in _recommend(database, login)]
+    assert ids[0] == oats.id and beans.id not in ids
 
 
 def test_a_client_with_no_history_gets_the_most_taken_product_first(database, logged_in_client):
     login = logged_in_client(Role.CLIENT)
     other = _other_client_id(database, login)
-    beans, oats = _product(database, "SYN-BEANS-001"), _product(database, "SYN-OATS-001")
+    beans, oats = _good_matches(database, login, 12)[-2:]
     _checkout(database, other, oats, 2)
     _checkout(database, other, beans, 3)
     _checkout(database, other, beans, 2)
@@ -178,10 +185,16 @@ def test_fallback_is_capped(database, logged_in_client):
     for product in products:
         _checkout(database, other, product, 1)
 
-    assert len(_recommend(database, login)) == POPULAR_COUNT == 10
+    assert len(_recommend(database, login)) == POPULAR_COUNT == 12
 
 
-def test_with_no_checkouts_at_all_the_first_ten_safe_in_stock_products_are_shown(
+def test_every_recommendation_is_a_clean_good_match(database, logged_in_client):
+    picks = _recommend(database, logged_in_client(Role.CLIENT))
+    assert picks
+    assert all(p["status"] == "Approved" and not p["not_for"] and not p["allergy_match"] for p in picks)
+
+
+def test_with_no_checkouts_at_all_the_first_twelve_good_match_products_are_shown(
     database, logged_in_client
 ):
     login = logged_in_client(Role.CLIENT)

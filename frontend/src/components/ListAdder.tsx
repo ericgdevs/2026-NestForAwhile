@@ -1,14 +1,13 @@
 import { useState } from "react";
 
-import { addToShoppingList, parseShoppingList, scanProduct, type ListLine } from "../api/client";
+import { addToShoppingList, parseShoppingList, type ListLine } from "../api/client";
 import { resizeToBase64Jpeg } from "../lib/resizeImage";
-import BarcodeScanner from "./BarcodeScanner";
 import Icon from "./Icon";
 import ListReview, { listEntry, mergeByProduct, type ReviewRow } from "./ListReview";
 
 const RED_CONFIRM = "This isn't recommended for anyone in your household. Add it anyway?";
 
-/** Type, photograph or scan items, review them, then add them; shared by the List page and Home. */
+/** Type or photograph items, review them, then add them; shared by the List page and Home. */
 export default function ListAdder({ onAdded }: { onAdded: (items: ListLine[]) => void }) {
   const [text, setText] = useState("");
   const [suggestions, setSuggestions] = useState<ReviewRow[]>([]);
@@ -37,21 +36,6 @@ export default function ListAdder({ onAdded }: { onAdded: (items: ListLine[]) =>
     } catch {
       setMessage("We couldn't open that image. Try a JPG or PNG, or type your list instead.");
       setBusy(false);
-    }
-  }
-
-  // Scan to add: same safety check as the Scan page, then the same review step.
-  async function scanToAdd(code: string) {
-    setMessage("");
-    try {
-      const scan = await scanProduct(code);
-      // Stock and swaps come from the same matching as a typed list; unmatched means a plain note.
-      const { lines } = scan.product_id ? await parseShoppingList({ text: scan.name }) : { lines: [] };
-      const found = lines.find((line) => line.product_id === scan.product_id);
-      const row = found ?? { text: scan.name, product_id: null, name: null, status: null, location: null };
-      setSuggestions((rows) => mergeByProduct([...rows, { ...row, keep: true }]));
-    } catch {
-      setMessage("We couldn't find that product. Try again or type it instead.");
     }
   }
 
@@ -114,8 +98,6 @@ export default function ListAdder({ onAdded }: { onAdded: (items: ListLine[]) =>
           {message}
         </p>
       )}
-      <span className="field-label">Scan to add</span>
-      <BarcodeScanner onDetected={(code) => void scanToAdd(code)} />
       {suggestions.length > 0 && (
         <ListReview rows={suggestions} onChange={setSuggestions} onConfirm={() => void addKept()} onRecheck={(i, v) => void recheck(i, v)} />
       )}
