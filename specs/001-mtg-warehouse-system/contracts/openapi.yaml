@@ -107,6 +107,14 @@ components:
         fiber_g: { type: number, nullable: true }
         protein_g: { type: number, nullable: true }
         carbs_g: { type: number, nullable: true }
+        total_fat_g: { type: number, nullable: true }
+        trans_fat_g: { type: number, nullable: true }
+        cholesterol_mg: { type: number, nullable: true }
+        vitamin_d_mcg: { type: number, nullable: true }
+        calcium_mg: { type: number, nullable: true }
+        iron_mg: { type: number, nullable: true }
+        added_sugar_g: { type: number, nullable: true }
+        potassium_mg: { type: number, nullable: true }
     NotFor:
       type: object
       description: A household member a product is restricted for, by nickname (never a real name).
@@ -172,6 +180,18 @@ components:
         sugar_g: { type: number, nullable: true }
         sat_fat_g: { type: number, nullable: true }
         potassium_mg: { type: number, nullable: true }
+        calories: { type: number, nullable: true }
+        carbs_g: { type: number, nullable: true }
+        serving_size_g: { type: number, nullable: true }
+        total_fat_g: { type: number, nullable: true }
+        trans_fat_g: { type: number, nullable: true }
+        cholesterol_mg: { type: number, nullable: true }
+        fiber_g: { type: number, nullable: true }
+        added_sugar_g: { type: number, nullable: true }
+        protein_g: { type: number, nullable: true }
+        vitamin_d_mcg: { type: number, nullable: true }
+        calcium_mg: { type: number, nullable: true }
+        iron_mg: { type: number, nullable: true }
     Cart:
       type: object
       properties:
@@ -480,6 +500,23 @@ paths:
     get: { summary: Lots in FIFO order with expiring-soon flag (Warehouse Staff, Warehouse Manager), responses: { '200': { description: OK, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/Lot' } } } } } } }
   /analytics:
     get: { summary: Anonymized operational metrics (Warehouse Manager, Director), responses: { '200': { description: OK, content: { application/json: { schema: { $ref: '#/components/schemas/Analytics' } } } } } }
+  /reports/options:
+    get: { summary: Donors, grants and product categories to filter by (Warehouse Manager, Director), responses: { '200': { description: OK } } }
+  /reports/preview:
+    get:
+      summary: Anonymous visit rows (newest 100) plus totals over every match (Warehouse Manager, Director). Participants are keyed-hash codes, never names or database IDs.
+      parameters: [{ name: date_from, in: query, schema: { type: string, format: date } }, { name: date_to, in: query, schema: { type: string, format: date } }, { name: attributed, in: query, schema: { type: string, enum: [donor, grant] } }, { name: donor_id, in: query, schema: { type: integer } }, { name: grant_id, in: query, schema: { type: integer } }, { name: category, in: query, schema: { type: string } }, { name: household_min, in: query, schema: { type: integer, minimum: 1 } }, { name: household_max, in: query, schema: { type: integer, minimum: 1 } }]
+      responses: { '200': { description: OK }, '422': { description: Bad filters } }
+  /reports/export:
+    get:
+      summary: Every matching row as CSV or JSON (Warehouse Manager, Director)
+      parameters: [{ name: date_from, in: query, schema: { type: string, format: date } }, { name: date_to, in: query, schema: { type: string, format: date } }, { name: attributed, in: query, schema: { type: string, enum: [donor, grant] } }, { name: donor_id, in: query, schema: { type: integer } }, { name: grant_id, in: query, schema: { type: integer } }, { name: category, in: query, schema: { type: string } }, { name: household_min, in: query, schema: { type: integer, minimum: 1 } }, { name: household_max, in: query, schema: { type: integer, minimum: 1 } }, { name: format, in: query, required: true, schema: { type: string, enum: [csv, json] } }]
+      responses: { '200': { description: OK }, '422': { description: Bad filters } }
+  /reports/written:
+    post:
+      summary: Written report for a donor, grant or general audience as DOCX, PDF or both in one ZIP, with charts; the text is drafted by AI from aggregate figures only, with a template fallback (Warehouse Manager, Director)
+      parameters: [{ name: date_from, in: query, schema: { type: string, format: date } }, { name: date_to, in: query, schema: { type: string, format: date } }, { name: attributed, in: query, schema: { type: string, enum: [donor, grant] } }, { name: donor_id, in: query, schema: { type: integer } }, { name: grant_id, in: query, schema: { type: integer } }, { name: category, in: query, schema: { type: string } }, { name: household_min, in: query, schema: { type: integer, minimum: 1 } }, { name: household_max, in: query, schema: { type: integer, minimum: 1 } }, { name: preset, in: query, required: true, schema: { type: string, enum: [donor, grant, general] } }, { name: format, in: query, schema: { type: string, enum: [docx, pdf, both], default: docx } }]
+      responses: { '200': { description: DOCX }, '422': { description: Bad filters } }
   /reports/{type}:
     post:
       summary: Generate a donor or grant report as DOCX (Warehouse Manager, Director)

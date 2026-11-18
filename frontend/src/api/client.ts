@@ -4,7 +4,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? (import.meta.env.PROD 
 
 type Json = Record<string, unknown> | unknown[];
 
-async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+async function send<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
     credentials: "include",
@@ -21,6 +21,17 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
     return undefined as T;
   }
   return (await response.json()) as T;
+}
+
+// Screens that ask for the same data at the same moment (household, list) share one request.
+const inFlight = new Map<string, Promise<unknown>>();
+
+function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
+  const shareable = (!init?.method || init.method === "GET") && !init?.signal;
+  if (!shareable) return send<T>(path, init);
+  const pending = inFlight.get(path) ?? send<T>(path, init).finally(() => inFlight.delete(path));
+  inFlight.set(path, pending);
+  return pending as Promise<T>;
 }
 
 export function apiRequest<T>(
@@ -145,6 +156,16 @@ export type ScanResult = HouseholdLabel & {
   potassium_mg: number | null;
   calories?: number | null;
   carbs_g?: number | null;
+  serving_size_g?: number | null;
+  total_fat_g?: number | null;
+  trans_fat_g?: number | null;
+  cholesterol_mg?: number | null;
+  fiber_g?: number | null;
+  added_sugar_g?: number | null;
+  protein_g?: number | null;
+  vitamin_d_mcg?: number | null;
+  calcium_mg?: number | null;
+  iron_mg?: number | null;
   explanation: string;
   swaps?: Swap[];
 };
@@ -168,6 +189,18 @@ export type CartItem = {
   sugar_g?: number | null;
   sat_fat_g?: number | null;
   potassium_mg?: number | null;
+  calories?: number | null;
+  carbs_g?: number | null;
+  serving_size_g?: number | null;
+  total_fat_g?: number | null;
+  trans_fat_g?: number | null;
+  cholesterol_mg?: number | null;
+  fiber_g?: number | null;
+  added_sugar_g?: number | null;
+  protein_g?: number | null;
+  vitamin_d_mcg?: number | null;
+  calcium_mg?: number | null;
+  iron_mg?: number | null;
 };
 
 export function getCart(): Promise<{ items: CartItem[] }> {
@@ -344,4 +377,68 @@ export function getQueue() {
 
 export function claimQueue() {
   return apiRequest<{ Shopping_Session_Token: string }>("/queue/me", { method: "POST" });
+}
+
+// --- Reports (Warehouse Manager and Director): an anonymous visit dataset, filtered on the server ---
+export type ReportFilters = Partial<
+  Record<"date_from" | "date_to" | "attributed" | "donor_id" | "grant_id" | "category" | "household_min" | "household_max", string>
+>;
+export type ReportRow = {
+  participant_id: string;
+  visit_date: string;
+  household_size: number;
+  items: number;
+  pounds: number;
+  donors: string[];
+  grants: string[];
+};
+export type ReportPreview = {
+  totals: { visits: number; households: number; items: number; pounds: number };
+  rows: ReportRow[];
+};
+export type ReportOptions = {
+  donors: { id: number; label: string }[];
+  grants: { id: number; label: string }[];
+  categories: string[];
+};
+
+const reportQuery = (filters: ReportFilters, extra: Record<string, string> = {}) =>
+  new URLSearchParams(
+    Object.entries({ ...filters, ...extra }).filter((entry): entry is [string, string] => Boolean(entry[1])),
+  ).toString();
+
+export function getReportOptions(): Promise<ReportOptions> {
+  return apiRequest("/reports/options");
+}
+
+export function getReportPreview(filters: ReportFilters, signal?: AbortSignal): Promise<ReportPreview> {
+  return apiRequest(`/reports/preview?${reportQuery(filters)}`, { signal });
+}
+
+// A fetch (not a link) so the sign-in cookie and the dev proxy treat it as an API call, then save the blob.
+async function saveFile(path: string, filename: string, init?: RequestInit) {
+  const response = await fetch(`${API_BASE_URL}${path}`, { ...init, credentials: "include" });
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as { detail?: string } | null;
+    throw new Error(body?.detail ?? `Download failed with status ${response.status}`);
+  }
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(await response.blob());
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
+
+export function downloadReportData(format: "csv" | "json", filters: ReportFilters) {
+  return saveFile(`/reports/export?${reportQuery(filters, { format })}`, `report-data.${format}`);
+}
+
+export type ReportAudience = "donor" | "grant" | "general";
+export type ReportFormat = "pdf" | "docx" | "both";
+
+export function downloadWrittenReport(audience: ReportAudience, format: ReportFormat, filters: ReportFilters) {
+  const extension = format === "both" ? "zip" : format;
+  return saveFile(`/reports/written?${reportQuery(filters, { preset: audience, format })}`, `${audience}-report.${extension}`, {
+    method: "POST",
+  });
 }

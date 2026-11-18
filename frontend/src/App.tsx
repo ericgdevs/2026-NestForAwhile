@@ -1,26 +1,29 @@
-import type { ReactElement } from "react";
+import { lazy, Suspense, useEffect, type ReactElement } from "react";
 import { Agentation } from "agentation";
 
 import AppShell from "./components/AppShell";
 import VisitGate from "./components/VisitGate";
 import { AuthProvider, ProtectedRoute, useAuth } from "./lib/auth";
+import { onLinkClick, usePath } from "./lib/navigate";
 import { canVisit } from "./lib/roles";
-import Analytics from "./pages/Analytics";
-import Approvals from "./pages/Approvals";
-import Audit from "./pages/Audit";
-import Cart from "./pages/Cart";
-import Checkout from "./pages/Checkout";
 import Home from "./pages/Home";
-import Labels from "./pages/Labels";
 import Login from "./pages/Login";
-import Lots from "./pages/Lots";
 import Overview from "./pages/Overview";
-import Profile from "./pages/Profile";
-import Recipes from "./pages/Recipes";
-import Replenishment from "./pages/Replenishment";
-import Scan from "./pages/Scan";
-import ShoppingList from "./pages/ShoppingList";
 import Signup from "./pages/Signup";
+
+const Analytics = lazy(() => import("./pages/Analytics"));
+const Approvals = lazy(() => import("./pages/Approvals"));
+const Audit = lazy(() => import("./pages/Audit"));
+const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
+const Labels = lazy(() => import("./pages/Labels"));
+const Lots = lazy(() => import("./pages/Lots"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Recipes = lazy(() => import("./pages/Recipes"));
+const Replenishment = lazy(() => import("./pages/Replenishment"));
+const Reports = lazy(() => import("./pages/Reports"));
+const Scan = lazy(() => import("./pages/Scan"));
+const ShoppingList = lazy(() => import("./pages/ShoppingList"));
 
 const screens: Record<string, () => ReactElement> = {
   "/profile": () => <Profile />,
@@ -33,13 +36,14 @@ const screens: Record<string, () => ReactElement> = {
   "/replenishment": () => <Replenishment />,
   "/lots": () => <Lots />,
   "/analytics": () => <Analytics />,
+  "/reports": () => <Reports />,
   "/approvals": () => <Approvals />,
   "/labels": () => <Labels />,
 };
 
 function Router() {
   const { user, loading } = useAuth();
-  const path = window.location.pathname;
+  const path = usePath();
   if (loading) {
     return <p className="empty centered">Checking your sign-in…</p>;
   }
@@ -59,13 +63,20 @@ function Router() {
   }
   if (path === "/login") return <Login />;
   const screen = screens[path];
-  const page = screen ? screen() : user.role === "Client" ? <Home householdSize={user.Household_Size} /> : <Overview />;
+  const home = user.role === "Client" ? <Home householdSize={user.Household_Size} /> : <Overview />;
+  // Screens load as separate chunks, so the first visit downloads only what it shows.
+  const page = <Suspense fallback={<p className="empty">Loading…</p>}>{screen ? screen() : home}</Suspense>;
   // Clients see shopping screens only during an active visit; Household stays reachable.
   const gated = user.role === "Client" && path !== "/profile" ? <VisitGate>{page}</VisitGate> : page;
   return <ProtectedRoute>{gated}</ProtectedRoute>;
 }
 
 export default function App() {
+  // Links move around inside the app, so a click never reloads it and refetches the session.
+  useEffect(() => {
+    document.addEventListener("click", onLinkClick);
+    return () => document.removeEventListener("click", onLinkClick);
+  }, []);
   return (
     <AuthProvider>
       <AppShell>
