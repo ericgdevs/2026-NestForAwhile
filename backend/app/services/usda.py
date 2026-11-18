@@ -23,6 +23,15 @@ def _nutrients(food: dict[str, Any]) -> dict[str, float | None]:
         "potassium_mg": None,
         "calories": None,
         "carbs_g": None,
+        "total_fat_g": None,
+        "trans_fat_g": None,
+        "cholesterol_mg": None,
+        "fiber_g": None,
+        "protein_g": None,
+        "added_sugar_g": None,
+        "vitamin_d_mcg": None,
+        "calcium_mg": None,
+        "iron_mg": None,
     }
     nutrient_map = {
         1093: "sodium_mg",
@@ -31,6 +40,15 @@ def _nutrients(food: dict[str, Any]) -> dict[str, float | None]:
         1092: "potassium_mg",
         1008: "calories",
         1005: "carbs_g",
+        1004: "total_fat_g",
+        1257: "trans_fat_g",
+        1253: "cholesterol_mg",
+        1079: "fiber_g",
+        1003: "protein_g",
+        1235: "added_sugar_g",
+        1114: "vitamin_d_mcg",
+        1087: "calcium_mg",
+        1089: "iron_mg",
     }
     serving = food.get("servingSize")
     in_grams = str(food.get("servingSizeUnit", "")).lower() in ("g", "grm")

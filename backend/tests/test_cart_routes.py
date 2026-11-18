@@ -54,6 +54,8 @@ def test_cart_items_carry_nutrition_and_rules_status(database, logged_in_client)
 
     assert item["sku"] == "SYN-OATS-001"
     assert item["sodium_mg"] == product.sodium_mg
+    assert item["calories"] == product.calories and item["fiber_g"] == product.fiber_g
+    assert item["total_fat_g"] is None  # not in the catalog: left empty, never made up
     assert item["status"] in {"Approved", "Capped", "Restricted"}
     assert item["explanation"]
 

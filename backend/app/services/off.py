@@ -65,6 +65,16 @@ def lookup_open_food_facts(
         "potassium_mg": amount("potassium", 1000),  # OFF: grams
         "calories": amount("energy-kcal"),
         "carbs_g": amount("carbohydrates"),
+        "serving_size_g": serving_g,
+        "total_fat_g": amount("fat"),
+        "trans_fat_g": amount("trans-fat"),
+        "cholesterol_mg": amount("cholesterol", 1000),  # OFF: grams
+        "fiber_g": amount("fiber"),
+        "protein_g": amount("proteins"),
+        "added_sugar_g": amount("added-sugars"),
+        "vitamin_d_mcg": amount("vitamin-d", 1_000_000),  # OFF: grams
+        "calcium_mg": amount("calcium", 1000),  # OFF: grams
+        "iron_mg": amount("iron", 1000),  # OFF: grams
         "source": "openfoodfacts",
     }
     _CACHE[barcode] = result

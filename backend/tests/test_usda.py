@@ -22,6 +22,9 @@ def test_usda_lookup_maps_nutrients_and_caches(monkeypatch):
                             {"nutrientId": 269, "value": 4},
                             {"nutrientId": 1258, "value": 1},
                             {"nutrientId": 1092, "value": 90},
+                            {"nutrientId": 1004, "value": 7},
+                            {"nutrientId": 1253, "value": 12},
+                            {"nutrientId": 1003, "value": 3},
                         ],
                     }
                 ]
@@ -35,4 +38,6 @@ def test_usda_lookup_maps_nutrients_and_caches(monkeypatch):
     assert first == second
     assert first["sodium_mg"] == 21
     assert first["potassium_mg"] == 90
+    assert first["total_fat_g"] == 7 and first["cholesterol_mg"] == 12 and first["protein_g"] == 3
+    assert first["iron_mg"] is None  # USDA sent no iron: left empty
     assert calls == 1

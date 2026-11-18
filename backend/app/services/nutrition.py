@@ -52,11 +52,17 @@ def local_label(product: Product, members: list[dict[str, object]]) -> dict[str,
     return {
         "sku": product.sku,
         **{field: product_data[field] for field in NUTRIENTS},
+        **{field: getattr(product, field) for field in DISPLAY_FIELDS},
         **safety_label(product_data, members),
     }
 
 
-SCAN_FIELDS = (*NUTRIENTS, "calories", "carbs_g")  # calories/carbs are display only
+# Display only: they never change the status. Left empty (None) when no source has a value.
+DISPLAY_FIELDS = (
+    "calories", "carbs_g", "serving_size_g", "total_fat_g", "trans_fat_g", "cholesterol_mg",
+    "fiber_g", "added_sugar_g", "protein_g", "vitamin_d_mcg", "calcium_mg", "iron_mg",
+)  # fmt: skip
+SCAN_FIELDS = (*NUTRIENTS, *DISPLAY_FIELDS)
 NOT_STOCKED = "Not stocked at Epic Cure today."
 LOOKUP_FAILED = "We couldn't look this item up. Try again, or ask a volunteer."
 EXTERNAL_SWAPS = 3

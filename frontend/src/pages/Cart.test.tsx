@@ -40,7 +40,7 @@ test("shows nutrition facts and status when the cart API sends them", async () =
     ],
   });
   render(<Cart />);
-  expect(await screen.findByText("420 mg")).toBeInTheDocument();
+  expect(await screen.findByText("420mg")).toBeInTheDocument();
   expect(screen.getByRole("status", { name: /please check/i })).toBeInTheDocument();
   expect(screen.getByText((_, element) => element?.textContent === "Quantity in cart: 3")).toBeInTheDocument();
 });
